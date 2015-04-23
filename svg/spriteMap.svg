@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg3126"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   width="100"
+   height="25"
+   sodipodi:docname="spriteMap.png"
+   inkscape:export-filename="/home/jm/Documents/programmeren/cpp/sfml/topDownShooter/sprites/spriteMap.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <metadata
+     id="metadata3132">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3130" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1276"
+     inkscape:window-height="1020"
+     id="namedview3128"
+     showgrid="false"
+     inkscape:zoom="5.67"
+     inkscape:cx="49.389797"
+     inkscape:cy="20.144275"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3126" />
+  <rect
+     style="fill:#275d38;fill-opacity:1;stroke:none"
+     id="rect3136"
+     width="25"
+     height="25"
+     x="0"
+     y="1.3322676e-15" />
+  <rect
+     style="fill:#000000;fill-opacity:1;stroke:none"
+     id="rect3136-7"
+     width="25"
+     height="25"
+     x="25"
+     y="0" />
+  <rect
+     style="fill:#e70000;fill-opacity:1;stroke:none"
+     id="rect3136-7-5"
+     width="25"
+     height="25"
+     x="50"
+     y="0" />
+</svg>

@@ -23,17 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 bool isSolid(int tileNum);
 char getDisplayChar(int tileNum);
 
-using namespace sf;
-
 class groundTileMap : public sf::Drawable, public sf::Transformable
 {
 public:
     void genGroundTileMap (const char* filename, sf::Texture nTexture
                            , int tilesW, int tilesH
-                           , int textureTileGridWidth, b2World *world, int nScale);
+                           , int textureTileGridWidth
+                           , b2World *world, int nScale);
 
 private:
-    virtual void draw (sf::RenderTarget& target, sf::RenderStates states) const;
+    virtual void draw (sf::RenderTarget& target
+                       , sf::RenderStates states) const;
     int width, height, SCALE;
     sf::VertexArray vertices;
     sf::Texture texture;

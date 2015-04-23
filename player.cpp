@@ -41,7 +41,8 @@ void Player::initialize(
     // Setup sprite
     texMap = nTexture;
     sprite.setTexture(texMap);
-    sprite.setOrigin(25, 25);
+    sprite.setOrigin(size / 2
+                     , size / 2);
     currentRec = IntRect(0,0,size,size);
     sprite.setTextureRect(currentRec);
     setPosition(startPosition);
@@ -60,8 +61,10 @@ void Player::initialize(
     b2PolygonShape box;
     box.SetAsBox(((float) (size)) / (2 * scale)
                  , ((float) (size)) / (2 * scale));
+    b2CircleShape circle;
+    circle.m_radius = ((float) (size)) / (2 * scale);
     b2FixtureDef fixtureDef;
-    fixtureDef.shape = &box;
+    fixtureDef.shape = &circle;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 1.0f;
 

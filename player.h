@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 
-using namespace sf;
-
 enum Movement {
     NONE = 0
     , UP
@@ -33,12 +31,13 @@ enum Movement {
     , UP_LEFT
 };
 
-class Player : public Drawable, public Transformable {
+class Player : public sf::Drawable
+             , public sf::Transformable {
 public:
     void initialize(b2World* nWorld
-                    , Vector2f startPosition
+                    , sf::Vector2f startPosition
                     , int nScale, int nSize
-                    , Texture nTexture);
+                    , sf::Texture nTexture);
     void update();
     void move(bool up);
     void turn(bool left);
@@ -47,13 +46,14 @@ private:
     float moveForce, rotationTorque;
     int scale, size;
     float framesRunning;
-    Texture texMap;
-    Sprite sprite;
-    IntRect currentRec;
+    sf::Texture texMap;
+    sf::Sprite sprite;
+    sf::IntRect currentRec;
     b2Body* body;
     b2World* world;
     const static float toDegreesMultiple = 57.2957795131;
 
-    virtual void draw(RenderTarget& target, RenderStates states) const;
+    virtual void draw(sf::RenderTarget& target
+                      , sf::RenderStates states) const;
     b2Vec2 rotateVec(b2Vec2 vector, float radians);
 };

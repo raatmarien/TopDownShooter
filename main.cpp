@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Box2D/Box2D.h>
 #include "groundTileMap.h"
 #include "player.h"
+#include "shadow.h"
 #include <vector>
 #include <math.h>
 #include <iostream>
@@ -45,6 +46,8 @@ Vector2f startPosition = Vector2f(100
                                  ,100);
 Player player;
 
+ShadowHandler shadowHandler;
+
 float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
     , positionIterations = 3;
@@ -55,10 +58,13 @@ int main() {
 
     loadSprites();
 
-    tileMap.genGroundTileMap("maps/test_map_3.pgm", spritesMap
+    const char* mapFilePath = "maps/test_map_shadows.pgm";
+    
+    tileMap.genGroundTileMap(mapFilePath, spritesMap
                              , 25, 25, 4, &world, SCALE);
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite);
+    shadowHandler.genObstaclePoints(mapFilePath, 25);
 
     while(window.isOpen()) {
         handleEvents(&window);
@@ -86,6 +92,7 @@ void simulatePhysics(RenderWindow* window) {
 
 void update(RenderWindow* window) {
     player.update();
+    shadowHandler.update(player.getPosition());
 }
 
 void handleInput(RenderWindow* window) {
@@ -112,6 +119,7 @@ void draw(RenderWindow* window) {
     window->clear(sf::Color(120,170,10));
     window->draw(tileMap);
     window->draw(player);
+    shadowHandler.draw(window);
     window->display();
 }
 
