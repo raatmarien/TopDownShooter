@@ -69,8 +69,6 @@ void ShadowHandler::update(Vector2f sightCenter) {
     vertices.setPrimitiveType(Quads);
     blockRedrawer.resetBlocks();
 
-    int debugcount = 0;
-    
     float viewDistance = 1000; // TODO change dynamically
     float pi = 3.14159265359;
     for (int i = 0; i < obstaclePoints.size(); i += 4) {
@@ -123,13 +121,22 @@ void ShadowHandler::update(Vector2f sightCenter) {
 
         // Check if completely visible, if so
         // add it to the redraw list
-        bool completelyVisible = true;
+        bool completelyVisible1 = true
+            , completelyVisible2 = true
+            , completelyVisible3 = true
+            , completelyVisible4 = true;
+        Vector2f end1 = obstaclePoints[i] - Vector2f(0.1f, 0.1f)
+            , end2 = obstaclePoints[i+1] - Vector2f(-0.1f, 0.1f)
+            , end3 = obstaclePoints[i+2] - Vector2f(-0.1f,-0.1f)
+            , end4 = obstaclePoints[i+3] - Vector2f(0.1f, -0.1f);
 
         // TODO fix
-
+        Vector2f centerOfObstacle = obstaclePoints[i]
+            + Vector2f(12.5f, 12.5f);
         // for all obstacles except the current one
         for (int x = 0; x < obstaclePoints.size()
-                 && completelyVisible; x += 4) {
+                 && (completelyVisible1 || completelyVisible2
+                     || completelyVisible3 || completelyVisible4); x += 4) {
             if (x != i) {
                 // check for all 4 edges if one of
                 // them intersects with the sight
@@ -138,41 +145,76 @@ void ShadowHandler::update(Vector2f sightCenter) {
                     if (y == x + 3)
                         r = -3;
 
+                    if (completelyVisible1
+                        && lineSegmentsIntersect
+                        (sightCenter
+                         , end1
+                         , obstaclePoints[y]
+                         , obstaclePoints[y+r]))
+                        completelyVisible1 = false;
+
+                    if (completelyVisible2
+                        && lineSegmentsIntersect
+                        (sightCenter
+                         , end2
+                         , obstaclePoints[y]
+                         , obstaclePoints[y+r]))
+                        completelyVisible2 = false;
+
+                    if (completelyVisible3
+                        && lineSegmentsIntersect
+                        (sightCenter
+                         , end3
+                         , obstaclePoints[y]
+                         , obstaclePoints[y+r]))
+                        completelyVisible3 = false;
+
+                    if (completelyVisible4
+                        && lineSegmentsIntersect
+                        (sightCenter
+                         , end4
+                         , obstaclePoints[y]
+                         , obstaclePoints[y+r]))
+                        completelyVisible4 = false;
                     // of any of the two adjacent
                     // corners of the current obstacle
-                    bool anyEqual = obstaclePoints[y]
-                        == obstaclePoints[minIndex]
-                        || obstaclePoints[y+r]
-                        == obstaclePoints[minIndex]
-                        || obstaclePoints[y]
-                        == obstaclePoints[maxIndex]
-                        || obstaclePoints[y+r]
-                        == obstaclePoints[maxIndex];
-                    if (!anyEqual) {
-                        if (lineSegmentsIntersect
-                            (obstaclePoints[y]
-                             , obstaclePoints[y+r]
-                             , sightCenter
-                             , obstaclePoints[minIndex]) 
-                            || lineSegmentsIntersect
-                            (obstaclePoints[y]
-                             , obstaclePoints[y+r]
-                             , sightCenter
-                             , obstaclePoints[maxIndex])) {
-                            completelyVisible = false;
-                            break;
-                        }
-                    }
+                    // bool anyEqual = obstaclePoints[y]
+                    //     == obstaclePoints[minIndex]
+                    //     || obstaclePoints[y+r]
+                    //     == obstaclePoints[minIndex]
+                    //     || obstaclePoints[y]
+                    //     == obstaclePoints[maxIndex]
+                    //     || obstaclePoints[y+r]
+                    //     == obstaclePoints[maxIndex];
+                    // if (!anyEqual) {
+                    //     if (lineSegmentsIntersect
+                    //         (obstaclePoints[y]
+                    //          , obstaclePoints[y+r]
+                    //          , sightCenter
+                    //          , obstaclePoints[minIndex]) 
+                    //         || lineSegmentsIntersect
+                    //         (obstaclePoints[y]
+                    //          , obstaclePoints[y+r]
+                    //          , sightCenter
+                    //          , obstaclePoints[maxIndex])) {
+                    //         completelyVisible = false;
+                    //         break;
+                    //     }
+                    // }
                 }
             }
         }
+        int ammountVisible = 0;
+        if (completelyVisible1) ammountVisible++;
+        if (completelyVisible2) ammountVisible++;
+        if (completelyVisible3) ammountVisible++;
+        if (completelyVisible4) ammountVisible++;
 
-        if (completelyVisible) {
+        if (ammountVisible >= 1) {
             blockRedrawer.addBlock(obstaclePoints[i]);
-            debugcount++;
         }
+            std::cout << ammountVisible << "\n";
     }
-    std::cout << debugcount << "\n";
     shadows.setVertices(vertices);
 }
 
@@ -223,10 +265,10 @@ void BlockRedrawer::draw(RenderWindow* window) {
 // Intersection functions
 bool onSegment(Vector2f line1, Vector2f line2
                , Vector2f point) {
-    return point.x <= std::max(line1.x, line2.x)
-        && point.x >= std::min(line1.x, line2.x)
-        && point.y <= std::max(line1.y, line2.y)
-        && point.y >= std::min(line1.y, line2.y);
+    return point.x < std::max(line1.x, line2.x)
+        && point.x > std::min(line1.x, line2.x)
+        && point.y < std::max(line1.y, line2.y)
+        && point.y > std::min(line1.y, line2.y);
 }
 
 int pointsOrientation(Vector2f point1
