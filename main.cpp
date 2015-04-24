@@ -65,6 +65,7 @@ int main() {
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite);
     shadowHandler.genObstaclePoints(mapFilePath, 25);
+    shadowHandler.setBlockTexture(spritesMap, IntRect(25,0,25,25));
 
     while(window.isOpen()) {
         handleEvents(&window);

@@ -35,7 +35,7 @@ void Player::initialize(
     framesRunning = 0;
 
     // Constants
-    moveForce = 20.0f;
+    moveForce = 15.0f;
     rotationTorque = 2.0f;
 
     // Setup sprite
