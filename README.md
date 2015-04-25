@@ -1,1 +1,1 @@
-A simple top down shooter
+A simple top down shooter with an field of view
