@@ -67,7 +67,6 @@ void ShadowHandler::update(Vector2f sightCenter) {
     VertexArray vertices;
     vertices.resize(obstaclePoints.size() * 2);
     vertices.setPrimitiveType(Quads);
-    blockRedrawer.resetBlocks();
 
     float viewDistance = 1000; // TODO change dynamically
     float pi = 3.14159265359;
@@ -137,12 +136,6 @@ void ShadowHandler::update(Vector2f sightCenter) {
 
 void ShadowHandler::draw(RenderWindow* window) {
     window->draw(shadows);
-    // blockRedrawer.draw(window);
-}
-
-void ShadowHandler::setBlockTexture(Texture texture
-                                    , IntRect textureRect) {
-    blockRedrawer.setTexture(texture, textureRect);
 }
 
 // ShadowDrawable methods
@@ -154,29 +147,6 @@ void ShadowDrawable::draw(RenderTarget& target
                          , RenderStates states) const {
     states.transform *= getTransform();
     target.draw(vertices);
-}
-
-// BlockRedrawer methods
-void BlockRedrawer::resetBlocks() {
-    blockPositions.clear();
-}
-
-void BlockRedrawer::addBlock(Vector2f position) {
-    blockPositions.push_back(Vector2f(position));
-}
-
-void BlockRedrawer::setTexture(Texture nTexture
-                               , IntRect textureRect) {
-    texture = nTexture;
-    blockSprite.setTexture(texture);
-    blockSprite.setTextureRect(textureRect);
-}
-
-void BlockRedrawer::draw(RenderWindow* window) {
-    for (int i = 0; i < blockPositions.size(); i++) {
-        blockSprite.setPosition(blockPositions[i]);
-        window->draw(blockSprite);
-    }
 }
 
 // Intersection functions

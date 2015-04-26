@@ -58,23 +58,6 @@ private:
                       , sf::RenderStates states) const;
 };
 
-/* Redraws the visible blocks
- * after the shadows have been
- * drawn
- */
-class  BlockRedrawer {
-public:
-    void resetBlocks();
-    void addBlock(sf::Vector2f position);
-    void setTexture(sf::Texture nTexture
-                    , sf::IntRect textureRect);
-    void draw(sf::RenderWindow* window);
-private:
-    sf::Sprite blockSprite;
-    sf::Texture texture;
-    std::vector<sf::Vector2f> blockPositions;
-};
-
 /* Calculates shadow in
  * its update() method
  * and draws them in
@@ -89,10 +72,7 @@ public:
     void draw(sf::RenderWindow* window); // Calls the draw methods
                                          // for the shadows and the
                                          // BlockRedrawer
-    void setBlockTexture(sf::Texture texture
-                         , sf::IntRect textureRect);
 private:
     std::vector<sf::Vector2f> obstaclePoints;
     ShadowDrawable shadows;
-    BlockRedrawer blockRedrawer;
 };
