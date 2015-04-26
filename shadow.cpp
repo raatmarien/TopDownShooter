@@ -77,18 +77,46 @@ void ShadowHandler::setScreenDiagonal(int screenX
                                       + screenY * screenY)));
 }
 
+std::vector<Vector2f> ShadowHandler::getObstaclesInRange(Vector2f sightCenter) {
+    std::vector<Vector2f> obstaclesInRange;
+    float range = (float) (screenDiagonal) / 2.0f;
+    for (int i = 0; i < obstaclePoints.size(); i += 4) {
+        Vector2f distance1 = obstaclePoints[i] - sightCenter;
+        Vector2f distance2 = obstaclePoints[i+1] - sightCenter;
+        Vector2f distance3 = obstaclePoints[i+2] - sightCenter;
+        Vector2f distance4 = obstaclePoints[i+3] - sightCenter;
+        float length1 = sqrt(distance1.x * distance1.x +
+                             distance1.y * distance1.y);
+        float length2 = sqrt(distance2.x * distance2.x +
+                             distance2.y * distance2.y);
+        float length3 = sqrt(distance3.x * distance3.x +
+                             distance3.y * distance3.y);
+        float length4 = sqrt(distance4.x * distance4.x +
+                             distance4.y * distance4.y);
+        if (length1 < range || length2 < range
+            || length3 < range || length4 < range) {
+            obstaclesInRange.push_back(obstaclePoints[i+0]);
+            obstaclesInRange.push_back(obstaclePoints[i+1]);
+            obstaclesInRange.push_back(obstaclePoints[i+2]);
+            obstaclesInRange.push_back(obstaclePoints[i+3]);
+        }
+    }
+    return obstaclesInRange;
+}
+
 void ShadowHandler::update(Vector2f sightCenter) {
+    std::vector<Vector2f> obstacles = getObstaclesInRange(sightCenter);
     VertexArray vertices;
-    vertices.resize(obstaclePoints.size() * 2);
+    vertices.resize(obstacles.size() * 2);
     vertices.setPrimitiveType(Quads);
 
     float viewDistance = screenDiagonal; // TODO change dynamically
     float pi = 3.14159265359;
-    for (int i = 0; i < obstaclePoints.size(); i += 4) {
+    for (int i = 0; i < obstacles.size(); i += 4) {
         float rotation[4];
         int r = 0;
         for (int j = i; j < i + 4; j++) {
-            Vector2f rayVector = obstaclePoints[j]
+            Vector2f rayVector = obstacles[j]
                 - sightCenter; 
             
             rotation[r] = std::atan2
@@ -118,13 +146,13 @@ void ShadowHandler::update(Vector2f sightCenter) {
             }
         }
         Vector2f direction1 = normalize
-            (obstaclePoints[minIndex] - sightCenter)
+            (obstacles[minIndex] - sightCenter)
             , direction2 = normalize
-            (obstaclePoints[maxIndex] - sightCenter);
+            (obstacles[maxIndex] - sightCenter);
         float move = 10;
-        Vector2f startPoint1 = obstaclePoints[minIndex]
+        Vector2f startPoint1 = obstacles[minIndex]
             + (move * direction1)
-            , startPoint2 = obstaclePoints[maxIndex]
+            , startPoint2 = obstacles[maxIndex]
                   + (move * direction2);
         
         vertices[2*i+0].position = startPoint1;
@@ -136,10 +164,10 @@ void ShadowHandler::update(Vector2f sightCenter) {
 
         // Draw black rectangle in shape of the original
         // obstacle
-        vertices[2*i+4].position = obstaclePoints[i+0] + (move * normalize(obstaclePoints[i+0] - sightCenter));
-        vertices[2*i+5].position = obstaclePoints[i+1] + (move * normalize(obstaclePoints[i+1] - sightCenter));
-        vertices[2*i+6].position = obstaclePoints[i+2] + (move * normalize(obstaclePoints[i+2] - sightCenter));
-        vertices[2*i+7].position = obstaclePoints[i+3] + (move * normalize(obstaclePoints[i+3] - sightCenter));
+        vertices[2*i+4].position = obstacles[i+0] + (move * normalize(obstacles[i+0] - sightCenter));
+        vertices[2*i+5].position = obstacles[i+1] + (move * normalize(obstacles[i+1] - sightCenter));
+        vertices[2*i+6].position = obstacles[i+2] + (move * normalize(obstacles[i+2] - sightCenter));
+        vertices[2*i+7].position = obstacles[i+3] + (move * normalize(obstacles[i+3] - sightCenter));
 
     }
     for (int i = 0; i < vertices.getVertexCount(); i++) {
