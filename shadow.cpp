@@ -33,6 +33,10 @@ Vector2f normalize(Vector2f vector) {
 }
 
 // ShadowHandler methods
+ShadowHandler::ShadowHandler() {
+    setScreenDiagonal(1000, 1000);
+}
+
 void ShadowHandler::genObstaclePoints(const char* filepath
                                       , int tileSize) {
     std::ifstream mapReader(filepath);
@@ -45,7 +49,7 @@ void ShadowHandler::genObstaclePoints(const char* filepath
         for (int x = 0; x < width; x++) {
             int tileNum;
             mapReader >> tileNum;
-            if (tileNum == 1) {
+            if (tileNum == 1 || tileNum == 255) {
                 obstaclePoints.push_back(
                     Vector2f(x * tileSize
                              , y * tileSize));
@@ -63,12 +67,22 @@ void ShadowHandler::genObstaclePoints(const char* filepath
     }
 }
 
+void ShadowHandler::setScreenDiagonal(int diagonal) {
+    screenDiagonal = diagonal;
+}
+
+void ShadowHandler::setScreenDiagonal(int screenX
+                                      , int screenY) {
+    screenDiagonal = (int) (ceil(sqrt(screenX * screenX
+                                      + screenY * screenY)));
+}
+
 void ShadowHandler::update(Vector2f sightCenter) {
     VertexArray vertices;
     vertices.resize(obstaclePoints.size() * 2);
     vertices.setPrimitiveType(Quads);
 
-    float viewDistance = 1000; // TODO change dynamically
+    float viewDistance = screenDiagonal; // TODO change dynamically
     float pi = 3.14159265359;
     for (int i = 0; i < obstaclePoints.size(); i += 4) {
         float rotation[4];
@@ -129,7 +143,7 @@ void ShadowHandler::update(Vector2f sightCenter) {
 
     }
     for (int i = 0; i < vertices.getVertexCount(); i++) {
-        vertices[i].color = Color::Black;
+        vertices[i].color = Color(0,0,0);
     }
     shadows.setVertices(vertices);
 }

@@ -55,6 +55,13 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
             int indexInVertexArray = 4 * (width * y + x), tileNum;
             bitmap >> tileNum; // The grayscale value
                                // of the corresponding pixel
+
+            // For easier map editing in graphic software
+            switch(tileNum) {
+            case 255:
+                tileNum = 1;
+                break;
+            }
             
             std::cout << getDisplayChar(tileNum) << " ";
             
@@ -62,6 +69,7 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                 * tilesWidth
                 , cornerTextureY = (tileNum / textureTileGridWidth)
                 * tilesHeight;
+
             // Top left corner
             vertices[indexInVertexArray+0].position
                 = Vector2f(x * tilesWidth

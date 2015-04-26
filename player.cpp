@@ -35,7 +35,7 @@ void Player::initialize(
     framesRunning = 0;
 
     // Constants
-    moveForce = 15.0f;
+    moveForce = 20.0f;
     rotationTorque = 2.0f;
 
     // Setup sprite
@@ -54,7 +54,7 @@ void Player::initialize(
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(startPosition.x / scale
                          , startPosition.y / scale);
-    bodyDef.linearDamping = 2.0f;
+    bodyDef.linearDamping = 4.0f;
     bodyDef.angularDamping = 2.0f;
     body = world->CreateBody(&bodyDef);
 

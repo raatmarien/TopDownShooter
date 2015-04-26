@@ -65,14 +65,18 @@ private:
  */
 class ShadowHandler {
 public:
+    ShadowHandler();
     void genObstaclePoints(      // Every 4 Vector2f's in the
         const char* filepath     // obstaclePoints vector 
         , int tileSize);         // represents 1 square         
+    void setScreenDiagonal(int diagonal);
+    void setScreenDiagonal(int screenX, int screenY);
     void update(sf::Vector2f sightCenter);
     void draw(sf::RenderWindow* window); // Calls the draw methods
                                          // for the shadows and the
                                          // BlockRedrawer
 private:
+    int screenDiagonal;
     std::vector<sf::Vector2f> obstaclePoints;
     ShadowDrawable shadows;
 };

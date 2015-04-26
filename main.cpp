@@ -42,29 +42,35 @@ groundTileMap tileMap;
 
 b2Vec2 gravity(0.0f, 0.0f);
 b2World world(gravity);
-Vector2f startPosition = Vector2f(100
-                                 ,100);
+Vector2f startPosition = Vector2f(150
+                                 ,200);
 Player player;
 
 ShadowHandler shadowHandler;
+
+View playerView;
 
 float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
     , positionIterations = 3;
 
+int screenX = 50 * 20, screenY = 50 * 20;
+
 int main() {
-    RenderWindow window(VideoMode(50 * 20, 50 * 20), "Float");
+    RenderWindow window(VideoMode(screenX, screenY), "Float");
     window.setVerticalSyncEnabled(true);
+    playerView.setSize(screenX, screenY);
 
     loadSprites();
 
-    const char* mapFilePath = "maps/test_map_shadows.pgm";
+    const char* mapFilePath = "maps/big_map_1.pgm";
     
     tileMap.genGroundTileMap(mapFilePath, spritesMap
                              , 25, 25, 4, &world, SCALE);
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite);
     shadowHandler.genObstaclePoints(mapFilePath, 25);
+    shadowHandler.setScreenDiagonal(screenX, screenY);
 
     while(window.isOpen()) {
         handleEvents(&window);
@@ -81,6 +87,14 @@ void handleEvents(RenderWindow* window) {
         if (event.type == Event::Closed) {
             window->close();
         }
+        if (event.type == Event::Resized) {
+            screenX = event.size.width;
+            screenY = event.size.height;
+            playerView.setSize(screenX
+                               , screenY);
+            shadowHandler.setScreenDiagonal(screenX
+                                            , screenY);
+        }
     }
 }
 
@@ -92,11 +106,11 @@ void simulatePhysics(RenderWindow* window) {
 
 void update(RenderWindow* window) {
     player.update();
+    playerView.setCenter(player.getPosition());
     shadowHandler.update(player.getPosition());
 }
 
 void handleInput(RenderWindow* window) {
-    float movementForce = 6.0f;
     if (Keyboard::isKeyPressed(Keyboard::W)
         || Keyboard::isKeyPressed(Keyboard::Up)) {
         player.move(true);
@@ -116,7 +130,8 @@ void handleInput(RenderWindow* window) {
 }
 
 void draw(RenderWindow* window) {
-    window->clear(sf::Color(120,170,10));
+    window->setView(playerView);
+    window->clear(sf::Color(0,0,0));
     window->draw(tileMap);
     window->draw(player);
     shadowHandler.draw(window);
