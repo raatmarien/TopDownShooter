@@ -65,7 +65,7 @@ void ShadowHandler::genObstaclePoints(const char* filepath
 
 void ShadowHandler::update(Vector2f sightCenter) {
     VertexArray vertices;
-    vertices.resize(obstaclePoints.size());
+    vertices.resize(obstaclePoints.size() * 2);
     vertices.setPrimitiveType(Quads);
     blockRedrawer.resetBlocks();
 
@@ -104,123 +104,40 @@ void ShadowHandler::update(Vector2f sightCenter) {
                 }
             }
         }
-        vertices[i+0].position = obstaclePoints[minIndex];
-        vertices[i+1].position = obstaclePoints[maxIndex];
-        vertices[i+2].position = normalize(
-            obstaclePoints[maxIndex]
-            - sightCenter)
-            * viewDistance + obstaclePoints[maxIndex];
-        vertices[i+3].position = normalize(
-            obstaclePoints[minIndex]
-            - sightCenter)
-            * viewDistance + obstaclePoints[minIndex];
+        Vector2f direction1 = normalize
+            (obstaclePoints[minIndex] - sightCenter)
+            , direction2 = normalize
+            (obstaclePoints[maxIndex] - sightCenter);
+        float move = 10;
+        Vector2f startPoint1 = obstaclePoints[minIndex]
+            + (move * direction1)
+            , startPoint2 = obstaclePoints[maxIndex]
+                  + (move * direction2);
+        
+        vertices[2*i+0].position = startPoint1;
+        vertices[2*i+1].position = startPoint2;
+        vertices[2*i+2].position = direction2
+            * viewDistance + startPoint2;
+        vertices[2*i+3].position = direction1
+            * viewDistance + startPoint1;
 
-        for (int j = i; j < i + 4; j++) {
-            vertices[j].color = Color::Black;
-        }
+        // Draw black rectangle in shape of the original
+        // obstacle
+        vertices[2*i+4].position = obstaclePoints[i+0] + (move * normalize(obstaclePoints[i+0] - sightCenter));
+        vertices[2*i+5].position = obstaclePoints[i+1] + (move * normalize(obstaclePoints[i+1] - sightCenter));
+        vertices[2*i+6].position = obstaclePoints[i+2] + (move * normalize(obstaclePoints[i+2] - sightCenter));
+        vertices[2*i+7].position = obstaclePoints[i+3] + (move * normalize(obstaclePoints[i+3] - sightCenter));
 
-        // Check if completely visible, if so
-        // add it to the redraw list
-        bool completelyVisible1 = true
-            , completelyVisible2 = true
-            , completelyVisible3 = true
-            , completelyVisible4 = true;
-        Vector2f end1 = obstaclePoints[i] - Vector2f(0.1f, 0.1f)
-            , end2 = obstaclePoints[i+1] - Vector2f(-0.1f, 0.1f)
-            , end3 = obstaclePoints[i+2] - Vector2f(-0.1f,-0.1f)
-            , end4 = obstaclePoints[i+3] - Vector2f(0.1f, -0.1f);
-
-        // TODO fix
-        Vector2f centerOfObstacle = obstaclePoints[i]
-            + Vector2f(12.5f, 12.5f);
-        // for all obstacles except the current one
-        for (int x = 0; x < obstaclePoints.size()
-                 && (completelyVisible1 || completelyVisible2
-                     || completelyVisible3 || completelyVisible4); x += 4) {
-            if (x != i) {
-                // check for all 4 edges if one of
-                // them intersects with the sight
-                for (int y = x; y < x + 4; y++) {
-                    int r = 1;
-                    if (y == x + 3)
-                        r = -3;
-
-                    if (completelyVisible1
-                        && lineSegmentsIntersect
-                        (sightCenter
-                         , end1
-                         , obstaclePoints[y]
-                         , obstaclePoints[y+r]))
-                        completelyVisible1 = false;
-
-                    if (completelyVisible2
-                        && lineSegmentsIntersect
-                        (sightCenter
-                         , end2
-                         , obstaclePoints[y]
-                         , obstaclePoints[y+r]))
-                        completelyVisible2 = false;
-
-                    if (completelyVisible3
-                        && lineSegmentsIntersect
-                        (sightCenter
-                         , end3
-                         , obstaclePoints[y]
-                         , obstaclePoints[y+r]))
-                        completelyVisible3 = false;
-
-                    if (completelyVisible4
-                        && lineSegmentsIntersect
-                        (sightCenter
-                         , end4
-                         , obstaclePoints[y]
-                         , obstaclePoints[y+r]))
-                        completelyVisible4 = false;
-                    // of any of the two adjacent
-                    // corners of the current obstacle
-                    // bool anyEqual = obstaclePoints[y]
-                    //     == obstaclePoints[minIndex]
-                    //     || obstaclePoints[y+r]
-                    //     == obstaclePoints[minIndex]
-                    //     || obstaclePoints[y]
-                    //     == obstaclePoints[maxIndex]
-                    //     || obstaclePoints[y+r]
-                    //     == obstaclePoints[maxIndex];
-                    // if (!anyEqual) {
-                    //     if (lineSegmentsIntersect
-                    //         (obstaclePoints[y]
-                    //          , obstaclePoints[y+r]
-                    //          , sightCenter
-                    //          , obstaclePoints[minIndex]) 
-                    //         || lineSegmentsIntersect
-                    //         (obstaclePoints[y]
-                    //          , obstaclePoints[y+r]
-                    //          , sightCenter
-                    //          , obstaclePoints[maxIndex])) {
-                    //         completelyVisible = false;
-                    //         break;
-                    //     }
-                    // }
-                }
-            }
-        }
-        int ammountVisible = 0;
-        if (completelyVisible1) ammountVisible++;
-        if (completelyVisible2) ammountVisible++;
-        if (completelyVisible3) ammountVisible++;
-        if (completelyVisible4) ammountVisible++;
-
-        if (ammountVisible >= 1) {
-            blockRedrawer.addBlock(obstaclePoints[i]);
-        }
-            std::cout << ammountVisible << "\n";
+    }
+    for (int i = 0; i < vertices.getVertexCount(); i++) {
+        vertices[i].color = Color::Black;
     }
     shadows.setVertices(vertices);
 }
 
 void ShadowHandler::draw(RenderWindow* window) {
     window->draw(shadows);
-    blockRedrawer.draw(window);
+    // blockRedrawer.draw(window);
 }
 
 void ShadowHandler::setBlockTexture(Texture texture
