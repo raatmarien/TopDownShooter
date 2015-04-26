@@ -50,6 +50,8 @@ ShadowHandler shadowHandler;
 
 View playerView;
 
+Clock deltaTimer;
+
 float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
     , positionIterations = 3;
@@ -63,7 +65,7 @@ int main() {
 
     loadSprites();
 
-    const char* mapFilePath = "maps/big_map_1.pgm";
+    const char* mapFilePath = "maps/chambers_map.pgm";
     
     tileMap.genGroundTileMap(mapFilePath, spritesMap
                              , 25, 25, 4, &world, SCALE);
@@ -73,6 +75,8 @@ int main() {
     shadowHandler.setScreenDiagonal(screenX, screenY);
 
     while(window.isOpen()) {
+        std::cout << (1.0f / deltaTimer.restart().asSeconds())
+            << std::endl;
         handleEvents(&window);
         simulatePhysics(&window);
         handleInput(&window);
