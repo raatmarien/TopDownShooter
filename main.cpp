@@ -84,6 +84,7 @@ int main() {
         Vector2f((0.5f * screenX) - minimapPadding
                  - minimap.getSize().x
                  , (-0.5f * screenY) + minimapPadding));
+    minimap.setTileSize(25);
     
     while(window.isOpen()) {
         handleEvents(&window);
@@ -126,6 +127,7 @@ void update(RenderWindow* window) {
     playerView.setCenter(player.getPosition());
     shadowHandler.update(player.getPosition());
     minimap.setViewCenter(playerView.getCenter());
+    minimap.setPlayerPosition(player.getPosition());
 }
 
 void handleInput(RenderWindow* window) {

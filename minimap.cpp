@@ -15,6 +15,10 @@ Minimap::Minimap() {
     minimapTexture.loadFromImage(minimapImage);
     minimapSprite.setTexture(minimapTexture);
     minimapSprite.setPosition(0,0);
+    player.setRadius(4);
+    player.setOrigin(4,4);
+    player.setFillColor(Color(255,0,0));
+    playerPosition = Vector2f(0,0);
 }
 
 void Minimap::setTileSize(int nTileSize) {
@@ -49,7 +53,10 @@ void Minimap::addWall(Vector2u position) {
 
 void Minimap::draw(RenderWindow* window) {
     minimapSprite.setPosition(currentViewCenter + position);
+    player.setPosition(currentViewCenter + position
+                       + playerPosition);
     window->draw(minimapSprite);
+    window->draw(player);
 }
 
 void Minimap::setPositionFromCenter(Vector2f
@@ -64,4 +71,8 @@ void Minimap::setViewCenter(Vector2f viewCenter) {
 Vector2f Minimap::getSize() {
     IntRect spriteRect = minimapSprite.getTextureRect();
     return Vector2f(spriteRect.width, spriteRect.height);
+}
+
+void Minimap::setPlayerPosition(Vector2f position) {
+    playerPosition = position / (float) (tileSize);
 }
