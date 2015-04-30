@@ -69,7 +69,7 @@ int main() {
 
     loadSprites();
 
-    const char* mapFilePath = "maps/chambers_map2.pgm";
+    const char* mapFilePath = "maps/chambers_map3.pgm";
     
     tileMap.genGroundTileMap(mapFilePath, spritesMap
                              , 25, 25, 4, &world, SCALE);
