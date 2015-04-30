@@ -37,8 +37,11 @@ ShadowHandler::ShadowHandler() {
     setScreenDiagonal(1000, 1000);
 }
 
-void ShadowHandler::genObstaclePoints(const char* filepath
+std::vector<Vector2u> ShadowHandler::genObstaclePoints(const char* filepath
                                       , int tileSize) {
+    // Temp walls
+    std::vector<Vector2u> walls;
+    
     std::ifstream mapReader(filepath);
     char buf[10];
     mapReader >> buf;
@@ -62,9 +65,13 @@ void ShadowHandler::genObstaclePoints(const char* filepath
                 obstaclePoints.push_back(
                     Vector2f(x * tileSize
                              , (y+1) * tileSize));
+
+                walls.push_back(Vector2u((unsigned int) x
+                                         , (unsigned int) y));
             }
         }
     }
+    return walls;
 }
 
 void ShadowHandler::setScreenDiagonal(int diagonal) {

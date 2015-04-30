@@ -50,6 +50,7 @@ Player player;
 ShadowHandler shadowHandler;
 
 Minimap minimap;
+float minimapPadding = 50.0f;
 
 View playerView;
 
@@ -78,6 +79,11 @@ int main() {
     for (int i = 0; i < walls.size(); i++) {
         minimap.addWall(walls[i]);
     }
+
+    minimap.setPositionFromCenter(
+        Vector2f((0.5f * screenX) - minimapPadding
+                 - minimap.getSize().x
+                 , (-0.5f * screenY) + minimapPadding));
     
     while(window.isOpen()) {
         handleEvents(&window);
@@ -101,6 +107,10 @@ void handleEvents(RenderWindow* window) {
                                , screenY);
             shadowHandler.setScreenDiagonal(screenX
                                             , screenY);
+            minimap.setPositionFromCenter(
+                Vector2f((0.5f * screenX) - minimapPadding
+                         - minimap.getSize().x
+                         , (-0.5f * screenY) + minimapPadding));
         }
     }
 }
@@ -115,6 +125,7 @@ void update(RenderWindow* window) {
     player.update();
     playerView.setCenter(player.getPosition());
     shadowHandler.update(player.getPosition());
+    minimap.setViewCenter(playerView.getCenter());
 }
 
 void handleInput(RenderWindow* window) {
