@@ -66,7 +66,7 @@ private:
 class ShadowHandler {
 public:
     ShadowHandler();
-    void genObstaclePoints(      // Every 4 Vector2f's in the
+    std::vector<sf::Vector2u> genObstaclePoints(      // Every 4 Vector2f's in the
         const char* filepath     // obstaclePoints vector 
         , int tileSize);         // represents 1 square         
     void setScreenDiagonal(int diagonal);

@@ -110,11 +110,11 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                            , cornerTextureY);
             // Top right corner
             vertices[indexInVertexArray+turnArray[1]].texCoords
-                = Vector2f(cornerTextureX + tilesWidth
+                = Vector2f(cornerTextureX + tilesWidth - 0.0001f
                            , cornerTextureY);
             // Bottom right corner
             vertices[indexInVertexArray+turnArray[2]].texCoords
-                = Vector2f(cornerTextureX + tilesWidth
+                = Vector2f(cornerTextureX + tilesWidth - 0.0001f
                            , cornerTextureY + tilesHeight);
             // Bottom left corner
             vertices[indexInVertexArray+turnArray[3]].texCoords
