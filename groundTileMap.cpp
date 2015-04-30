@@ -130,6 +130,11 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                                      , (float)((float)(y + 0.5) * tilesWidth)
                                      / (float) (SCALE));
                 b2Body *boxBody = world->CreateBody(&boxBodyDef);
+
+                b2PolygonShape boxBodyShape;
+                boxBodyShape.SetAsBox((float)(tilesWidth) / (2 * SCALE)
+                                      , (float)(tilesHeight) / (2 * SCALE));
+                boxBody->CreateFixture(&boxBodyShape, 0.0f);
             }
         }
         // std::cout << "\n"; // debug
