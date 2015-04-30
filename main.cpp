@@ -58,6 +58,8 @@ float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
     , positionIterations = 3;
 
+Clock timer;
+
 int screenX = 50 * 20, screenY = 50 * 20;
 
 int main() {
@@ -83,8 +85,14 @@ int main() {
                  , (-0.5f * screenY) + minimapPadding));
     minimap.setTileSize(25);
     minimap.setScreenSize(screenX, screenY);
-    
+    int frames = 0;
     while(window.isOpen()) {
+        if (frames == 60) {
+            float time = timer.restart().asSeconds();
+            std::cout <<  1.0f / (time / 60.0f) << "\n";
+            frames = 0;
+        }
+        frames++;
         handleEvents(&window);
         simulatePhysics(&window);
         handleInput(&window);
