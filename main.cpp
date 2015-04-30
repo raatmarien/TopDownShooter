@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "groundTileMap.h"
 #include "player.h"
 #include "shadow.h"
+#include "minimap.h"
 #include <vector>
 #include <math.h>
 #include <iostream>
@@ -48,9 +49,9 @@ Player player;
 
 ShadowHandler shadowHandler;
 
-View playerView;
+Minimap minimap;
 
-Clock deltaTimer;
+View playerView;
 
 float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
@@ -59,24 +60,26 @@ int velocityIterations = 8
 int screenX = 50 * 20, screenY = 50 * 20;
 
 int main() {
-    RenderWindow window(VideoMode(screenX, screenY), "Float");
+    RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
     playerView.setSize(screenX, screenY);
 
     loadSprites();
 
-    const char* mapFilePath = "maps/chambers_map.pgm";
+    const char* mapFilePath = "maps/chambers_map2.pgm";
     
     tileMap.genGroundTileMap(mapFilePath, spritesMap
                              , 25, 25, 4, &world, SCALE);
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite);
-    shadowHandler.genObstaclePoints(mapFilePath, 25);
+    std::vector<Vector2u> walls = shadowHandler.genObstaclePoints(mapFilePath, 25);
     shadowHandler.setScreenDiagonal(screenX, screenY);
 
+    for (int i = 0; i < walls.size(); i++) {
+        minimap.addWall(walls[i]);
+    }
+    
     while(window.isOpen()) {
-        std::cout << (1.0f / deltaTimer.restart().asSeconds())
-            << std::endl;
         handleEvents(&window);
         simulatePhysics(&window);
         handleInput(&window);
@@ -139,10 +142,11 @@ void draw(RenderWindow* window) {
     window->draw(tileMap);
     window->draw(player);
     shadowHandler.draw(window);
+    minimap.draw(window);
     window->display();
 }
 
 void loadSprites() {
-    spritesMap.loadFromFile("sprites/spriteMap.png");
+    spritesMap.loadFromFile("sprites/spriteMap3.png");
     playerSprite.loadFromFile("sprites/player.png");
 }

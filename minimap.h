@@ -6,7 +6,7 @@ class Minimap {
 public:
     Minimap();
     void setTileSize(int nTileSize);
-    void addWall(Vector2f position);
+    void addWall(sf::Vector2u position);
     void draw(sf::RenderWindow* window);
 private:
     int tileSize;

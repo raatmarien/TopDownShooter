@@ -41,16 +41,7 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                    // Not needed for reading for us
     vertices.setPrimitiveType(Quads);
     vertices.resize(4 * width * height);
-    std::cout << "  ";
-    for (int i = 0; i < width; i++) {
-        std::cout << i;
-        if (i < 10) 
-            std::cout << " ";
-    }
-    std::cout << '\n';
     for (int y = 0; y < height; y++) {
-        std::cout << y;
-        if (y < 10) std::cout << ' ';
         for (int x = 0; x < width; x++) {
             int indexInVertexArray = 4 * (width * y + x), tileNum;
             bitmap >> tileNum; // The grayscale value
@@ -63,12 +54,18 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                 break;
             }
             
-            std::cout << getDisplayChar(tileNum) << " ";
+            // std::cout << getDisplayChar(tileNum) << " ";
             
             int cornerTextureX = (tileNum % textureTileGridWidth)
                 * tilesWidth
                 , cornerTextureY = (tileNum / textureTileGridWidth)
                 * tilesHeight;
+
+            // If ground, randomnize textureY for random ground
+            if (tileNum == 0) {
+                int tilesAmmount = 4;
+                cornerTextureY += tilesHeight * (rand() % tilesAmmount);
+            }
 
             // Top left corner
             vertices[indexInVertexArray+0].position
@@ -87,7 +84,24 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                 = Vector2f(x * tilesWidth
                            , (y + 1) * tilesHeight);
 
+            int rotation = rand() % 4;
             int turnArray[4] = {0,1,2,3};
+            if (rotation == 1) {
+                turnArray[0] = 1;
+                turnArray[1] = 2;
+                turnArray[2] = 3;
+                turnArray[3] = 0;
+            } else if (rotation == 2) {
+                turnArray[0] = 2;
+                turnArray[1] = 3;
+                turnArray[2] = 0;
+                turnArray[3] = 1;
+            } else if (rotation == 3) {
+                turnArray[0] = 3;
+                turnArray[1] = 0;
+                turnArray[2] = 1;
+                turnArray[3] = 2;
+            }
 
             // Texture Coords
             // Top left corner
@@ -123,7 +137,7 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                 boxBody->CreateFixture(&boxBodyShape, 0.0f);
             }
         }
-        std::cout << "\n"; // debug
+        // std::cout << "\n"; // debug
     }
 }
 
