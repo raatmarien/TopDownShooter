@@ -110,11 +110,11 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                            , cornerTextureY);
             // Top right corner
             vertices[indexInVertexArray+turnArray[1]].texCoords
-                = Vector2f(cornerTextureX + tilesWidth - 0.0001f
+                = Vector2f(cornerTextureX + tilesWidth - 0.1f
                            , cornerTextureY);
             // Bottom right corner
             vertices[indexInVertexArray+turnArray[2]].texCoords
-                = Vector2f(cornerTextureX + tilesWidth - 0.0001f
+                = Vector2f(cornerTextureX + tilesWidth - 0.1f
                            , cornerTextureY + tilesHeight);
             // Bottom left corner
             vertices[indexInVertexArray+turnArray[3]].texCoords
@@ -130,11 +130,6 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                                      , (float)((float)(y + 0.5) * tilesWidth)
                                      / (float) (SCALE));
                 b2Body *boxBody = world->CreateBody(&boxBodyDef);
-
-                b2PolygonShape boxBodyShape;
-                boxBodyShape.SetAsBox((float)(tilesWidth) / (2 * SCALE)
-                                      , (float)(tilesHeight) / (2 * SCALE));
-                boxBody->CreateFixture(&boxBodyShape, 0.0f);
             }
         }
         // std::cout << "\n"; // debug

@@ -50,7 +50,7 @@ Player player;
 ShadowHandler shadowHandler;
 
 Minimap minimap;
-float minimapPadding = 200.0f;
+float minimapPadding = 50.0f;
 
 View playerView;
 
@@ -136,6 +136,10 @@ void update(RenderWindow* window) {
     minimap.setViewCenter(playerView.getCenter());
     minimap.setPlayerPosition(player.getPosition());
     minimap.update();
+    minimap.setPositionFromCenter(
+        Vector2f((0.5f * screenX) - minimapPadding
+                 - minimap.getSize().x
+                 , (-0.5f * screenY) + minimapPadding));
 }
 
 void handleInput(RenderWindow* window) {
