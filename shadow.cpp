@@ -37,10 +37,10 @@ ShadowHandler::ShadowHandler() {
     setScreenDiagonal(1000, 1000);
 }
 
-std::vector<Vector2u> ShadowHandler::genObstaclePoints(const char* filepath
+std::vector<Vector2f> ShadowHandler::genObstaclePoints(const char* filepath
                                       , int tileSize) {
     // Temp walls
-    std::vector<Vector2u> walls;
+    std::vector<Vector2f> walls;
     
     std::ifstream mapReader(filepath);
     char buf[10];
@@ -66,42 +66,33 @@ std::vector<Vector2u> ShadowHandler::genObstaclePoints(const char* filepath
                     Vector2f(x * tileSize
                              , (y+1) * tileSize));
 
-                walls.push_back(Vector2u((unsigned int) x
-                                         , (unsigned int) y));
+                walls.push_back(Vector2f(x * tileSize
+                                         , y * tileSize));
             }
         }
     }
     return walls;
 }
 
-void ShadowHandler::setScreenDiagonal(int diagonal) {
-    screenDiagonal = diagonal;
-}
-
 void ShadowHandler::setScreenDiagonal(int screenX
                                       , int screenY) {
     screenDiagonal = (int) (ceil(sqrt(screenX * screenX
                                       + screenY * screenY)));
+    screenWidth = screenX;
+    screenHeight = screenY;
 }
 
 std::vector<Vector2f> ShadowHandler::getObstaclesInRange(Vector2f sightCenter) {
     std::vector<Vector2f> obstaclesInRange;
     float range = (float) (screenDiagonal) / 2.0f;
     for (int i = 0; i < obstaclePoints.size(); i += 4) {
-        Vector2f distance1 = obstaclePoints[i] - sightCenter;
-        Vector2f distance2 = obstaclePoints[i+1] - sightCenter;
-        Vector2f distance3 = obstaclePoints[i+2] - sightCenter;
-        Vector2f distance4 = obstaclePoints[i+3] - sightCenter;
-        float length1 = sqrt(distance1.x * distance1.x +
-                             distance1.y * distance1.y);
-        float length2 = sqrt(distance2.x * distance2.x +
-                             distance2.y * distance2.y);
-        float length3 = sqrt(distance3.x * distance3.x +
-                             distance3.y * distance3.y);
-        float length4 = sqrt(distance4.x * distance4.x +
-                             distance4.y * distance4.y);
-        if (length1 < range || length2 < range
-            || length3 < range || length4 < range) {
+        float halfX = (float) (screenWidth) / 2
+            , halfY = (float) (screenHeight) / 2;
+        bool rightY = (obstaclePoints[i+2].y > (sightCenter.y - halfY))
+            && (obstaclePoints[i].y < (sightCenter.y + halfY))
+            , rightX = (obstaclePoints[i+2].x > (sightCenter.x - halfX))
+            && (obstaclePoints[i].x < (sightCenter.x + halfX));
+        if (rightX && rightY) {
             obstaclesInRange.push_back(obstaclePoints[i+0]);
             obstaclesInRange.push_back(obstaclePoints[i+1]);
             obstaclesInRange.push_back(obstaclePoints[i+2]);

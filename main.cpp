@@ -50,7 +50,7 @@ Player player;
 ShadowHandler shadowHandler;
 
 Minimap minimap;
-float minimapPadding = 50.0f;
+float minimapPadding = 200.0f;
 
 View playerView;
 
@@ -73,18 +73,16 @@ int main() {
                              , 25, 25, 4, &world, SCALE);
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite);
-    std::vector<Vector2u> walls = shadowHandler.genObstaclePoints(mapFilePath, 25);
+    std::vector<Vector2f> walls = shadowHandler.genObstaclePoints(mapFilePath, 25);
     shadowHandler.setScreenDiagonal(screenX, screenY);
 
-    for (int i = 0; i < walls.size(); i++) {
-        minimap.addWall(walls[i]);
-    }
-
+    minimap.setWalls(walls);
     minimap.setPositionFromCenter(
         Vector2f((0.5f * screenX) - minimapPadding
                  - minimap.getSize().x
                  , (-0.5f * screenY) + minimapPadding));
     minimap.setTileSize(25);
+    minimap.setScreenSize(screenX, screenY);
     
     while(window.isOpen()) {
         handleEvents(&window);
@@ -112,6 +110,7 @@ void handleEvents(RenderWindow* window) {
                 Vector2f((0.5f * screenX) - minimapPadding
                          - minimap.getSize().x
                          , (-0.5f * screenY) + minimapPadding));
+            minimap.setScreenSize(screenX, screenY);
         }
     }
 }
@@ -128,6 +127,7 @@ void update(RenderWindow* window) {
     shadowHandler.update(player.getPosition());
     minimap.setViewCenter(playerView.getCenter());
     minimap.setPlayerPosition(player.getPosition());
+    minimap.update();
 }
 
 void handleInput(RenderWindow* window) {

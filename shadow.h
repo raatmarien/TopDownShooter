@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -66,10 +67,9 @@ private:
 class ShadowHandler {
 public:
     ShadowHandler();
-    std::vector<sf::Vector2u> genObstaclePoints(      // Every 4 Vector2f's in the
+    std::vector<sf::Vector2f> genObstaclePoints(      // Every 4 Vector2f's in the
         const char* filepath     // obstaclePoints vector 
         , int tileSize);         // represents 1 square         
-    void setScreenDiagonal(int diagonal);
     void setScreenDiagonal(int screenX, int screenY);
     std::vector<sf::Vector2f> getObstaclesInRange
         (sf::Vector2f sightCenter);
@@ -78,7 +78,7 @@ public:
                                          // for the shadows and the
                                          // BlockRedrawer
 private:
-    int screenDiagonal;
+    int screenDiagonal, screenWidth, screenHeight;
     std::vector<sf::Vector2f> obstaclePoints;
     ShadowDrawable shadows;
 };
