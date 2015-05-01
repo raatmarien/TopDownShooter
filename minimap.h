@@ -37,6 +37,7 @@ public:
     void setWalls(std::vector<sf::Vector2f>
                   newWalls);
 private:
+    int framesToCheckEverything, currentPart;
     std::vector<sf::Vector2f> getWallsOnScreen();
     std::vector<sf::Vector2f> wallPositions;
     std::vector<bool> isWallSeen, onScreenIsWallSeen;

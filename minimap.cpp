@@ -38,6 +38,9 @@ Minimap::Minimap() {
     player.setOrigin(4,4);
     player.setFillColor(Color(255,0,0));
     playerPosition = Vector2f(0,0);
+
+    currentPart = 0;
+    framesToCheckEverything = 20;
 }
 
 void Minimap::setTileSize(int nTileSize) {
@@ -129,7 +132,17 @@ std::vector<Vector2f> Minimap::getWallsOnScreen() {
 void Minimap::update() {
     std::vector<Vector2f> walls = getWallsOnScreen();
     float halfT = ((float) (tileSize)) / 2;
-    for(int i = 0; i < walls.size(); i++) {
+    int startI = (int) ((((float) currentPart)
+                        / ((float) framesToCheckEverything))
+                        * walls.size());
+    int endBeforeI = (int) ((((float) (currentPart+1))
+                            / ((float) framesToCheckEverything))
+                            * walls.size());
+    currentPart++;
+    if (currentPart == framesToCheckEverything) {
+        currentPart = 0;
+    }
+    for(int i = startI; i < endBeforeI; i++) {
         if (!onScreenIsWallSeen[i]) {
             Vector2f corner1 = walls[i]
                 , corner2 = walls[i] + Vector2f(tileSize, 0)
