@@ -34,6 +34,7 @@ void handleEvents(RenderWindow* window);
 void simulatePhysics(RenderWindow* window);
 void handleInput(RenderWindow* window);
 void update(RenderWindow* window);
+void updateDrawables(RenderWindow* window);
 void draw(RenderWindow* window);
 
 void loadSprites();
@@ -58,7 +59,7 @@ float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
     , positionIterations = 3;
 
-Clock timer;
+Clock timer, deltaTimer;
 
 int screenX = 50 * 20, screenY = 50 * 20;
 
@@ -86,6 +87,8 @@ int main() {
     minimap.setTileSize(25);
     minimap.setScreenSize(screenX, screenY);
     int frames = 0;
+    float timeLeft = 0;
+    deltaTimer.restart();
     while(window.isOpen()) {
         if (frames == 60) {
             float time = timer.restart().asSeconds();
@@ -93,10 +96,18 @@ int main() {
             frames = 0;
         }
         frames++;
-        handleEvents(&window);
-        simulatePhysics(&window);
-        handleInput(&window);
-        update(&window);
+
+        timeLeft += deltaTimer.restart().asSeconds();
+        do {
+            handleEvents(&window);
+            simulatePhysics(&window);
+            handleInput(&window);
+            update(&window);
+            timeLeft -= box2DTimeStep;
+            if (timeLeft < 0)
+                timeLeft = 0;
+        } while(timeLeft > box2DTimeStep);
+        updateDrawables(&window);
         draw(&window);
     }
 }
@@ -132,10 +143,13 @@ void simulatePhysics(RenderWindow* window) {
 void update(RenderWindow* window) {
     player.update();
     playerView.setCenter(player.getPosition());
-    shadowHandler.update(player.getPosition());
-    minimap.setViewCenter(playerView.getCenter());
     minimap.setPlayerPosition(player.getPosition());
     minimap.update();
+}
+
+void updateDrawables(RenderWindow* window) {
+    shadowHandler.update(player.getPosition());
+    minimap.setViewCenter(playerView.getCenter());
     minimap.setPositionFromCenter(
         Vector2f((0.5f * screenX) - minimapPadding
                  - minimap.getSize().x
