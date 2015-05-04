@@ -98,6 +98,7 @@ int main() {
         frames++;
 
         timeLeft += deltaTimer.restart().asSeconds();
+        int i = 0, maxUpdatesInFrame = 2;
         do {
             handleEvents(&window);
             simulatePhysics(&window);
@@ -106,7 +107,8 @@ int main() {
             timeLeft -= box2DTimeStep;
             if (timeLeft < 0)
                 timeLeft = 0;
-        } while(timeLeft > box2DTimeStep);
+            i++;
+        } while(timeLeft > box2DTimeStep && i < maxUpdatesInFrame);
         updateDrawables(&window);
         draw(&window);
     }
