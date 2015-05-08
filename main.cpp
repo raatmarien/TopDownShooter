@@ -40,6 +40,7 @@ void loadSprites();
 
 Texture spritesMap, playerSprite;
 groundTileMap tileMap;
+int tileSize = 25;
 
 b2Vec2 gravity(0.0f, 0.0f);
 b2World world(gravity);
@@ -69,23 +70,27 @@ int main() {
 
     loadSprites();
 
-    const char* mapFilePath = "maps/chambers_map3.pgm";
+    const char* mapFilePath = "maps/maze1.pgm";
     
     tileMap.genGroundTileMap(mapFilePath, spritesMap
-                             , 25, 25, 4, &world, SCALE);
+                             , tileSize, tileSize
+                             , 4, &world, SCALE);
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite);
-    std::vector<Vector2f> walls = shadowHandler.genObstaclePoints(mapFilePath, 25);
+    std::vector<Vector2f> walls = shadowHandler.genObstaclePoints(mapFilePath, tileSize);
     shadowHandler.setScreenDiagonal(screenX, screenY);
 
     minimap.setWalls(walls);
     minimap.setPositionFromCenter(
         Vector2f((0.5f * screenX) - minimapPadding
-                 - minimap.getSize().x
                  , (-0.5f * screenY) + minimapPadding));
-    minimap.setTileSize(25);
+    minimap.setTileSize(tileSize);
     minimap.setScreenSize(screenX, screenY);
     int frames = 0;
+
+    std::cout << "Configuration time: "
+              << timer.restart().asSeconds()
+              << std::endl;
     while(window.isOpen()) {
         if (frames == 60) {
             float time = timer.restart().asSeconds();
@@ -136,10 +141,6 @@ void update(RenderWindow* window) {
     minimap.setViewCenter(playerView.getCenter());
     minimap.setPlayerPosition(player.getPosition());
     minimap.update();
-    minimap.setPositionFromCenter(
-        Vector2f((0.5f * screenX) - minimapPadding
-                 - minimap.getSize().x
-                 , (-0.5f * screenY) + minimapPadding));
 }
 
 void handleInput(RenderWindow* window) {

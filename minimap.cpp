@@ -30,12 +30,12 @@ Minimap::Minimap() {
     walls = Color(255,255,255,255);
     position = Vector2f(0,0);
     currentViewCenter = Vector2f(0,0);
-    minimapImage.create(4,4,background);
+    minimapImage.create(1,1,background);
     minimapTexture.loadFromImage(minimapImage);
     minimapSprite.setTexture(minimapTexture);
     minimapSprite.setPosition(0,0);
-    player.setRadius(4);
-    player.setOrigin(4,4);
+    player.setRadius(3);
+    player.setOrigin(3,3);
     player.setFillColor(Color(255,0,0));
     playerPosition = Vector2f(0,0);
 
@@ -73,7 +73,8 @@ void Minimap::addWall(Vector2u position) {
 void Minimap::draw(RenderWindow* window) {
     minimapSprite.setPosition(currentViewCenter + position);
     player.setPosition(currentViewCenter + position
-                       + playerPosition);
+                       + playerPosition
+                       - Vector2f(minimapImage.getSize().x, 0));
     window->draw(minimapSprite);
     window->draw(player);
 }
@@ -215,4 +216,5 @@ void Minimap::update() {
     Vector2u textureSize = minimapTexture.getSize();
     minimapSprite.setTextureRect(IntRect(0,0,textureSize.x
                                          , textureSize.y));
+    minimapSprite.setOrigin(textureSize.x, 0);
 }
