@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "player.h"
 #include "shadow.h"
 #include "minimap.h"
+#include "light.h"
 #include <vector>
 #include <math.h>
 #include <iostream>
@@ -64,6 +65,11 @@ Clock timer, deltaTimer;
 
 int screenX = 50 * 20, screenY = 50 * 20;
 
+
+// Test
+Sprite testSprite;
+Texture testTexture;
+
 int main() {
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
@@ -87,13 +93,20 @@ int main() {
                  , (-0.5f * screenY) + minimapPadding));
     minimap.setTileSize(tileSize);
     minimap.setScreenSize(screenX, screenY);
-    int frames = 0;
+    float timeLeft = 0;
+
+    // test
+    testTexture
+        = generateLightTexture(200, Color(255,255,205,205)
+                               , 90, 600, 100);
+    testSprite.setTexture(testTexture);
+    testSprite.setOrigin(200,200);
+    testSprite.setPosition(startPosition);
 
     std::cout << "Configuration time: "
               << timer.restart().asSeconds()
               << std::endl;
-    float timeLeft = 0;
-    deltaTimer.restart();
+    int frames = -1;
     while(window.isOpen()) {
         if (frames == 60) {
             float time = timer.restart().asSeconds();
@@ -183,6 +196,7 @@ void draw(RenderWindow* window) {
     window->clear(sf::Color(0,0,0));
     window->draw(tileMap);
     window->draw(player);
+    window->draw(testSprite);
     shadowHandler.draw(window);
     minimap.draw(window);
     window->display();
