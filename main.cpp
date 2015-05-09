@@ -55,6 +55,8 @@ ShadowHandler shadowHandler;
 Minimap minimap;
 float minimapPadding = 50.0f;
 
+LightManager lightManager;
+
 View playerView;
 
 float box2DTimeStep = 1.0f / 60.0f;
@@ -65,11 +67,6 @@ Clock timer, deltaTimer;
 
 int screenX = 50 * 20, screenY = 50 * 20;
 
-
-// Test
-Texture testTexture;
-std::vector<Light> lights;
-
 int main() {
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
@@ -79,35 +76,31 @@ int main() {
 
     const char* mapFilePath = "maps/chambers_map3.pgm";
     
+    // Set up Tilemap
     tileMap.genGroundTileMap(mapFilePath, spritesMap
                              , tileSize, tileSize
                              , 4, &world, SCALE);
+
+    // Set up Player
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite);
+
+    // Set up ShadowHandler
     std::vector<Vector2f> walls = shadowHandler.genObstaclePoints(mapFilePath, tileSize);
     shadowHandler.setScreenDiagonal(screenX, screenY);
 
+    // Set up Minimap
     minimap.setWalls(walls);
     minimap.setPositionFromCenter(
         Vector2f((0.5f * screenX) - minimapPadding
                  , (-0.5f * screenY) + minimapPadding));
     minimap.setTileSize(tileSize);
     minimap.setScreenSize(screenX, screenY);
-    float timeLeft = 0;
 
-    // Test lights
-    int radius = 300;
-    testTexture
-        = generateLightTexture(radius, Color(255,245,150,255)
-                               , 120, 1000, 130);
-    for (int i = 0; i < 5; i++) {
-        Light light;
-        light.setTexture(testTexture);
-        int x = rand() % 500
-            , y = rand() % 200 + 100;
-        light.setPosition(x, y);
-        lights.push_back(light);
-    }
+    // Set up LightManager
+    lightManager.initialize(70);
+    
+    float timeLeft = 0;
 
     std::cout << "Configuration time: "
               << timer.restart().asSeconds()
@@ -202,10 +195,7 @@ void draw(RenderWindow* window) {
     window->clear(sf::Color(0,0,0));
     window->draw(tileMap);
     window->draw(player);
-    // Draw test lights
-    for (int i = 0; i < lights.size(); i++) {
-        lights[i].draw(window);
-    }
+    lightManager.draw(window, playerView);
     shadowHandler.draw(window);
     minimap.draw(window);
     window->display();

@@ -29,12 +29,23 @@ public:
                       nObstacles);
     // Temp draw function
     void draw(sf::RenderWindow* window);
+    sf::Vector2u getSize();
 private:
     std::vector<sf::FloatRect> obstacles;
     sf::Sprite sprite;
     sf::Texture texture;
     virtual void draw(sf::RenderTarget &target
                       , sf::RenderStates states) const;
+};
+
+class LightManager {
+public:
+    void initialize(int ammountLights);
+    void draw(sf::RenderWindow* window
+              , sf::View currentView);
+private:
+    sf::Texture lightTexture;
+    std::vector<Light> lights;
 };
 
 sf::Texture generateLightTexture(int radius

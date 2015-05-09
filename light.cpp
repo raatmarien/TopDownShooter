@@ -57,6 +57,45 @@ void Light::draw(RenderWindow* window) {
     window->draw(sprite, BlendAdd);
 }
 
+Vector2u Light::getSize() {
+    return texture.getSize();
+}
+
+// Light manager
+void LightManager::initialize(int ammountLights) {
+    lightTexture
+        = generateLightTexture(300, Color(255,245,150,255)
+                               , 998, 1000, 1000);
+    for (int i = 0; i < ammountLights; i++) {
+        Light light;
+        light.setTexture(lightTexture);
+        light.setPosition(rand() % 5000
+                          , rand() % 5000);
+        lights.push_back(light);
+    }
+}
+
+void LightManager::draw(RenderWindow* window
+                        , View currentView) {
+    Vector2f viewCenter = currentView.getCenter()
+        , viewSize = currentView.getSize();
+    FloatRect viewRect(viewCenter.x - (viewSize.x / 2.0f)
+                       , viewCenter.y - (viewSize.y / 2.0f)
+                       , viewSize.x, viewSize.y);
+    for (int i = 0; i < lights.size(); i++) {
+        Vector2f lightCenter = lights[i].getPosition()
+            , lightSize = Vector2f(lights[i].getSize().x
+                                   , lights[i].getSize().y);
+        FloatRect lightRect =
+            FloatRect(lightCenter.x - (lightSize.x / 2.0f)
+                      , lightCenter.y - (lightSize.y / 2.0f)
+                      , lightSize.x, lightSize.y);
+        if (lightRect.intersects(viewRect)) {
+            lights[i].draw(window);
+        }
+    }
+}
+
 Texture generateLightTexture(int radius
                              , Color centerColor
                              , int centerDistance
