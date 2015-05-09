@@ -33,6 +33,10 @@ void Light::update() {
 
 void Light::setTexture(Texture nTexture) {
     texture = nTexture;
+    sprite.setTexture(texture);
+    // Set origin to the center
+    Vector2u size = texture.getSize();
+    sprite.setOrigin(size.x / 2.0f, size.y / 2.0f);
 }
 
 void Light::setObstacles(std::vector<FloatRect> nObstacles) {
@@ -41,7 +45,16 @@ void Light::setObstacles(std::vector<FloatRect> nObstacles) {
 
 void Light::draw(RenderTarget &target
           , RenderStates states) const {
-    target.draw(vertices);
+    states.transform *= getTransform();
+    states.texture = &texture;
+    states.blendMode = BlendAdd;
+    target.draw(sprite, states);
+}
+
+void Light::draw(RenderWindow* window) {
+    sprite.setPosition(getPosition());
+    setTexture(texture);
+    window->draw(sprite, BlendAdd);
 }
 
 Texture generateLightTexture(int radius

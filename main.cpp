@@ -67,8 +67,8 @@ int screenX = 50 * 20, screenY = 50 * 20;
 
 
 // Test
-Sprite testSprite;
 Texture testTexture;
+std::vector<Light> lights;
 
 int main() {
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
@@ -95,13 +95,19 @@ int main() {
     minimap.setScreenSize(screenX, screenY);
     float timeLeft = 0;
 
-    // test
+    // Test lights
+    int radius = 300;
     testTexture
-        = generateLightTexture(200, Color(255,255,205,205)
-                               , 90, 600, 100);
-    testSprite.setTexture(testTexture);
-    testSprite.setOrigin(200,200);
-    testSprite.setPosition(startPosition);
+        = generateLightTexture(radius, Color(255,245,150,255)
+                               , 120, 1000, 130);
+    for (int i = 0; i < 5; i++) {
+        Light light;
+        light.setTexture(testTexture);
+        int x = rand() % 500
+            , y = rand() % 200 + 100;
+        light.setPosition(x, y);
+        lights.push_back(light);
+    }
 
     std::cout << "Configuration time: "
               << timer.restart().asSeconds()
@@ -196,7 +202,10 @@ void draw(RenderWindow* window) {
     window->clear(sf::Color(0,0,0));
     window->draw(tileMap);
     window->draw(player);
-    window->draw(testSprite);
+    // Draw test lights
+    for (int i = 0; i < lights.size(); i++) {
+        lights[i].draw(window);
+    }
     shadowHandler.draw(window);
     minimap.draw(window);
     window->display();

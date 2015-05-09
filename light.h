@@ -19,16 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class Light : sf::Drawable, sf::Transformable {
+class Light : public sf::Drawable
+     , public sf::Transformable {
 public:
     Light();
     void update();
     void setTexture(sf::Texture nTexture);
     void setObstacles(std::vector<sf::FloatRect>
                       nObstacles);
+    // Temp draw function
+    void draw(sf::RenderWindow* window);
 private:
     std::vector<sf::FloatRect> obstacles;
-    sf::VertexArray vertices;
+    sf::Sprite sprite;
     sf::Texture texture;
     virtual void draw(sf::RenderTarget &target
                       , sf::RenderStates states) const;
