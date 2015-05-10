@@ -15,7 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include "groundTileMap.h"
@@ -117,7 +116,7 @@ int main() {
         frames++;
 
         timeLeft += deltaTimer.restart().asSeconds();
-        int i = 0, maxUpdatesInFrame = 2;
+        int i = 0, maxUpdatesInFrame = 20;
         do {
             handleEvents(&window);
             simulatePhysics(&window);
@@ -128,6 +127,7 @@ int main() {
                 timeLeft = 0;
             i++;
         } while(timeLeft > box2DTimeStep && i < maxUpdatesInFrame);
+        if (i == maxUpdatesInFrame) timeLeft = 0;
         updateDrawables(&window);
         draw(&window);
     }

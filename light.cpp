@@ -24,59 +24,57 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sf;
 
-Light::Light() {
-    
+Light::Light(int radius, Vector3f falloff
+             , Color color, Vector2f position) {
+    this->radius = radius;
+    this->falloff = falloff;
+    this->centerColor = color;
+    this->position = position;
 }
 
-void Light::update() {
-
+int Light::getRadius() {
+    return radius;
 }
 
-void Light::setTexture(Texture nTexture) {
-    texture = nTexture;
-    sprite.setTexture(texture);
-    // Set origin to the center
-    Vector2u size = texture.getSize();
-    sprite.setOrigin(size.x / 2.0f, size.y / 2.0f);
+Color Light::getColorAt(Vector2f pixelPosition) {
+    Vector2f dif = position - pixelPosition;
+    float dist = sqrt(dif.x * dif.x
+                      + dif.y * dif.y);
+
+    if (dist > radius) {
+        return Color(0,0,0); // Neutral color
+    }
+    // Intensity determined by falloff
+    float relativeIntensity =
+        1.0f / (falloff.x
+                + falloff.y * dist
+                + falloff.z * dist * dist);
+    // Intensity determined by linear distance from the
+    // center. Is this needed?
+    float circleIntensity = 1.0f - (dist / radius);
+    float intensity = relativeIntensity * circleIntensity;
+
+    Color colorAtPos;
+    colorAtPos.r = (Uint8) ((float) (centerColor.r) * intensity);
+    colorAtPos.g = (Uint8) ((float) (centerColor.g) * intensity);
+    colorAtPos.b = (Uint8) ((float) (centerColor.b) * intensity);
+
+    colorAtPos.a = centerColor.a;
+
+    return colorAtPos;
 }
 
-void Light::setObstacles(std::vector<FloatRect> nObstacles) {
-    obstacles = nObstacles;
+Vector2f Light::getPosition() {
+    return position;
 }
 
-void Light::setColor(Color color) {
-    sprite.setColor(color);
-}
-
-void Light::draw(RenderTarget &target
-          , RenderStates states) const {
-    states.transform *= getTransform();
-    states.texture = &texture;
-    states.blendMode = BlendAdd;
-    target.draw(sprite, states);
-}
-
-void Light::draw(RenderWindow* window) {
-    sprite.setPosition(getPosition());
-    setTexture(texture);
-    window->draw(sprite, BlendAdd);
-}
-
-Vector2u Light::getSize() {
-    return texture.getSize();
-}
-
-// Light manager
 void LightManager::initialize(const char* lightMapFilePath
                               , int tileWidth
                               , int tileHeight) {
     Vector3f falloff;
-    falloff.x = 3.0f; // Constant falloff
+    falloff.x = 1.2f; // Constant falloff
     falloff.y = 0.0001f; // Linear falloff
     falloff.z = 0.00006f; // Quadratic falloff
-    lightTexture
-        = generateLightTexture(300, Color(255,255,255,255)
-                               , 1000, 1000, falloff);
     
     // Read the positions of the lamps from the map
     std::ifstream map(lightMapFilePath);
@@ -84,7 +82,7 @@ void LightManager::initialize(const char* lightMapFilePath
     map >> buf; // Not needed
     int width, height;
     map >> width >> height;
-    map >> buf; // Range of grayscale
+    map >> buf; // Range of bitmap
                 // Not needed
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -92,24 +90,14 @@ void LightManager::initialize(const char* lightMapFilePath
             map >> r >> g >> b;
             if (!(r == 0 && g == 0
                   && b == 0)) { // Lamp
-                Light light;
-                light.setTexture(lightTexture);
-                light.setColor(Color(r,g,b));
-                light.setPosition(x * tileWidth
-                                  , y * tileHeight);
+                Light light(300, falloff
+                            , Color(r, g, b)
+                            , Vector2f(x * tileWidth
+                                       , y * tileHeight));
                 lights.push_back(light);
             }
         }
     }
-    
-    darkShader.setPrimitiveType(Quads);
-    darkShader.resize(4);
-    Color shaderColor = Color(0, 0, 0
-                              , 127);
-    darkShader[0].color = shaderColor;
-    darkShader[1].color = shaderColor;
-    darkShader[2].color = shaderColor;
-    darkShader[3].color = shaderColor;
 }
 
 void LightManager::draw(RenderWindow* window
@@ -119,85 +107,53 @@ void LightManager::draw(RenderWindow* window
     FloatRect viewRect(viewCenter.x - (viewSize.x / 2.0f)
                        , viewCenter.y - (viewSize.y / 2.0f)
                        , viewSize.x, viewSize.y);
-    // Draw a transparent black shader over the
-    // current view to darken it
-    darkShader[0].position = Vector2f(viewRect.left
-                                      , viewRect.top);
-    darkShader[1].position = Vector2f(viewRect.left
-                                      + viewRect.width
-                                      , viewRect.top);
-    darkShader[2].position = Vector2f(viewRect.left
-                                      + viewRect.width
-                                      , viewRect.top
-                                      + viewRect.height);
-    darkShader[3].position = Vector2f(viewRect.left
-                                      , viewRect.top
-                                      + viewRect.height);
-    window->draw(darkShader);
 
+    std::vector<Light> lightsInView;
     for (int i = 0; i < lights.size(); i++) {
         Vector2f lightCenter = lights[i].getPosition()
-            , lightSize = Vector2f(lights[i].getSize().x
-                                   , lights[i].getSize().y);
+            , lightSize = Vector2f(lights[i].getRadius()
+                                   , lights[i].getRadius());
         FloatRect lightRect =
             FloatRect(lightCenter.x - (lightSize.x / 2.0f)
                       , lightCenter.y - (lightSize.y / 2.0f)
                       , lightSize.x, lightSize.y);
         if (lightRect.intersects(viewRect)) {
-            lights[i].draw(window);
+            lightsInView.push_back(lights[i]);
         }
     }
-}
 
-Texture generateLightTexture(int radius
-                             , Color centerColor
-                             , int centerDistance
-                             , int height
-                             , Vector3f falloff
-                             // (constant, linear, quadratic)
-    ) {
-    Image image;
-    image.create(radius * 2, radius * 2
-                 , Color(0,0,0,0));
-    Vector2f center = Vector2f(radius, radius);
-    float radiusSquared = radius * radius; // That efficiency
-    for (int y = 0; y < radius * 2; y++) {
-        for (int x = 0; x < radius * 2; x++) {
-            // The position used is the center of
-            // the pixel
-            Vector2f position = Vector2f(x + 0.5f
-                                         , y + 0.5f);
-            Vector2f distance = position - center;
-            float lengthSquared = distance.x * distance.x
-                + distance.y * distance.y;
-            // Only change color if the pixel is in the
-            // light circle
-            if (lengthSquared <= radiusSquared) {
-                float dist= sqrt(lengthSquared
-                                 + height * height
-                                 - centerDistance
-                                 * centerDistance);
-                float relativeIntensity =
-                    1.0f / (falloff.x
-                            + falloff.y * dist
-                            + falloff.z * dist * dist);
-                float blurIntensity = 1.0f - sqrt(lengthSquared)
-                                                  / radius;
-                                               
-                Color currentColor;
-                currentColor.r = centerColor.r;
-                currentColor.g = centerColor.g;
-                currentColor.b = centerColor.b;
-
-                currentColor.a
-                    = (Uint8) ((float) (centerColor.a) *
-                               relativeIntensity * blurIntensity);
-
-                image.setPixel(x, y, currentColor);
+    Vector2f viewTopRight = Vector2f(viewRect.left
+                                     , viewRect.top);
+    Color ambientLight = Color(30,30,30);
+    Image canvas = window->capture();
+    for (int y = 0; y < viewSize.y; y++) {
+        for (int x = 0; x < viewSize.x; x++) {
+            Vector2f pixelPosition = Vector2f((float) x + 0.5f
+                                         , (float) y + 0.5f);
+            Color pixelColor = canvas.getPixel(x, y);
+            Color lightColor = ambientLight;
+            for (int i = 0; i < lightsInView.size(); i++) {
+                Color extraLight = lightsInView[i]
+                    .getColorAt(pixelPosition + viewTopRight);
+                lightColor.r += extraLight.r;
+                lightColor.g += extraLight.g;
+                lightColor.b += extraLight.b;
             }
+            pixelColor.r *= ((float) (lightColor.r)
+                             / 255.0f);
+            pixelColor.g *= ((float) (lightColor.g)
+                             / 255.0f);
+            pixelColor.b *= ((float) (lightColor.b)
+                             / 255.0f);
+            canvas.setPixel(x, y, pixelColor);
         }
     }
-    Texture lightTexture;
-    lightTexture.loadFromImage(image);
-    return lightTexture;
+    drawTexture.loadFromImage(canvas);
+    drawSprite.setTexture(drawTexture);
+    drawSprite.setPosition(viewRect.left, viewRect.top);
+    drawSprite.setTextureRect(
+        IntRect(0, 0
+                , drawTexture.getSize().x
+                , drawTexture.getSize().y));
+    window->draw(drawSprite);
 }

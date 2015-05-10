@@ -19,24 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class Light : public sf::Drawable
-     , public sf::Transformable {
+class Light {
 public:
-    Light();
-    void update();
-    void setTexture(sf::Texture nTexture);
-    void setObstacles(std::vector<sf::FloatRect>
-                      nObstacles);
-    void setColor(sf::Color color);
-    // Temp draw function
-    void draw(sf::RenderWindow* window);
-    sf::Vector2u getSize();
+    Light(int radius, sf::Vector3f falloff
+          , sf::Color color, sf::Vector2f position);
+    int getRadius();
+    sf::Color getColorAt(sf::Vector2f pixelPosition);
+    sf::Vector2f getPosition();
 private:
-    std::vector<sf::FloatRect> obstacles;
-    sf::Sprite sprite;
-    sf::Texture texture;
-    virtual void draw(sf::RenderTarget &target
-                      , sf::RenderStates states) const;
+    sf::Color centerColor;
+    int radius;
+    sf::Vector3f falloff;
+    sf::Vector2f position;
 };
 
 class LightManager {
@@ -47,15 +41,7 @@ public:
     void draw(sf::RenderWindow* window
               , sf::View currentView);
 private:
-    sf::VertexArray darkShader;
-    sf::Texture lightTexture;
     std::vector<Light> lights;
+    sf::Texture drawTexture;
+    sf::Sprite drawSprite;
 };
-
-sf::Texture generateLightTexture(int radius
-                                 , sf::Color centerColor
-                                 , int centerDistance
-                                 , int height
-                                 , sf::Vector3f falloff
-                                 // (constant, linear, quadratic)
-    );
