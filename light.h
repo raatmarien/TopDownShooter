@@ -27,6 +27,7 @@ public:
     void setTexture(sf::Texture nTexture);
     void setObstacles(std::vector<sf::FloatRect>
                       nObstacles);
+    void setColor(sf::Color color);
     // Temp draw function
     void draw(sf::RenderWindow* window);
     sf::Vector2u getSize();
@@ -40,10 +41,13 @@ private:
 
 class LightManager {
 public:
-    void initialize(int ammountLights);
+    void initialize(const char* lightMapFilePath
+                    , int tileWidth
+                    , int tileHeight);
     void draw(sf::RenderWindow* window
               , sf::View currentView);
 private:
+    sf::VertexArray darkShader;
     sf::Texture lightTexture;
     std::vector<Light> lights;
 };
@@ -51,5 +55,7 @@ private:
 sf::Texture generateLightTexture(int radius
                                  , sf::Color centerColor
                                  , int centerDistance
-                                 , float pixelsToHalfIntensity // change?
-                                 , int height);
+                                 , int height
+                                 , sf::Vector3f falloff
+                                 // (constant, linear, quadratic)
+    );

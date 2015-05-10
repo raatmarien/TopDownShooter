@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "light.h"
 #include <SFML/Graphics.hpp>
 #include <math.h>
+#include <fstream>
 #include <iostream>
 
 using namespace sf;
@@ -43,6 +44,10 @@ void Light::setObstacles(std::vector<FloatRect> nObstacles) {
     obstacles = nObstacles;
 }
 
+void Light::setColor(Color color) {
+    sprite.setColor(color);
+}
+
 void Light::draw(RenderTarget &target
           , RenderStates states) const {
     states.transform *= getTransform();
@@ -62,17 +67,49 @@ Vector2u Light::getSize() {
 }
 
 // Light manager
-void LightManager::initialize(int ammountLights) {
+void LightManager::initialize(const char* lightMapFilePath
+                              , int tileWidth
+                              , int tileHeight) {
+    Vector3f falloff;
+    falloff.x = 3.0f; // Constant falloff
+    falloff.y = 0.0001f; // Linear falloff
+    falloff.z = 0.00006f; // Quadratic falloff
     lightTexture
-        = generateLightTexture(300, Color(255,245,150,255)
-                               , 998, 1000, 1000);
-    for (int i = 0; i < ammountLights; i++) {
-        Light light;
-        light.setTexture(lightTexture);
-        light.setPosition(rand() % 5000
-                          , rand() % 5000);
-        lights.push_back(light);
+        = generateLightTexture(300, Color(255,255,255,255)
+                               , 1000, 1000, falloff);
+    
+    // Read the positions of the lamps from the map
+    std::ifstream map(lightMapFilePath);
+    char buf[10];
+    map >> buf; // Not needed
+    int width, height;
+    map >> width >> height;
+    map >> buf; // Range of grayscale
+                // Not needed
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int r, g, b;
+            map >> r >> g >> b;
+            if (!(r == 0 && g == 0
+                  && b == 0)) { // Lamp
+                Light light;
+                light.setTexture(lightTexture);
+                light.setColor(Color(r,g,b));
+                light.setPosition(x * tileWidth
+                                  , y * tileHeight);
+                lights.push_back(light);
+            }
+        }
     }
+    
+    darkShader.setPrimitiveType(Quads);
+    darkShader.resize(4);
+    Color shaderColor = Color(0, 0, 0
+                              , 127);
+    darkShader[0].color = shaderColor;
+    darkShader[1].color = shaderColor;
+    darkShader[2].color = shaderColor;
+    darkShader[3].color = shaderColor;
 }
 
 void LightManager::draw(RenderWindow* window
@@ -82,6 +119,22 @@ void LightManager::draw(RenderWindow* window
     FloatRect viewRect(viewCenter.x - (viewSize.x / 2.0f)
                        , viewCenter.y - (viewSize.y / 2.0f)
                        , viewSize.x, viewSize.y);
+    // Draw a transparent black shader over the
+    // current view to darken it
+    darkShader[0].position = Vector2f(viewRect.left
+                                      , viewRect.top);
+    darkShader[1].position = Vector2f(viewRect.left
+                                      + viewRect.width
+                                      , viewRect.top);
+    darkShader[2].position = Vector2f(viewRect.left
+                                      + viewRect.width
+                                      , viewRect.top
+                                      + viewRect.height);
+    darkShader[3].position = Vector2f(viewRect.left
+                                      , viewRect.top
+                                      + viewRect.height);
+    window->draw(darkShader);
+
     for (int i = 0; i < lights.size(); i++) {
         Vector2f lightCenter = lights[i].getPosition()
             , lightSize = Vector2f(lights[i].getSize().x
@@ -99,8 +152,10 @@ void LightManager::draw(RenderWindow* window
 Texture generateLightTexture(int radius
                              , Color centerColor
                              , int centerDistance
-                             , float pixelsToHalfIntensity
-                             , int height) {
+                             , int height
+                             , Vector3f falloff
+                             // (constant, linear, quadratic)
+    ) {
     Image image;
     image.create(radius * 2, radius * 2
                  , Color(0,0,0,0));
@@ -118,11 +173,17 @@ Texture generateLightTexture(int radius
             // Only change color if the pixel is in the
             // light circle
             if (lengthSquared <= radiusSquared) {
-                float distSquared = lengthSquared + height * height
-                    - centerDistance * centerDistance;
-                float relativeIntensity
-                    = 1.0f / ((distSquared + pixelsToHalfIntensity)
-                        / pixelsToHalfIntensity);
+                float dist= sqrt(lengthSquared
+                                 + height * height
+                                 - centerDistance
+                                 * centerDistance);
+                float relativeIntensity =
+                    1.0f / (falloff.x
+                            + falloff.y * dist
+                            + falloff.z * dist * dist);
+                float blurIntensity = 1.0f - sqrt(lengthSquared)
+                                                  / radius;
+                                               
                 Color currentColor;
                 currentColor.r = centerColor.r;
                 currentColor.g = centerColor.g;
@@ -130,7 +191,7 @@ Texture generateLightTexture(int radius
 
                 currentColor.a
                     = (Uint8) ((float) (centerColor.a) *
-                               relativeIntensity);
+                               relativeIntensity * blurIntensity);
 
                 image.setPixel(x, y, currentColor);
             }

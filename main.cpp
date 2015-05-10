@@ -98,7 +98,9 @@ int main() {
     minimap.setScreenSize(screenX, screenY);
 
     // Set up LightManager
-    lightManager.initialize(70);
+    lightManager.initialize("maps/light_map.ppm"
+                            , tileSize
+                            , tileSize);
     
     float timeLeft = 0;
 
@@ -187,6 +189,14 @@ void handleInput(RenderWindow* window) {
     if (Keyboard::isKeyPressed(Keyboard::D)
         || Keyboard::isKeyPressed(Keyboard::Right)) {
         player.turn(false);
+    }
+
+    // Capture a screenshot with F1
+    // For debugging purposes
+    if (Keyboard::isKeyPressed(Keyboard::F1))
+    {
+        Image Screen = window->capture();
+        Screen.saveToFile("screenshot.jpg");
     }
 }
 
