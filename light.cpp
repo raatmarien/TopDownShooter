@@ -128,24 +128,28 @@ void LightManager::draw(RenderWindow* window
     Image canvas = window->capture();
     for (int y = 0; y < viewSize.y; y++) {
         for (int x = 0; x < viewSize.x; x++) {
-            Vector2f pixelPosition = Vector2f((float) x + 0.5f
-                                         , (float) y + 0.5f);
             Color pixelColor = canvas.getPixel(x, y);
-            Color lightColor = ambientLight;
-            for (int i = 0; i < lightsInView.size(); i++) {
-                Color extraLight = lightsInView[i]
-                    .getColorAt(pixelPosition + viewTopRight);
-                lightColor.r += extraLight.r;
-                lightColor.g += extraLight.g;
-                lightColor.b += extraLight.b;
+            if (!(pixelColor.r == 0
+            swsddddddddddddddddddd      && pixelColor.g == 0
+                  && pixelColor.b == 0)) {
+                Vector2f pixelPosition = Vector2f((float) x + 0.5f
+                                                  , (float) y + 0.5f);
+                Color lightColor = ambientLight;
+                for (int i = 0; i < lightsInView.size(); i++) {
+                    Color extraLight = lightsInView[i]
+                        .getColorAt(pixelPosition + viewTopRight);
+                    lightColor.r += extraLight.r;
+                    lightColor.g += extraLight.g;
+                    lightColor.b += extraLight.b;
+                }
+                pixelColor.r *= ((float) (lightColor.r)
+                                 / 255.0f);
+                pixelColor.g *= ((float) (lightColor.g)
+                                 / 255.0f);
+                pixelColor.b *= ((float) (lightColor.b)
+                                 / 255.0f);
+                canvas.setPixel(x, y, pixelColor);
             }
-            pixelColor.r *= ((float) (lightColor.r)
-                             / 255.0f);
-            pixelColor.g *= ((float) (lightColor.g)
-                             / 255.0f);
-            pixelColor.b *= ((float) (lightColor.b)
-                             / 255.0f);
-            canvas.setPixel(x, y, pixelColor);
         }
     }
     drawTexture.loadFromImage(canvas);
