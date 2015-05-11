@@ -71,16 +71,16 @@ Vector2f Light::getPosition() {
 void LightManager::initialize(const char* lightMapFilePath
                               , int tileWidth
                               , int tileHeight) {
-    ambientColor = Color(40, 40, 40, 255);
+    ambientColor = Color(90, 90, 90, 255);
     lightTexture.create(1000, 1000);
     
     Vector3f falloff;
     falloff.x = 1.0f; // Constant falloff
-    falloff.y = 0.0000003f; // Linear falloff
-    falloff.z = 0.000003f; // Quadratic falloff
+    falloff.y = 0.0000008f; // Linear falloff
+    falloff.z = 0.000005f; // Quadratic falloff
 
     standardLightTexture
-        = generateLightTexture(300, Color(255,255,255,255)
+        = generateLightTexture(250, Color(255,255,255,255)
                                , 1000, 1000, falloff);
     
     // Read the positions of the lamps from the map
@@ -102,7 +102,7 @@ void LightManager::initialize(const char* lightMapFilePath
                 light.setColor(Color(r,g,b));
                 light.setPosition(x * tileWidth
                                   , y * tileHeight);
-                light.setOrigin(300, 300);
+                light.setOrigin(250, 250);
                 lights.push_back(light);
             }
         }
@@ -134,9 +134,9 @@ void LightManager::draw(RenderWindow* window
     }
     lightTexture.display();
 
-    Texture texture = lightTexture.getTexture();
-    Sprite lightSprite;
-    lightSprite.setTexture(texture);
+    lightSprite.setTexture(lightTexture.getTexture());
+    lightSprite.setTextureRect(IntRect(0,0,viewRect.width
+                                       , viewRect.height));
     lightSprite.setPosition(viewRect.left, viewRect.top);
 
     window->draw(lightSprite, BlendMultiply);

@@ -43,7 +43,9 @@ public:
     void setScreenSize(int x, int y);
 private:
     std::vector<sf::Sprite> lights;
-    sf::Texture standardLightTexture;
+    sf::Texture standardLightTexture
+        , texture;
+    sf::Sprite lightSprite;
     sf::RenderTexture lightTexture;
     sf::Color ambientColor;
     // std::vector<Light> lights;

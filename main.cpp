@@ -116,7 +116,7 @@ int main() {
         frames++;
 
         timeLeft += deltaTimer.restart().asSeconds();
-        int i = 0, maxUpdatesInFrame = 20;
+        int i = 0, maxUpdatesInFrame = 2;
         do {
             handleEvents(&window);
             simulatePhysics(&window);
