@@ -71,10 +71,17 @@ Vector2f Light::getPosition() {
 void LightManager::initialize(const char* lightMapFilePath
                               , int tileWidth
                               , int tileHeight) {
+    ambientColor = Color(40, 40, 40, 255);
+    lightTexture.create(1000, 1000);
+    
     Vector3f falloff;
-    falloff.x = 1.2f; // Constant falloff
-    falloff.y = 0.0001f; // Linear falloff
-    falloff.z = 0.00006f; // Quadratic falloff
+    falloff.x = 1.0f; // Constant falloff
+    falloff.y = 0.0000003f; // Linear falloff
+    falloff.z = 0.000003f; // Quadratic falloff
+
+    standardLightTexture
+        = generateLightTexture(300, Color(255,255,255,255)
+                               , 1000, 1000, falloff);
     
     // Read the positions of the lamps from the map
     std::ifstream map(lightMapFilePath);
@@ -90,10 +97,12 @@ void LightManager::initialize(const char* lightMapFilePath
             map >> r >> g >> b;
             if (!(r == 0 && g == 0
                   && b == 0)) { // Lamp
-                Light light(300, falloff
-                            , Color(r, g, b)
-                            , Vector2f(x * tileWidth
-                                       , y * tileHeight));
+                Sprite light;
+                light.setTexture(standardLightTexture);
+                light.setColor(Color(r,g,b));
+                light.setPosition(x * tileWidth
+                                  , y * tileHeight);
+                light.setOrigin(300, 300);
                 lights.push_back(light);
             }
         }
@@ -108,56 +117,127 @@ void LightManager::draw(RenderWindow* window
                        , viewCenter.y - (viewSize.y / 2.0f)
                        , viewSize.x, viewSize.y);
 
-    std::vector<Light> lightsInView;
+    lightTexture.setView(currentView);
+    lightTexture.clear(ambientColor);
+
     for (int i = 0; i < lights.size(); i++) {
         Vector2f lightCenter = lights[i].getPosition()
-            , lightSize = Vector2f(lights[i].getRadius()
-                                   , lights[i].getRadius());
+            , lightSize = Vector2f(standardLightTexture.getSize().x
+                                   , standardLightTexture.getSize().y);
         FloatRect lightRect =
             FloatRect(lightCenter.x - (lightSize.x / 2.0f)
                       , lightCenter.y - (lightSize.y / 2.0f)
                       , lightSize.x, lightSize.y);
         if (lightRect.intersects(viewRect)) {
-            lightsInView.push_back(lights[i]);
+            lightTexture.draw(lights[i], BlendAdd);
         }
     }
+    lightTexture.display();
 
-    Vector2f viewTopRight = Vector2f(viewRect.left
-                                     , viewRect.top);
-    Color ambientLight = Color(30,30,30);
-    Image canvas = window->capture();
-    for (int y = 0; y < viewSize.y; y++) {
-        for (int x = 0; x < viewSize.x; x++) {
-            Color pixelColor = canvas.getPixel(x, y);
-            if (!(pixelColor.r == 0
-            swsddddddddddddddddddd      && pixelColor.g == 0
-                  && pixelColor.b == 0)) {
-                Vector2f pixelPosition = Vector2f((float) x + 0.5f
-                                                  , (float) y + 0.5f);
-                Color lightColor = ambientLight;
-                for (int i = 0; i < lightsInView.size(); i++) {
-                    Color extraLight = lightsInView[i]
-                        .getColorAt(pixelPosition + viewTopRight);
-                    lightColor.r += extraLight.r;
-                    lightColor.g += extraLight.g;
-                    lightColor.b += extraLight.b;
-                }
-                pixelColor.r *= ((float) (lightColor.r)
-                                 / 255.0f);
-                pixelColor.g *= ((float) (lightColor.g)
-                                 / 255.0f);
-                pixelColor.b *= ((float) (lightColor.b)
-                                 / 255.0f);
-                canvas.setPixel(x, y, pixelColor);
+    Texture texture = lightTexture.getTexture();
+    Sprite lightSprite;
+    lightSprite.setTexture(texture);
+    lightSprite.setPosition(viewRect.left, viewRect.top);
+
+    window->draw(lightSprite, BlendMultiply);
+    
+
+    // Vector2f viewTopRight = Vector2f(viewRect.left
+    //                                  , viewRect.top);
+    // Color ambientLight = Color(30,30,30);
+    // Image canvas = window->capture();
+    // for (int y = 0; y < viewSize.y; y++) {
+    //     for (int x = 0; x < viewSize.x; x++) {
+    //         Color pixelColor = canvas.getPixel(x, y);
+    //         if (!(pixelColor.r == 0
+    //         swsddddddddddddddddddd      && pixelColor.g == 0
+    //               && pixelColor.b == 0)) {
+    //             Vector2f pixelPosition = Vector2f((float) x + 0.5f
+    //                                               , (float) y + 0.5f);
+    //             Color lightColor = ambientLight;
+    //             for (int i = 0; i < lightsInView.size(); i++) {
+    //                 Color extraLight = lightsInView[i]
+    //                     .getColorAt(pixelPosition + viewTopRight);
+    //                 lightColor.r += extraLight.r;
+    //                 lightColor.g += extraLight.g;
+    //                 lightColor.b += extraLight.b;
+    //             }
+    //             pixelColor.r *= ((float) (lightColor.r)
+    //                              / 255.0f);
+    //             pixelColor.g *= ((float) (lightColor.g)
+    //                              / 255.0f);
+    //             pixelColor.b *= ((float) (lightColor.b)
+    //                              / 255.0f);
+    //             canvas.setPixel(x, y, pixelColor);
+    //         }
+    //     }
+    // }
+    // drawTexture.loadFromImage(canvas);
+    // drawSprite.setTexture(drawTexture);
+    // drawSprite.setPosition(viewRect.left, viewRect.top);
+    // drawSprite.setTextureRect(
+    //     IntRect(0, 0
+    //             , drawTexture.getSize().x
+    //             , drawTexture.getSize().y));
+    // window->draw(drawSprite);
+}
+
+void LightManager::setScreenSize(int x, int y) {
+    lightTexture.create(x, y);
+}
+
+Texture generateLightTexture(int radius
+                             , Color centerColor
+                             , int centerDistance
+                             , int height
+                             , Vector3f falloff
+                             // (constant, linear, quadratic)
+    ) {
+    Image image;
+    image.create(radius * 2, radius * 2
+                 , Color(0,0,0,1));
+    Vector2f center = Vector2f(radius, radius);
+    float radiusSquared = radius * radius; // That efficiency
+    for (int y = 0; y < radius * 2; y++) {
+        for (int x = 0; x < radius * 2; x++) {
+            // The position used is the center of
+            // the pixel
+            Vector2f position = Vector2f(x + 0.5f
+                                         , y + 0.5f);
+            Vector2f distance = position - center;
+            float lengthSquared = distance.x * distance.x
+                + distance.y * distance.y;
+            // Only change color if the pixel is in the
+            // light circle
+            if (lengthSquared <= radiusSquared) {
+                float dist= sqrt(lengthSquared
+                                 + height * height
+                                 - centerDistance
+                                 * centerDistance);
+                float relativeIntensity =
+                    1.0f / (falloff.x
+                            + falloff.y * dist
+                            + falloff.z * dist * dist);
+                float blurIntensity = 1.0f - sqrt(sqrt(lengthSquared)
+                                                  / radius);
+                                               
+                Color currentColor;
+
+                currentColor.r
+                    = (Uint8) ((float) (centerColor.r) *
+                               relativeIntensity * blurIntensity);
+                currentColor.g
+                    = (Uint8) ((float) (centerColor.g) *
+                               relativeIntensity * blurIntensity);
+                currentColor.b
+                    = (Uint8) ((float) (centerColor.b) *
+                               relativeIntensity * blurIntensity);
+
+                image.setPixel(x, y, currentColor);
             }
         }
     }
-    drawTexture.loadFromImage(canvas);
-    drawSprite.setTexture(drawTexture);
-    drawSprite.setPosition(viewRect.left, viewRect.top);
-    drawSprite.setTextureRect(
-        IntRect(0, 0
-                , drawTexture.getSize().x
-                , drawTexture.getSize().y));
-    window->draw(drawSprite);
+    Texture newLightTexture;
+    newLightTexture.loadFromImage(image);
+    return newLightTexture;
 }

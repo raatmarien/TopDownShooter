@@ -151,6 +151,7 @@ void handleEvents(RenderWindow* window) {
                          - minimap.getSize().x
                          , (-0.5f * screenY) + minimapPadding));
             minimap.setScreenSize(screenX, screenY);
+            lightManager.setScreenSize(screenX, screenY);
         }
     }
 }

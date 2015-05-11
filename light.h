@@ -40,8 +40,21 @@ public:
                     , int tileHeight);
     void draw(sf::RenderWindow* window
               , sf::View currentView);
+    void setScreenSize(int x, int y);
 private:
-    std::vector<Light> lights;
-    sf::Texture drawTexture;
-    sf::Sprite drawSprite;
+    std::vector<sf::Sprite> lights;
+    sf::Texture standardLightTexture;
+    sf::RenderTexture lightTexture;
+    sf::Color ambientColor;
+    // std::vector<Light> lights;
+    // sf::Texture drawTexture;
+    // sf::Sprite drawSprite;
 };
+
+sf::Texture generateLightTexture(int radius
+                             , sf::Color centerColor
+                             , int centerDistance
+                             , int height
+                             , sf::Vector3f falloff
+                             // (constant, linear, quadratic)
+    );
