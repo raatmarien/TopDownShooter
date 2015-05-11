@@ -97,7 +97,7 @@ int main() {
     minimap.setScreenSize(screenX, screenY);
 
     // Set up LightManager
-    lightManager.initialize("maps/light_map.ppm"
+    lightManager.initialize("maps/light_map2.ppm"
                             , tileSize
                             , tileSize);
     
