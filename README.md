@@ -14,11 +14,11 @@ Positions of the lights are saved in a seperate bitmap of te PPM type. This bitm
 
 ###Build instructions
 
-I have only tested it on Linux so far. To build it from source you will need [SFML](http://www.sfml-dev.org/download.php), [Box2D](http://box2d.org/). Both are available in a package on Ubuntu and make.
+I have only tested it on Linux so far. To build it from source you will need [SFML](http://www.sfml-dev.org/download.php), [Box2D](http://box2d.org/) and make. Both are available in a package on Ubuntu.
 
 ###Build instructions for Ubuntu
 
-First move to the directory where you've downloaded the project. To do this execute:
+First move to the directory where you've downloaded the project. To do this execute:  
 `cd /Path/To/The/Project/`
 
 `sudo apt-get install libsfml-dev libbox2d-dev`  
