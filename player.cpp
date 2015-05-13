@@ -237,25 +237,24 @@ void MousePointer::update(RenderWindow* window, View* view
                                                            , viewMoved.y);
     // Move view if needed
     view->setCenter(playerPos);
-    viewMoved = Vector2f(0,0);
+    targetViewMoved = Vector2f(0,0);
     if (aiming) {
         float distFromCenter = sqrt(mousePositionFromCenter.x
                                     * mousePositionFromCenter.x
                                     + mousePositionFromCenter.y
                                     * mousePositionFromCenter.y);
         if (distFromCenter < viewMovingDistance) {
-            view->move(mousePositionFromCenter.x
-                      , mousePositionFromCenter.y);
-            viewMoved = Vector2f(mousePositionFromCenter.x
+            targetViewMoved = Vector2f(mousePositionFromCenter.x
                                  , mousePositionFromCenter.y);
         } else {
             Vector2f move = (Vector2f(mousePositionFromCenter.x
                                       , mousePositionFromCenter.y) / distFromCenter)
                 * (float) viewMovingDistance;
-            view->move(move);
-            viewMoved = move;
+            targetViewMoved = move;
         }
     }
+    viewMoved += (targetViewMoved - viewMoved) * 0.15f;
+    view->move(viewMoved);
 }
 
 void MousePointer::draw(RenderWindow* window, View view) {

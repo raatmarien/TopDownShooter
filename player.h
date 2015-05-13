@@ -78,5 +78,6 @@ private:
     sf::Sprite pointerSprite;
     sf::Vector2i mousePosition
         , mousePositionFromCenter;
-    sf::Vector2f viewMoved;
+    sf::Vector2f viewMoved
+        , targetViewMoved;
 };
