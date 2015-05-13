@@ -71,12 +71,12 @@ Vector2f Light::getPosition() {
 void LightManager::initialize(const char* lightMapFilePath
                               , int tileWidth
                               , int tileHeight) {
-    ambientColor = Color(90, 90, 90, 255);
+    ambientColor = Color(80, 80, 80, 255);
     lightTexture.create(1000, 1000);
     
     Vector3f falloff;
-    falloff.x = 2.0f; // Constant falloff
-    falloff.y = 0.003f; // Linear falloff
+    falloff.x = 1.9f; // Constant falloff
+    falloff.y = 0.002f; // Linear falloff
     falloff.z = 0.000002f; // Quadratic falloff
 
     standardLightTexture

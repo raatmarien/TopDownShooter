@@ -226,15 +226,17 @@ void MousePointer::draw(RenderWindow* window, View view) {
         > (view.getSize().x / 2)
         , outOfScreenY = abs(mousePositionFromCenter.y)
         > (view.getSize().y / 2);
-    // if (outOfScreenX || outOfScreenY) {
-    //     currentPosFromCenter /= (float) sqrt(currentPosFromCenter.x
-    //                                          * currentPosFromCenter.x
-    //                                          + currentPosFromCenter.y
-    //                                          * currentPosFromCenter.y);
-    //     currentPosFromCenter *= 100.0f;
-        
-    // }
-    std::cout << mousePositionFromCenter.x << "\n";
+    if (outOfScreenX || outOfScreenY) {
+        currentPosFromCenter /= (float) sqrt(currentPosFromCenter.x
+                                             * currentPosFromCenter.x
+                                             + currentPosFromCenter.y
+                                             * currentPosFromCenter.y);
+        float xRatio = view.getSize().x / currentPosFromCenter.x
+            , yRatio = view.getSize().y / currentPosFromCenter.y;
+        xRatio *= (xRatio < 0) ? -1.0f : 1.0f;
+        yRatio *= (yRatio < 0) ? -1.0f : 1.0f;
+        currentPosFromCenter *= std::min(xRatio, yRatio) * 0.5f;
+    }
     pointerSprite.setPosition( currentPosFromCenter
                               + view.getCenter());
     window->draw(pointerSprite);
