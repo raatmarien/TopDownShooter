@@ -39,7 +39,7 @@ void draw(RenderWindow* window);
 
 void loadSprites();
 
-Texture spritesMap, playerSprite;
+Texture spritesMap, playerSprite, mousePointerTexture;
 groundTileMap tileMap;
 int tileSize = 25;
 
@@ -56,6 +56,8 @@ float minimapPadding = 50.0f;
 
 LightManager lightManager;
 
+MousePointer mousePointer;
+
 View playerView;
 
 float box2DTimeStep = 1.0f / 60.0f;
@@ -69,6 +71,7 @@ int screenX = 50 * 20, screenY = 50 * 20;
 int main() {
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
+    window.setMouseCursorVisible(false);
     playerView.setSize(screenX, screenY);
 
     loadSprites();
@@ -97,9 +100,12 @@ int main() {
     minimap.setScreenSize(screenX, screenY);
 
     // Set up LightManager
-    lightManager.initialize("maps/light_map2.ppm"
+    lightManager.initialize("maps/light_map3.ppm"
                             , tileSize
                             , tileSize);
+
+    // Set up MousePointer
+    mousePointer.setTexture(mousePointerTexture);
     
     float timeLeft = 0;
 
@@ -199,6 +205,9 @@ void handleInput(RenderWindow* window) {
         Image Screen = window->capture();
         Screen.saveToFile("screenshot.jpg");
     }
+
+    // Mouse input
+    mousePointer.update(window, playerView);
 }
 
 void draw(RenderWindow* window) {
@@ -208,6 +217,7 @@ void draw(RenderWindow* window) {
     window->draw(player);
     lightManager.draw(window, playerView);
     shadowHandler.draw(window);
+    mousePointer.draw(window, playerView);
     minimap.draw(window);
     window->display();
 }
@@ -215,4 +225,5 @@ void draw(RenderWindow* window) {
 void loadSprites() {
     spritesMap.loadFromFile("sprites/spriteMap3.png");
     playerSprite.loadFromFile("sprites/player.png");
+    mousePointerTexture.loadFromFile("sprites/mousePointer.png");
 }

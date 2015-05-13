@@ -191,6 +191,7 @@ void Player::turn(bool left) {
 
 void Player::draw(RenderTarget& target
                   , RenderStates states) const {
+    states.texture = &texMap;
     states.transform *= getTransform();
     target.draw(sprite, states);
 }
@@ -201,4 +202,40 @@ b2Vec2 Player::rotateVec(b2Vec2 vector, float radians) {
     float y = vector.x * sin(radians)
         + vector.y * cos(radians);
     return b2Vec2(x, y);
+}
+
+
+// MousePointer methods
+void MousePointer::setTexture(Texture newPointerTexture) {
+    pointerTexture = newPointerTexture;
+    pointerSprite.setTexture(pointerTexture);
+    pointerSprite.setOrigin(pointerTexture.getSize().x / 2
+                            , pointerTexture.getSize().y / 2);
+}
+
+void MousePointer::update(RenderWindow* window, View view) {
+    mousePosition = Mouse::getPosition(*window);
+}
+
+void MousePointer::draw(RenderWindow* window, View view) {
+    mousePositionFromCenter = mousePosition
+        - Vector2i(view.getSize().x / 2, view.getSize().y / 2);
+    Vector2f currentPosFromCenter = Vector2f(mousePositionFromCenter.x
+                                             , mousePositionFromCenter.y);
+    bool outOfScreenX = abs(mousePositionFromCenter.x)
+        > (view.getSize().x / 2)
+        , outOfScreenY = abs(mousePositionFromCenter.y)
+        > (view.getSize().y / 2);
+    // if (outOfScreenX || outOfScreenY) {
+    //     currentPosFromCenter /= (float) sqrt(currentPosFromCenter.x
+    //                                          * currentPosFromCenter.x
+    //                                          + currentPosFromCenter.y
+    //                                          * currentPosFromCenter.y);
+    //     currentPosFromCenter *= 100.0f;
+        
+    // }
+    std::cout << mousePositionFromCenter.x << "\n";
+    pointerSprite.setPosition( currentPosFromCenter
+                              + view.getCenter());
+    window->draw(pointerSprite);
 }

@@ -75,12 +75,12 @@ void LightManager::initialize(const char* lightMapFilePath
     lightTexture.create(1000, 1000);
     
     Vector3f falloff;
-    falloff.x = 1.0f; // Constant falloff
-    falloff.y = 0.0000008f; // Linear falloff
-    falloff.z = 0.000005f; // Quadratic falloff
+    falloff.x = 2.0f; // Constant falloff
+    falloff.y = 0.003f; // Linear falloff
+    falloff.z = 0.000002f; // Quadratic falloff
 
     standardLightTexture
-        = generateLightTexture(250, Color(255,255,255,255)
+        = generateLightTexture(500, Color(255,255,255,255)
                                , 1000, 1000, falloff);
     
     // Read the positions of the lamps from the map
@@ -102,7 +102,7 @@ void LightManager::initialize(const char* lightMapFilePath
                 light.setColor(Color(r,g,b));
                 light.setPosition(x * tileWidth
                                   , y * tileHeight);
-                light.setOrigin(250, 250);
+                light.setOrigin(500, 500);
                 lights.push_back(light);
             }
         }

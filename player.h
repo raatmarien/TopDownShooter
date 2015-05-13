@@ -57,3 +57,17 @@ private:
                       , sf::RenderStates states) const;
     b2Vec2 rotateVec(b2Vec2 vector, float radians);
 };
+
+class MousePointer {
+public:
+    void setTexture(sf::Texture newPointerTexture);
+    void update(sf::RenderWindow* window
+                , sf::View view);
+    void draw(sf::RenderWindow* window
+              , sf::View);
+private:
+    sf::Texture pointerTexture;
+    sf::Sprite pointerSprite;
+    sf::Vector2i mousePosition
+        , mousePositionFromCenter;
+};
