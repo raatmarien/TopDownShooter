@@ -35,7 +35,7 @@ void Player::initialize(
     framesRunning = 0;
 
     // Constants
-    moveForce = 20.0f;
+    movementForce = 20.0f;
     rotationTorque = 2.0f;
 
     // Setup sprite
@@ -71,7 +71,7 @@ void Player::initialize(
     body->CreateFixture(&fixtureDef);
 }
 
-void Player::update() {
+void Player::update(Vector2f relativeMousePointerPos) {
     // Update position
     b2Vec2 newPlayerPosition = body->GetPosition();
     setPosition(newPlayerPosition.x * scale
@@ -81,12 +81,21 @@ void Player::update() {
     b2Vec2 linearVelocity = body->GetLinearVelocity();
     float speed = b2Vec2(linearVelocity.x
                          , linearVelocity.y).Normalize();
-    float rotation = std::atan2(linearVelocity.y
-                                , linearVelocity.x)
-        * toDegreesMultiple;
-    setRotation(rotation + 90);
+    if (!aiming) {
+        float rotation = std::atan2(linearVelocity.y
+                                    , linearVelocity.x)
+            * toDegreesMultiple;
+        setRotation(rotation + 90);
+    } else {
+        float rotation = std::atan2(relativeMousePointerPos.y
+                                    , relativeMousePointerPos.x)
+            * toDegreesMultiple;
+        setRotation(rotation + 90);
+    }
 
     // Apply movement force
+    float moveForce = movementForce
+        * (aiming ? 0.4f : 1);
     b2Vec2 moveForceVec = b2Vec2(0,0);
     float diagonalForce
         = sqrt(0.5 * moveForce * moveForce);
@@ -144,6 +153,7 @@ void Player::update() {
     sprite.setTextureRect(currentRec);
 
     movement = NONE;
+    aiming = false;
 }
 
 
@@ -204,8 +214,16 @@ b2Vec2 Player::rotateVec(b2Vec2 vector, float radians) {
     return b2Vec2(x, y);
 }
 
+void Player::setAiming(bool nAiming) {
+    aiming = nAiming;
+}
+
 
 // MousePointer methods
+MousePointer::MousePointer() {
+    viewMovingDistance = 300;
+}
+
 void MousePointer::setTexture(Texture newPointerTexture) {
     pointerTexture = newPointerTexture;
     pointerSprite.setTexture(pointerTexture);
@@ -213,18 +231,45 @@ void MousePointer::setTexture(Texture newPointerTexture) {
                             , pointerTexture.getSize().y / 2);
 }
 
-void MousePointer::update(RenderWindow* window, View view) {
-    mousePosition = Mouse::getPosition(*window);
+void MousePointer::update(RenderWindow* window, View* view
+                          , Vector2f playerPos) {
+    mousePosition = Mouse::getPosition(*window) + Vector2i(viewMoved.x
+                                                           , viewMoved.y);
+    // Move view if needed
+    view->setCenter(playerPos);
+    viewMoved = Vector2f(0,0);
+    if (aiming) {
+        float distFromCenter = sqrt(mousePositionFromCenter.x
+                                    * mousePositionFromCenter.x
+                                    + mousePositionFromCenter.y
+                                    * mousePositionFromCenter.y);
+        if (distFromCenter < viewMovingDistance) {
+            view->move(mousePositionFromCenter.x
+                      , mousePositionFromCenter.y);
+            viewMoved = Vector2f(mousePositionFromCenter.x
+                                 , mousePositionFromCenter.y);
+        } else {
+            Vector2f move = (Vector2f(mousePositionFromCenter.x
+                                      , mousePositionFromCenter.y) / distFromCenter)
+                * (float) viewMovingDistance;
+            view->move(move);
+            viewMoved = move;
+        }
+    }
 }
 
 void MousePointer::draw(RenderWindow* window, View view) {
     mousePositionFromCenter = mousePosition
         - Vector2i(view.getSize().x / 2, view.getSize().y / 2);
+    
     Vector2f currentPosFromCenter = Vector2f(mousePositionFromCenter.x
-                                             , mousePositionFromCenter.y);
-    bool outOfScreenX = abs(mousePositionFromCenter.x)
+                                             , mousePositionFromCenter.y) - viewMoved;
+    Vector2i newMousePosition = mousePosition - Vector2i(viewMoved.x
+                                                         , viewMoved.y);
+    Mouse::setPosition(newMousePosition, *window);
+    bool outOfScreenX = abs(currentPosFromCenter.x)
         > (view.getSize().x / 2)
-        , outOfScreenY = abs(mousePositionFromCenter.y)
+        , outOfScreenY = abs(currentPosFromCenter.y)
         > (view.getSize().y / 2);
     if (outOfScreenX || outOfScreenY) {
         currentPosFromCenter /= (float) sqrt(currentPosFromCenter.x
@@ -240,4 +285,16 @@ void MousePointer::draw(RenderWindow* window, View view) {
     pointerSprite.setPosition( currentPosFromCenter
                               + view.getCenter());
     window->draw(pointerSprite);
+
+    // Reset aiming
+    aiming = false;
+}
+
+void MousePointer::setAiming(bool nAiming) {
+    aiming = nAiming;
+}
+
+Vector2f MousePointer::getRelativePosition() {
+    return Vector2f(mousePositionFromCenter.x
+                    , mousePositionFromCenter.y);
 }

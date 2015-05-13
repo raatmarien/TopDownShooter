@@ -73,7 +73,8 @@ public:
     void setScreenDiagonal(int screenX, int screenY);
     std::vector<sf::Vector2f> getObstaclesInRange
         (sf::Vector2f sightCenter);
-    void update(sf::Vector2f sightCenter);
+    void update(sf::Vector2f sightCenter
+                , sf::Vector2f viewCenter);
     void draw(sf::RenderWindow* window); // Calls the draw methods
                                          // for the shadows and the
                                          // BlockRedrawer

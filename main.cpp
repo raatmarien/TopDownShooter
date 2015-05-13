@@ -169,14 +169,15 @@ void simulatePhysics(RenderWindow* window) {
 }
 
 void update(RenderWindow* window) {
-    player.update();
-    playerView.setCenter(player.getPosition());
+    player.update(mousePointer.getRelativePosition());
     minimap.setPlayerPosition(player.getPosition());
     minimap.update();
+    mousePointer.update(window, &playerView, player.getPosition());
 }
 
 void updateDrawables(RenderWindow* window) {
-    shadowHandler.update(player.getPosition());
+    shadowHandler.update(player.getPosition()
+                         , playerView.getCenter());
     minimap.setViewCenter(playerView.getCenter());
 }
 
@@ -207,7 +208,10 @@ void handleInput(RenderWindow* window) {
     }
 
     // Mouse input
-    mousePointer.update(window, playerView);
+    if (Mouse::isButtonPressed(Mouse::Right)) {
+        mousePointer.setAiming(true);
+        player.setAiming(true);
+    }
 }
 
 void draw(RenderWindow* window) {

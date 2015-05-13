@@ -102,8 +102,9 @@ std::vector<Vector2f> ShadowHandler::getObstaclesInRange(Vector2f sightCenter) {
     return obstaclesInRange;
 }
 
-void ShadowHandler::update(Vector2f sightCenter) {
-    std::vector<Vector2f> obstacles = getObstaclesInRange(sightCenter);
+void ShadowHandler::update(Vector2f sightCenter
+                           , Vector2f viewCenter) {
+    std::vector<Vector2f> obstacles = getObstaclesInRange(viewCenter);
     VertexArray vertices;
     vertices.resize(obstacles.size() * 2);
     vertices.setPrimitiveType(Quads);

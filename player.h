@@ -38,12 +38,14 @@ public:
                     , sf::Vector2f startPosition
                     , int nScale, int nSize
                     , sf::Texture nTexture);
-    void update();
+    void update(sf::Vector2f relativeMousePointerPos);
     void move(bool up);
     void turn(bool left);
+    void setAiming(bool nAiming);
 private:
+    bool aiming;
     Movement movement;
-    float moveForce, rotationTorque;
+    float movementForce, rotationTorque;
     int scale, size;
     float framesRunning;
     sf::Texture texMap;
@@ -60,14 +62,21 @@ private:
 
 class MousePointer {
 public:
+    MousePointer();
     void setTexture(sf::Texture newPointerTexture);
     void update(sf::RenderWindow* window
-                , sf::View view);
+                , sf::View* view
+                , sf::Vector2f playerPos);
     void draw(sf::RenderWindow* window
-              , sf::View);
+              , sf::View view);
+    void setAiming(bool nAiming);
+    sf::Vector2f getRelativePosition();
 private:
+    bool aiming;
+    int viewMovingDistance;
     sf::Texture pointerTexture;
     sf::Sprite pointerSprite;
     sf::Vector2i mousePosition
         , mousePositionFromCenter;
+    sf::Vector2f viewMoved;
 };
