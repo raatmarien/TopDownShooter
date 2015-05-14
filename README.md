@@ -1,5 +1,7 @@
 ##A simple top down shooter with a field of view
 
+![Gameplay image](http://i.imgur.com/S7F1eeI.jpg)
+
 ###Build instructions
 
 I have only tested it on Linux so far. To build it from source you will need [SFML](http://www.sfml-dev.org/download.php), [Box2D](http://box2d.org/) and make. Both are available in a package on Ubuntu.
