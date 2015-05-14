@@ -41,7 +41,7 @@ void loadSprites();
 
 Texture spritesMap, playerSprite, mousePointerTexture;
 groundTileMap tileMap;
-int tileSize = 25;
+int tileSize = 32;
 
 b2Vec2 gravity(0.0f, 0.0f);
 b2World world(gravity);
@@ -227,7 +227,7 @@ void draw(RenderWindow* window) {
 }
 
 void loadSprites() {
-    spritesMap.loadFromFile("sprites/spriteMap3.png");
+    spritesMap.loadFromFile("sprites/spriteMap4.png");
     playerSprite.loadFromFile("sprites/player.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
 }

@@ -65,6 +65,11 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
             if (tileNum == 0) {
                 int tilesAmmount = 4;
                 cornerTextureY += tilesHeight * (rand() % tilesAmmount);
+                int tilesAmmountX = 2;
+                cornerTextureX += tilesWidth * (rand() % tilesAmmountX);
+            }
+            if (tileNum == 1) { // wall
+                cornerTextureX = 2 * tilesWidth;
             }
 
             // Top left corner
@@ -84,7 +89,9 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
                 = Vector2f(x * tilesWidth
                            , (y + 1) * tilesHeight);
 
-            int rotation = rand() % 4;
+            int rotation = 0; // Todo: random rotation?
+                             // rand() % 4;
+            // rotation = rand() % 4;
             int turnArray[4] = {0,1,2,3};
             if (rotation == 1) {
                 turnArray[0] = 1;

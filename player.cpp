@@ -283,6 +283,14 @@ void MousePointer::draw(RenderWindow* window, View view) {
     }
     pointerSprite.setPosition( currentPosFromCenter
                               + view.getCenter());
+
+    targetRotation = aiming ? 90 : 0;
+    currentRotation += (targetRotation - currentRotation) * 0.1f;
+    pointerSprite.setRotation(currentRotation);
+
+    pointerSprite.setColor(aiming ? Color::White
+                           : Color(255,255,255,160));
+
     window->draw(pointerSprite);
 
     // Reset aiming
