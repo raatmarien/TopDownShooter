@@ -31,4 +31,4 @@ Positions of the lights are saved in a seperate bitmap of te PPM type. This bitm
 
 ###'Gameplay' so far
 
-[Walking through a map with lighting](https://gfycat.com/UnfinishedBoilingBarebirdbat)
+[Walking through a map with lighting](https://gfycat.com/AccurateHospitableBlacknorwegianelkhound)
