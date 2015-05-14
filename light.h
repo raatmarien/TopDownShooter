@@ -38,10 +38,14 @@ public:
     void initialize(const char* lightMapFilePath
                     , int tileWidth
                     , int tileHeight);
-    void draw(sf::RenderWindow* window
+    void draw(sf::RenderTexture* diffuse 
+              , sf::RenderTexture* normal
+              , sf::RenderWindow* window
               , sf::View currentView);
     void setScreenSize(int x, int y);
 private:
+    sf::Shader lightShader
+        , lightMultiplierShader;
     std::vector<sf::Sprite> lights;
     sf::Texture standardLightTexture
         , texture;
@@ -55,8 +59,6 @@ private:
 
 sf::Texture generateLightTexture(int radius
                              , sf::Color centerColor
-                             , int centerDistance
-                             , int height
                              , sf::Vector3f falloff
                              // (constant, linear, quadratic)
     );

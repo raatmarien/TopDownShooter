@@ -71,17 +71,22 @@ Vector2f Light::getPosition() {
 void LightManager::initialize(const char* lightMapFilePath
                               , int tileWidth
                               , int tileHeight) {
+    // Set up shader
+    lightShader.loadFromFile("shaders/light.frag", Shader::Fragment);
+    lightMultiplierShader.loadFromFile("shaders/lightMultiplier.frag"
+                                       , Shader::Fragment);
+    
     ambientColor = Color(80, 80, 80, 255);
     lightTexture.create(1000, 1000);
     
     Vector3f falloff;
-    falloff.x = 1.9f; // Constant falloff
-    falloff.y = 0.002f; // Linear falloff
-    falloff.z = 0.000002f; // Quadratic falloff
+    falloff.x = 1.0f; // Constant falloff
+    falloff.y = 0.0015f; // Linear falloff
+    falloff.z = 0.0000012f; // Quadratic falloff
 
     standardLightTexture
         = generateLightTexture(500, Color(255,255,255,255)
-                               , 1000, 1000, falloff);
+                               , falloff);
     
     // Read the positions of the lamps from the map
     std::ifstream map(lightMapFilePath);
@@ -109,7 +114,9 @@ void LightManager::initialize(const char* lightMapFilePath
     }
 }
 
-void LightManager::draw(RenderWindow* window
+void LightManager::draw(RenderTexture* diffuse
+                        , RenderTexture* normal
+                        , RenderWindow* window
                         , View currentView) {
     Vector2f viewCenter = currentView.getCenter()
         , viewSize = currentView.getSize();
@@ -129,18 +136,38 @@ void LightManager::draw(RenderWindow* window
                       , lightCenter.y - (lightSize.y / 2.0f)
                       , lightSize.x, lightSize.y);
         if (lightRect.intersects(viewRect)) {
-            lightTexture.draw(lights[i], BlendAdd);
+            lightShader.setParameter("normalTex", normal->getTexture()); 
+            // Tex position of the lamp
+            Vector2f texPos = Vector2f(lightRect.left, lightRect.top)
+                - Vector2f(viewRect.left, viewRect.top);
+            texPos.x /= (float) viewRect.width;
+            texPos.y /= (float) viewRect.height;
+
+            // Set the parameters
+            lightShader.setParameter("texPos", texPos);
+            lightShader.setParameter("normalTexSize", Vector2f(viewRect.width
+                                                         , viewRect.height));
+            lightShader.setParameter("texSize", lightSize);
+            Vector2f dLightPos = lightCenter - Vector2f(viewRect.left, viewRect.top);
+            dLightPos.x /= (float) viewRect.width;
+            dLightPos.y /= (float) viewRect.height;
+            lightShader.setParameter("lightPos", Vector3f(dLightPos.x, dLightPos.y
+                                                          , 0.1f));
+            RenderStates states;
+            states.shader = &lightShader;
+            states.blendMode = BlendAdd;
+            lightTexture.draw(lights[i], states);
         }
     }
     lightTexture.display();
 
-    lightSprite.setTexture(lightTexture.getTexture());
-    lightSprite.setTextureRect(IntRect(0,0,viewRect.width
-                                       , viewRect.height));
+    lightSprite.setTexture(diffuse->getTexture());
+    lightSprite.setTextureRect(IntRect(0,0,viewRect.width, viewRect.height));
     lightSprite.setPosition(viewRect.left, viewRect.top);
 
-    window->draw(lightSprite, BlendMultiply);
-    
+    lightMultiplierShader.setParameter("lightTex", lightTexture.getTexture());
+    window->draw(lightSprite, &lightMultiplierShader);
+
 
     // Vector2f viewTopRight = Vector2f(viewRect.left
     //                                  , viewRect.top);
@@ -188,8 +215,6 @@ void LightManager::setScreenSize(int x, int y) {
 
 Texture generateLightTexture(int radius
                              , Color centerColor
-                             , int centerDistance
-                             , int height
                              , Vector3f falloff
                              // (constant, linear, quadratic)
     ) {
@@ -210,10 +235,7 @@ Texture generateLightTexture(int radius
             // Only change color if the pixel is in the
             // light circle
             if (lengthSquared <= radiusSquared) {
-                float dist= sqrt(lengthSquared
-                                 + height * height
-                                 - centerDistance
-                                 * centerDistance);
+                float dist= sqrt(lengthSquared);
                 float relativeIntensity =
                     1.0f / (falloff.x
                             + falloff.y * dist

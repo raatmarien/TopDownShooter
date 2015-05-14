@@ -80,4 +80,6 @@ private:
         , mousePositionFromCenter;
     sf::Vector2f viewMoved
         , targetViewMoved;
+    float currentRotation
+        , targetRotation;
 };

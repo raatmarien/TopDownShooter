@@ -39,7 +39,8 @@ void draw(RenderWindow* window);
 
 void loadSprites();
 
-Texture spritesMap, playerSprite, mousePointerTexture;
+Texture spritesMap, playerSprite, mousePointerTexture
+                                       , normalTiles;
 groundTileMap tileMap;
 int tileSize = 32;
 
@@ -60,6 +61,8 @@ MousePointer mousePointer;
 
 View playerView;
 
+RenderTexture diffuseTarget, normalTarget;
+
 float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
     , positionIterations = 3;
@@ -74,12 +77,16 @@ int main() {
     window.setMouseCursorVisible(false);
     playerView.setSize(screenX, screenY);
 
+    // Set up RenderTargets
+    diffuseTarget.create(screenX, screenY);
+    normalTarget.create(screenX, screenY);
+
     loadSprites();
 
     const char* mapFilePath = "maps/chambers_map3.pgm";
     
     // Set up Tilemap
-    tileMap.genGroundTileMap(mapFilePath, spritesMap
+    tileMap.genGroundTileMap(mapFilePath
                              , tileSize, tileSize
                              , 4, &world, SCALE);
 
@@ -158,6 +165,10 @@ void handleEvents(RenderWindow* window) {
                          , (-0.5f * screenY) + minimapPadding));
             minimap.setScreenSize(screenX, screenY);
             lightManager.setScreenSize(screenX, screenY);
+
+            // RenderTextures
+            diffuseTarget.create(screenX, screenY);
+            normalTarget.create(screenX, screenY);
         }
     }
 }
@@ -215,11 +226,26 @@ void handleInput(RenderWindow* window) {
 }
 
 void draw(RenderWindow* window) {
+
+    // Diffuse drawing
+    diffuseTarget.setView(playerView);
+    diffuseTarget.clear(sf::Color(0,0,0));
+    diffuseTarget.draw(tileMap, &spritesMap);
+    diffuseTarget.draw(player);
+    diffuseTarget.display();
+
+    // Normal drawing
+    normalTarget.setView(playerView);
+    normalTarget.clear(sf::Color(0,0,0));
+    normalTarget.draw(tileMap, &normalTiles);
+    normalTarget.display();
+
+    // Draw diffuse combined with lighting to window
     window->setView(playerView);
     window->clear(sf::Color(0,0,0));
-    window->draw(tileMap);
-    window->draw(player);
-    lightManager.draw(window, playerView);
+    lightManager.draw(&diffuseTarget, &normalTarget
+                      , window, playerView);
+
     shadowHandler.draw(window);
     mousePointer.draw(window, playerView);
     minimap.draw(window);
@@ -228,6 +254,7 @@ void draw(RenderWindow* window) {
 
 void loadSprites() {
     spritesMap.loadFromFile("sprites/spriteMap4.png");
+    normalTiles.loadFromFile("normalmaps/tilesNormal.png");
     playerSprite.loadFromFile("sprites/player.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
 }
