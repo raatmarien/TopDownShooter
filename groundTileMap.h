@@ -26,7 +26,7 @@ char getDisplayChar(int tileNum);
 class groundTileMap : public sf::Drawable, public sf::Transformable
 {
 public:
-    void genGroundTileMap (const char* filename, sf::Texture nTexture
+    void genGroundTileMap (const char* filename
                            , int tilesW, int tilesH
                            , int textureTileGridWidth
                            , b2World *world, int nScale);
@@ -36,6 +36,5 @@ private:
                        , sf::RenderStates states) const;
     int width, height, SCALE;
     sf::VertexArray vertices;
-    sf::Texture texture;
     int tilesWidth, tilesHeight;
 };

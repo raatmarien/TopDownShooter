@@ -25,11 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sf;
 
-void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
+void groundTileMap::genGroundTileMap (const char* filename
                                       , int tilesW, int tilesH
                                       , int textureTileGridWidth
                                       , b2World *world, int nScale) {
-    texture = nTexture;
     tilesWidth = tilesW;
     tilesHeight = tilesH;
     SCALE = nScale;
@@ -151,7 +150,6 @@ void groundTileMap::genGroundTileMap (const char* filename, Texture nTexture
 void groundTileMap::draw(RenderTarget& target, RenderStates states) const
 {
     states.transform *= getTransform();
-    states.texture = &texture;
     target.draw(vertices, states);
 }
 
