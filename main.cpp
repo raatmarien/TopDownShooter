@@ -253,8 +253,8 @@ void draw(RenderWindow* window) {
 }
 
 void loadSprites() {
-    spritesMap.loadFromFile("sprites/spriteMap4.png");
-    normalTiles.loadFromFile("normalmaps/tilesNormal.png");
+    spritesMap.loadFromFile("sprites/spriteMap5.png");
+    normalTiles.loadFromFile("normalmaps/tilesNormal2.png");
     playerSprite.loadFromFile("sprites/player.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
 }

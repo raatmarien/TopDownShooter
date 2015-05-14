@@ -81,8 +81,8 @@ void LightManager::initialize(const char* lightMapFilePath
     
     Vector3f falloff;
     falloff.x = 1.0f; // Constant falloff
-    falloff.y = 0.0015f; // Linear falloff
-    falloff.z = 0.0000012f; // Quadratic falloff
+    falloff.y = 0.0005f; // Linear falloff
+    falloff.z = 0.0000002f; // Quadratic falloff
 
     standardLightTexture
         = generateLightTexture(500, Color(255,255,255,255)
@@ -152,7 +152,7 @@ void LightManager::draw(RenderTexture* diffuse
             dLightPos.x /= (float) viewRect.width;
             dLightPos.y /= (float) viewRect.height;
             lightShader.setParameter("lightPos", Vector3f(dLightPos.x, dLightPos.y
-                                                          , 0.1f));
+                                                          , 0.3f));
             RenderStates states;
             states.shader = &lightShader;
             states.blendMode = BlendAdd;
