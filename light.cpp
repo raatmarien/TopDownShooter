@@ -80,7 +80,7 @@ void LightManager::initialize(const char* lightMapFilePath
     lightTexture.create(1000, 1000);
     
     Vector3f falloff;
-    falloff.x = 1.0f; // Constant falloff
+    falloff.x = 1.2f; // Constant falloff
     falloff.y = 0.0005f; // Linear falloff
     falloff.z = 0.0000002f; // Quadratic falloff
 

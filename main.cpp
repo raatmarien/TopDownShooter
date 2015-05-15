@@ -40,7 +40,8 @@ void draw(RenderWindow* window);
 void loadSprites();
 
 Texture spritesMap, playerSprite, mousePointerTexture
-                                       , normalTiles;
+                                       , normalTiles
+                                       , playerNormal;
 groundTileMap tileMap;
 int tileSize = 32;
 
@@ -231,13 +232,14 @@ void draw(RenderWindow* window) {
     diffuseTarget.setView(playerView);
     diffuseTarget.clear(sf::Color(0,0,0));
     diffuseTarget.draw(tileMap, &spritesMap);
-    diffuseTarget.draw(player);
+    diffuseTarget.draw(player, &playerSprite);
     diffuseTarget.display();
 
     // Normal drawing
     normalTarget.setView(playerView);
     normalTarget.clear(sf::Color(0,0,0));
     normalTarget.draw(tileMap, &normalTiles);
+    // normalTarget.draw(player, &playerNormal);
     normalTarget.display();
 
     // Draw diffuse combined with lighting to window
@@ -254,7 +256,8 @@ void draw(RenderWindow* window) {
 
 void loadSprites() {
     spritesMap.loadFromFile("sprites/spriteMap5.png");
-    normalTiles.loadFromFile("normalmaps/tilesNormal2.png");
+    normalTiles.loadFromFile("normalmaps/tilesNormal3.png");
     playerSprite.loadFromFile("sprites/player.png");
+    playerNormal.loadFromFile("normalmaps/playerNormal.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
 }

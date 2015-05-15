@@ -73,7 +73,7 @@ void Minimap::addWall(Vector2u position) {
 void Minimap::draw(RenderWindow* window) {
     minimapSprite.setPosition(currentViewCenter + position);
     player.setPosition(currentViewCenter + position
-                       + playerPosition
+                       + (playerPosition / (float) tileSize)
                        - Vector2f(minimapImage.getSize().x, 0));
     window->draw(minimapSprite);
     window->draw(player);
@@ -94,7 +94,7 @@ Vector2f Minimap::getSize() {
 }
 
 void Minimap::setPlayerPosition(Vector2f position) {
-    playerPosition = position / (float) (tileSize);
+    playerPosition = position;
 }
 
 void Minimap::setScreenSize(int screenX, int screenY) {
@@ -160,44 +160,44 @@ void Minimap::update() {
                     Vector2f w3 = walls[j] + Vector2f(halfT,halfT);
                     Vector2f w4 = walls[j] + Vector2f(-halfT,halfT);
                     if (visible1
-                        && (lineSegmentsIntersect(currentViewCenter
+                        && (lineSegmentsIntersect(playerPosition
                                                   , corner1
                                                   , w1
                                                   , w2)
-                        || lineSegmentsIntersect(currentViewCenter
+                        || lineSegmentsIntersect(playerPosition
                                                  , corner1
                                                  , w2
                                                  , w3))) { 
                         visible1 = false;
                     }
                     if (visible2
-                        && (lineSegmentsIntersect(currentViewCenter
+                        && (lineSegmentsIntersect(playerPosition
                                                   , corner2
                                                   , w1
                                                   , w2)
-                        || lineSegmentsIntersect(currentViewCenter
+                        || lineSegmentsIntersect(playerPosition
                                                  , corner2
                                                  , w2
                                                  , w3))) { 
                         visible2 = false;
                     }
                     if (visible3
-                        && (lineSegmentsIntersect(currentViewCenter
+                        && (lineSegmentsIntersect(playerPosition
                                                   , corner3
                                                   , w1
                                                   , w2)
-                        || lineSegmentsIntersect(currentViewCenter
+                        || lineSegmentsIntersect(playerPosition
                                                  , corner3
                                                  , w2
                                                  , w3))) { 
                         visible3 = false;
                     }
                     if (visible4
-                        && (lineSegmentsIntersect(currentViewCenter
+                        && (lineSegmentsIntersect(playerPosition
                                                   , corner4
                                                   , w1
                                                   , w2)
-                        || lineSegmentsIntersect(currentViewCenter
+                        || lineSegmentsIntersect(playerPosition
                                                  , corner4
                                                  , w2
                                                  , w3))) { 

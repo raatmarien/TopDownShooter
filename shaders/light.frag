@@ -29,9 +29,12 @@ void main()
     
     // Calculate final light color
     vec4 finalColor;
-    finalColor.a = 1.0;
-    finalColor.rgb = lightAttenuation * max(dot(normal, lightDir), 0.0);
+    float power = max(dot(normal, lightDir), 0.0);
+    finalColor.x = lightAttenuation.x * power; 
+    finalColor.y = lightAttenuation.y * power; 
+    finalColor.z = lightAttenuation.z * power; 
+    finalColor.w = lightAttenuation.w * power; 
     
     // multiply it by the color
-    gl_FragColor = finalColor; 
+    gl_FragColor = gl_Color * finalColor; 
 }

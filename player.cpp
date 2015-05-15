@@ -201,7 +201,6 @@ void Player::turn(bool left) {
 
 void Player::draw(RenderTarget& target
                   , RenderStates states) const {
-    states.texture = &texMap;
     states.transform *= getTransform();
     target.draw(sprite, states);
 }

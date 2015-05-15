@@ -66,28 +66,12 @@ void groundTileMap::genGroundTileMap (const char* filename
                 cornerTextureY += tilesHeight * (rand() % tilesAmmount);
                 int tilesAmmountX = 2;
                 cornerTextureX += tilesWidth * (rand() % tilesAmmountX);
+                cornerTextureY = (1 + rand() % 2) * tilesHeight;
+                // cornerTextureX = 1 * tilesWidth;
             }
             if (tileNum == 1) { // wall
                 cornerTextureX = 2 * tilesWidth;
             }
-
-            // Top left corner
-            vertices[indexInVertexArray+0].position
-                = Vector2f(x * tilesWidth
-                           , y * tilesHeight);
-            // Top right corner
-            vertices[indexInVertexArray+1].position
-                = Vector2f((x + 1) * tilesWidth
-                           , y * tilesHeight);
-            // Bottom right corner
-            vertices[indexInVertexArray+2].position
-                = Vector2f((x + 1) * tilesWidth
-                           , (y + 1) * tilesHeight);
-            // Bottom left corner
-            vertices[indexInVertexArray+3].position
-                = Vector2f(x * tilesWidth
-                           , (y + 1) * tilesHeight);
-
             int rotation = 0; // Todo: random rotation?
                              // rand() % 4;
             // rotation = rand() % 4;
@@ -108,6 +92,24 @@ void groundTileMap::genGroundTileMap (const char* filename
                 turnArray[2] = 1;
                 turnArray[3] = 2;
             }
+
+            // Top left corner
+            vertices[indexInVertexArray+0].position
+                = Vector2f(x * tilesWidth
+                           , y * tilesHeight);
+            // Top right corner
+            vertices[indexInVertexArray+1].position
+                = Vector2f((x + 1) * tilesWidth
+                           , y * tilesHeight);
+            // Bottom right corner
+            vertices[indexInVertexArray+2].position
+                = Vector2f((x + 1) * tilesWidth
+                           , (y + 1) * tilesHeight);
+            // Bottom left corner
+            vertices[indexInVertexArray+3].position
+                = Vector2f(x * tilesWidth
+                           , (y + 1) * tilesHeight);
+
 
             // Texture Coords
             // Top left corner
