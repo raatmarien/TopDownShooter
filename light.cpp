@@ -39,14 +39,14 @@ void LightManager::initialize(const char* lightMapFilePath
     onePixTex.setRepeated(true);
     rect.setTexture(&onePixTex);
     
-    ambientColor = Color(90, 90, 90, 255);
+    ambientColor = Color(60, 60, 60, 255);
     
     Vector3f falloff;
-    falloff.x = 1.2f; // Constant falloff
-    falloff.y = 0.0005f; // Linear falloff
-    falloff.z = 0.0000002f; // Quadratic falloff 
-    int size = 1000;
-    float lightHeight = 100.0f;
+    falloff.x = 3.0f; // Constant falloff
+    falloff.y = 0.003f; // Linear falloff
+    falloff.z = 0.00004f; // Quadratic falloff 
+    int size = 2000;
+    float lightHeight = 200.0f;
     
     // Read the positions of the lamps from the map
     std::ifstream map(lightMapFilePath);
@@ -93,8 +93,11 @@ void LightManager::draw(RenderTexture* diffuse
 
     int lightsn = 0;
     for (int i = 0; i < lights.size(); i++) {
-        Vector2f lightCenter = lights[i].center;
-        FloatRect lightRect = lights[i].rect;
+        Vector2f lightCenter = lights[i].center
+            , lightPos = lightCenter - Vector2f(lights[i].rect.width / 2
+                                                , lights[i].rect.height / 2);
+        FloatRect lightRect = FloatRect(lightPos.x, lightPos.y
+                                        , lights[i].rect.width, lights[i].rect.height);
         if (lightRect.intersects(viewRect)) {
             lightShader.setParameter("normalTex", normal->getTexture()); 
             // Tex position of the lamp
@@ -136,6 +139,11 @@ void LightManager::draw(RenderTexture* diffuse
 
 void LightManager::setScreenSize(int x, int y) {
     lightTexture.create(x, y);
+}
+
+Light* LightManager::addLight(Light light) {
+    lights.push_back(light);
+    return &lights[lights.size() - 1];
 }
 
 // Returns an 0 by 0 rectangle at the position (0,0)

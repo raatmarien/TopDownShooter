@@ -72,6 +72,10 @@ Clock timer, deltaTimer;
 
 int screenX = 50 * 20, screenY = 50 * 20;
 
+
+// test
+Light mouseLight, *pMouseLight;
+
 int main() {
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
@@ -114,7 +118,23 @@ int main() {
 
     // Set up MousePointer
     mousePointer.setTexture(mousePointerTexture);
-    
+
+    // test
+    Vector3f falloff;
+    falloff.x = 3.0f; // Constant falloff
+    falloff.y = 0.003f; // Linear falloff
+    falloff.z = 0.00004f; // Quadratic falloff 
+    int size = 2000;
+    float lightHeight = 100.0f;
+    mouseLight.color = Color(255,255,255);
+    mouseLight.center = Vector2f(100,100);
+    mouseLight.rect = FloatRect(0
+                                , 0 
+                                , size, size);
+    mouseLight.height = lightHeight;
+    mouseLight.falloff = falloff;
+    pMouseLight = lightManager.addLight(mouseLight);
+
     float timeLeft = 0;
 
     std::cout << "Configuration time: "
@@ -224,6 +244,9 @@ void handleInput(RenderWindow* window) {
         mousePointer.setAiming(true);
         player.setAiming(true);
     }
+    (*pMouseLight).center = Vector2f(Mouse::getPosition(*window).x
+                                 , Mouse::getPosition(*window).y)
+        + playerView.getCenter() - Vector2f(screenX / 2, screenY / 2);
 }
 
 void draw(RenderWindow* window) {

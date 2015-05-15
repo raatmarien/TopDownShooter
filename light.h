@@ -38,6 +38,7 @@ public:
               , sf::RenderWindow* window
               , sf::View currentView);
     void setScreenSize(int x, int y);
+    Light* addLight(Light light);
 private:
     sf::Shader lightShader
         , lightMultiplierShader;
