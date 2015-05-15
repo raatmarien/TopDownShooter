@@ -19,18 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class Light {
-public:
-    Light(int radius, sf::Vector3f falloff
-          , sf::Color color, sf::Vector2f position);
-    int getRadius();
-    sf::Color getColorAt(sf::Vector2f pixelPosition);
-    sf::Vector2f getPosition();
-private:
-    sf::Color centerColor;
-    int radius;
+
+struct Light {
+    sf::Color color;
+    sf::FloatRect rect;
+    sf::Vector2f center;
     sf::Vector3f falloff;
-    sf::Vector2f position;
+    float height;
 };
 
 class LightManager {
@@ -46,19 +41,15 @@ public:
 private:
     sf::Shader lightShader
         , lightMultiplierShader;
-    std::vector<sf::Sprite> lights;
-    sf::Texture standardLightTexture
-        , texture;
+    std::vector<Light*> mapLights;
+    std::vector<Light> lights;
+    sf::Texture onePixTex;
+    sf::RectangleShape rect;
     sf::Sprite lightSprite;
     sf::RenderTexture lightTexture;
     sf::Color ambientColor;
-    // std::vector<Light> lights;
-    // sf::Texture drawTexture;
-    // sf::Sprite drawSprite;
 };
 
-sf::Texture generateLightTexture(int radius
-                             , sf::Color centerColor
-                             , sf::Vector3f falloff
-                             // (constant, linear, quadratic)
-    );
+// Returns null if rectangles don't intersect
+sf::FloatRect intersectingRectangle(sf::FloatRect rect1
+                                     , sf::FloatRect rect2);

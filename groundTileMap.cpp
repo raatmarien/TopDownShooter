@@ -65,9 +65,10 @@ void groundTileMap::genGroundTileMap (const char* filename
                 int tilesAmmount = 4;
                 cornerTextureY += tilesHeight * (rand() % tilesAmmount);
                 int tilesAmmountX = 2;
-                cornerTextureX += tilesWidth * (rand() % tilesAmmountX);
-                cornerTextureY = (1 + rand() % 2) * tilesHeight;
-                // cornerTextureX = 1 * tilesWidth;
+                cornerTextureX = tilesWidth * (rand() % tilesAmmountX);
+                cornerTextureY = (0 + rand() % 3) * tilesHeight;
+                // cornerTextureX = 0;
+                // cornerTextureY = 0;
             }
             if (tileNum == 1) { // wall
                 cornerTextureX = 2 * tilesWidth;
