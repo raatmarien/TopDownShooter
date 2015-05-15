@@ -1,6 +1,6 @@
 ##A simple top down shooter with a field of view
 
-![Gameplay image](http://i.imgur.com/S7F1eeI.jpg)
+![Gameplay image](http://i.imgur.com/ta02I2g.jpg)
 
 #Build instructions
 
