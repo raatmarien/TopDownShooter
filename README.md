@@ -17,6 +17,15 @@ First move to the directory where you've downloaded the project. To do this exec
 To run the game:
 `./topDownShooter`
 
+###Windows binaries
+
+Building the game on windows is more complicated, as there are no packages for SFML and Box2D, so I have built a binary that should work on every 32 or 64 bit Windows system (Only tested on Windows 8).  
+This binary has been last updated after this commit - https://github.com/raatmarien/TopDownShooter/commit/ab9fefca419c724bda47f8d9b56f1fdb34aee866 - on 15 May 2015.
+
+[Download](https://mega.co.nz/#!sIQ0HTiC!oc8wc97CSOYwGihIPf1fcQw7xYAtEMFKkqUb9Ea6D_8)
+
+To run the game, unpack the 7zip file and execute (double click) the file "TopDownShooter".
+
 ###Controls
 - Use wasd or the arrow keys to move
 - Right click to aim
