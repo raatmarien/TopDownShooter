@@ -76,6 +76,11 @@ int screenX = 50 * 20, screenY = 50 * 20;
 // test
 Light mouseLight, *pMouseLight;
 
+bool mouseLightOn = true;
+
+Clock tKeyTimer;
+float timeSincePressT;
+
 int main() {
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
@@ -239,6 +244,15 @@ void handleInput(RenderWindow* window) {
         Screen.saveToFile("screenshot.jpg");
     }
 
+    if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+        window->close();
+    }
+    if (Keyboard::isKeyPressed(Keyboard::T)
+        && (timeSincePressT += tKeyTimer.restart().asSeconds()) > 0.4f) {
+        mouseLightOn = !mouseLightOn;
+        timeSincePressT = 0;
+    }
+
     // Mouse input
     if (Mouse::isButtonPressed(Mouse::Right)) {
         mousePointer.setAiming(true);
@@ -247,6 +261,12 @@ void handleInput(RenderWindow* window) {
     (*pMouseLight).center = Vector2f(Mouse::getPosition(*window).x
                                  , Mouse::getPosition(*window).y)
         + playerView.getCenter() - Vector2f(screenX / 2, screenY / 2);
+
+    if (mouseLightOn) {
+        pMouseLight->color = Color::White;
+    } else {
+        pMouseLight->color = Color::Black;
+    }
 }
 
 void draw(RenderWindow* window) {
