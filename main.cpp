@@ -196,6 +196,9 @@ void handleEvents(RenderWindow* window) {
             diffuseTarget.create(screenX, screenY);
             normalTarget.create(screenX, screenY);
         }
+        if (event.type == Event::MouseWheelMoved) {
+            pMouseLight->height *= (1.0f + 0.1f * event.mouseWheel.delta);
+        }
     }
 }
 
