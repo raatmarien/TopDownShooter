@@ -28,7 +28,8 @@ void Player::initialize(
     b2World* nWorld
     , Vector2f startPosition
     , int nScale, int nSize
-    , Texture nTexture) {
+    , Texture nTexture
+    , Texture normalTexture) {
     world = nWorld;
     scale = nScale;
     size = nSize;
@@ -40,6 +41,7 @@ void Player::initialize(
 
     // Setup sprite
     texMap = nTexture;
+    normalTexMap = normalTexture;
     sprite.setTexture(texMap);
     sprite.setOrigin(size / 2
                      , size / 2);
@@ -217,6 +219,12 @@ void Player::setAiming(bool nAiming) {
     aiming = nAiming;
 }
 
+void Player::setNormal(bool drawNormalMap) {
+    if (drawNormalMap)
+        sprite.setTexture(normalTexMap);
+    else
+        sprite.setTexture(texMap);
+}
 
 // MousePointer methods
 MousePointer::MousePointer() {

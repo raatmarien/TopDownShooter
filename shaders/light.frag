@@ -34,7 +34,7 @@ void main() {
     // Calculate the light attenuation based on the falloff 
     float attenuation = 1.0 / (falloff.x + falloff.y * dist
                                 + falloff.z * dist * dist);    
-    attenuation *= (1.0f - sqrt(dist / (texSize.x / 2)));
+    //attenuation *= (1.0f - sqrt(dist / (texSize.x / 2)));
     
     float totalStrength = attenuation * power;
     

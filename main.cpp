@@ -37,7 +37,7 @@ void update(RenderWindow* window);
 void updateDrawables(RenderWindow* window);
 void draw(RenderWindow* window);
 
-void loadSprites();
+void loadFiles();
 
 Texture spritesMap, playerSprite, mousePointerTexture
                                        , normalTiles
@@ -64,6 +64,9 @@ View playerView;
 
 RenderTexture diffuseTarget, normalTarget;
 
+// Shaders
+Shader normalRotationShader;
+
 float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
     , positionIterations = 3;
@@ -71,7 +74,6 @@ int velocityIterations = 8
 Clock timer, deltaTimer;
 
 int screenX = 50 * 20, screenY = 50 * 20;
-
 
 // test
 Light mouseLight, *pMouseLight;
@@ -91,7 +93,7 @@ int main() {
     diffuseTarget.create(screenX, screenY);
     normalTarget.create(screenX, screenY);
 
-    loadSprites();
+    loadFiles();
 
     const char* mapFilePath = "maps/chambers_map3.pgm";
     
@@ -102,7 +104,7 @@ int main() {
 
     // Set up Player
     player.initialize(&world, startPosition, SCALE
-                      , 40, playerSprite);
+                      , 40, playerSprite, playerNormal);
 
     // Set up ShadowHandler
     std::vector<Vector2f> walls = shadowHandler.genObstaclePoints(mapFilePath, tileSize);
@@ -149,7 +151,7 @@ int main() {
     while(window.isOpen()) {
         if (frames == 60) {
             float time = timer.restart().asSeconds();
-            std::cout <<  1.0f / (time / 60.0f) << "\n";
+            std::cout << "FPS: " << 1.0f / (time / 60.0f) << "\n";
             frames = 0;
         }
         frames++;
@@ -181,6 +183,8 @@ void handleEvents(RenderWindow* window) {
         if (event.type == Event::Resized) {
             screenX = event.size.width;
             screenY = event.size.height;
+            std::cout << "New screen size: "
+                << screenX << " " << screenY << "\n";
             playerView.setSize(screenX
                                , screenY);
             shadowHandler.setScreenDiagonal(screenX
@@ -273,11 +277,11 @@ void handleInput(RenderWindow* window) {
 }
 
 void draw(RenderWindow* window) {
-
     // Diffuse drawing
     diffuseTarget.setView(playerView);
     diffuseTarget.clear(sf::Color(0,0,0));
     diffuseTarget.draw(tileMap, &spritesMap);
+    player.setNormal(false);
     diffuseTarget.draw(player, &playerSprite);
     diffuseTarget.display();
 
@@ -285,7 +289,10 @@ void draw(RenderWindow* window) {
     normalTarget.setView(playerView);
     normalTarget.clear(sf::Color(0,0,0));
     normalTarget.draw(tileMap, &normalTiles);
-    // normalTarget.draw(player, &playerNormal);
+    player.setNormal(true);
+    normalRotationShader.setParameter("angle"
+                                      , player.getRotation());
+    normalTarget.draw(player, &normalRotationShader);
     normalTarget.display();
 
     // Draw diffuse combined with lighting to window
@@ -300,10 +307,12 @@ void draw(RenderWindow* window) {
     window->display();
 }
 
-void loadSprites() {
+void loadFiles() {
     spritesMap.loadFromFile("sprites/spriteMap5.png");
     normalTiles.loadFromFile("normalmaps/tilesNormal3.png");
-    playerSprite.loadFromFile("sprites/player.png");
-    playerNormal.loadFromFile("normalmaps/playerNormal.png");
+    playerSprite.loadFromFile("sprites/player_gray.png");
+    playerNormal.loadFromFile("normalmaps/playerNormal2.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
+    normalRotationShader.loadFromFile("shaders/rotateNormalBitmap.frag"
+                                      , Shader::Fragment);
 }

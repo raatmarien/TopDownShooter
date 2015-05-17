@@ -37,18 +37,20 @@ public:
     void initialize(b2World* nWorld
                     , sf::Vector2f startPosition
                     , int nScale, int nSize
-                    , sf::Texture nTexture);
+                    , sf::Texture nTexture
+                    , sf::Texture normalTexture);
     void update(sf::Vector2f relativeMousePointerPos);
     void move(bool up);
     void turn(bool left);
     void setAiming(bool nAiming);
+    void setNormal(bool drawNormalMap);
 private:
     bool aiming;
     Movement movement;
     float movementForce, rotationTorque;
     int scale, size;
     float framesRunning;
-    sf::Texture texMap;
+    sf::Texture texMap, normalTexMap;
     sf::Sprite sprite;
     sf::IntRect currentRec;
     b2Body* body;
