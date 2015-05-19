@@ -17,30 +17,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include <vector>
+#include "player.h"
+#include "groundTileMap.h"
 #include "collidable.h"
-bool isSolid(int tileNum);
-char getDisplayChar(int tileNum);
 
-struct Wall {
-    int x, y;
-};
-
-class groundTileMap : public sf::Drawable, public sf::Transformable
-{
+class ContactListener : public b2ContactListener {
 public:
-    void genGroundTileMap (const char* filename
-                           , int tilesW, int tilesH
-                           , int textureTileGridWidth
-                           , b2World *world, int nScale);
-
-private:
-    virtual void draw (sf::RenderTarget& target
-                       , sf::RenderStates states) const;
-    CollideData myCollideData;
-    int width, height, SCALE;
-    sf::VertexArray vertices;
-    int tilesWidth, tilesHeight;
+    // Pass pointers to random objects of the specified
+    // type to the object so it can check typeid against
+    // them
+    ContactListener();
+    void BeginContact(b2Contact* contact);
+    void EndContact(b2Contact* contact);
 };

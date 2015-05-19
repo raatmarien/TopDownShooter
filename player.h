@@ -15,9 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include "collidable.h"
 
 enum Movement {
     NONE = 0
@@ -32,7 +34,7 @@ enum Movement {
 };
 
 class Player : public sf::Drawable
-             , public sf::Transformable {
+, public sf::Transformable {
 public:
     void initialize(b2World* nWorld
                     , sf::Vector2f startPosition
@@ -45,6 +47,7 @@ public:
     void setAiming(bool nAiming);
     void setNormal(bool drawNormalMap);
 private:
+    CollideData myCollideData;
     bool aiming;
     Movement movement;
     float movementForce, rotationTorque;

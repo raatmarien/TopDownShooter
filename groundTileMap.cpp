@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "groundTileMap.h"
+#include "collidable.h"
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <fstream>
@@ -29,6 +30,9 @@ void groundTileMap::genGroundTileMap (const char* filename
                                       , int tilesW, int tilesH
                                       , int textureTileGridWidth
                                       , b2World *world, int nScale) {
+    // Set up collide data
+    myCollideData.collideType = COLLIDE_TYPE_WALL;
+    
     tilesWidth = tilesW;
     tilesHeight = tilesH;
     SCALE = nScale;
@@ -138,6 +142,7 @@ void groundTileMap::genGroundTileMap (const char* filename
                                      / (float) (SCALE)
                                      , (float)((float)(y + 0.5) * tilesWidth)
                                      / (float) (SCALE));
+                boxBodyDef.userData = &myCollideData;
                 b2Body *boxBody = world->CreateBody(&boxBodyDef);
 
                 b2PolygonShape boxBodyShape;

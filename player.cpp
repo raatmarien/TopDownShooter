@@ -51,6 +51,10 @@ void Player::initialize(
 
     movement = NONE;
 
+    // Setup collide type
+    myCollideData.collideType = COLLIDE_TYPE_PLAYER;
+    myCollideData.user = this;
+
     // Setup body physics
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
@@ -58,6 +62,7 @@ void Player::initialize(
                          , startPosition.y / scale);
     bodyDef.linearDamping = 4.0f;
     bodyDef.angularDamping = 2.0f;
+    bodyDef.userData = &myCollideData;
     body = world->CreateBody(&bodyDef);
 
     b2PolygonShape box;

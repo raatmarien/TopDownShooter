@@ -22,12 +22,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "shadow.h"
 #include "minimap.h"
 #include "light.h"
+#include "contactListener.h"
 #include <vector>
 #include <math.h>
 #include <iostream>
 
-#define SCALE 50
 
+#define SCALE 50
 using namespace sf;
 
 void handleEvents(RenderWindow* window);
@@ -67,6 +68,8 @@ RenderTexture diffuseTarget, normalTarget;
 // Shaders
 Shader normalRotationShader;
 
+ContactListener mainContactListener;
+
 float box2DTimeStep = 1.0f / 60.0f;
 int velocityIterations = 8
     , positionIterations = 3;
@@ -96,6 +99,9 @@ int main() {
     loadFiles();
 
     const char* mapFilePath = "maps/chambers_map3.pgm";
+
+    // Set up world
+    world.SetContactListener(&mainContactListener);
     
     // Set up Tilemap
     tileMap.genGroundTileMap(mapFilePath
@@ -160,9 +166,9 @@ int main() {
         int i = 0, maxUpdatesInFrame = 2;
         do {
             handleEvents(&window);
-            simulatePhysics(&window);
             handleInput(&window);
             update(&window);
+            simulatePhysics(&window);
             timeLeft -= box2DTimeStep;
             if (timeLeft < 0)
                 timeLeft = 0;
@@ -265,7 +271,7 @@ void handleInput(RenderWindow* window) {
         mousePointer.setAiming(true);
         player.setAiming(true);
     }
-    (*pMouseLight).center = Vector2f(Mouse::getPosition(*window).x
+    pMouseLight->center = Vector2f(Mouse::getPosition(*window).x
                                  , Mouse::getPosition(*window).y)
         + playerView.getCenter() - Vector2f(screenX / 2, screenY / 2);
 
@@ -311,7 +317,7 @@ void loadFiles() {
     spritesMap.loadFromFile("sprites/spriteMap5.png");
     normalTiles.loadFromFile("normalmaps/tilesNormal3.png");
     playerSprite.loadFromFile("sprites/player_gray.png");
-    playerNormal.loadFromFile("normalmaps/playerNormal2.png");
+    playerNormal.loadFromFile("normalmaps/playerNormal3.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
     normalRotationShader.loadFromFile("shaders/rotateNormalBitmap.frag"
                                       , Shader::Fragment);
