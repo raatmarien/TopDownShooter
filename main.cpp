@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Box2D/Box2D.h>
 #include "groundTileMap.h"
 #include "player.h"
+#include "bulletManager.h"
 #include "shadow.h"
 #include "minimap.h"
 #include "light.h"
@@ -51,6 +52,8 @@ b2World world(gravity);
 Vector2f startPosition = Vector2f(150
                                  ,200);
 Player player;
+
+BulletManager bulletManager;
 
 ShadowHandler shadowHandler;
 
@@ -108,10 +111,13 @@ int main() {
                              , tileSize, tileSize
                              , 4, &world, SCALE);
 
+    // Set up BulletManager
+    bulletManager.initialize(&world, SCALE, 1000.0f, 4.0f); 
+
     // Set up Player
     player.initialize(&world, startPosition, SCALE
-                      , 40, playerSprite, playerNormal);
-
+                      , 40, playerSprite, playerNormal, &bulletManager, 0.4f);
+    
     // Set up ShadowHandler
     std::vector<Vector2f> walls = shadowHandler.genObstaclePoints(mapFilePath, tileSize);
     shadowHandler.setScreenDiagonal(screenX, screenY);
@@ -125,7 +131,7 @@ int main() {
     minimap.setScreenSize(screenX, screenY);
 
     // Set up LightManager
-    lightManager.initialize("maps/light_map3.ppm"
+    lightManager.initialize("maps/light_map4.ppm"
                             , tileSize
                             , tileSize);
 
@@ -220,6 +226,7 @@ void simulatePhysics(RenderWindow* window) {
 
 void update(RenderWindow* window) {
     player.update(mousePointer.getRelativePosition());
+    bulletManager.update();
     minimap.setPlayerPosition(player.getPosition());
     minimap.update();
     mousePointer.update(window, &playerView, player.getPosition());
@@ -271,6 +278,11 @@ void handleInput(RenderWindow* window) {
         mousePointer.setAiming(true);
         player.setAiming(true);
     }
+
+    if (Mouse::isButtonPressed(Mouse::Left)) {
+        player.shoot(mousePointer.getRelativePosition());
+    }
+    
     pMouseLight->center = Vector2f(Mouse::getPosition(*window).x
                                  , Mouse::getPosition(*window).y)
         + playerView.getCenter() - Vector2f(screenX / 2, screenY / 2);
@@ -287,6 +299,7 @@ void draw(RenderWindow* window) {
     diffuseTarget.setView(playerView);
     diffuseTarget.clear(sf::Color(0,0,0));
     diffuseTarget.draw(tileMap, &spritesMap);
+    bulletManager.drawDiffuse(&diffuseTarget);
     player.setNormal(false);
     diffuseTarget.draw(player, &playerSprite);
     diffuseTarget.display();

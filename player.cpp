@@ -29,11 +29,16 @@ void Player::initialize(
     , Vector2f startPosition
     , int nScale, int nSize
     , Texture nTexture
-    , Texture normalTexture) {
+    , Texture normalTexture
+    , BulletManager* nBulletManager
+    , float nReloadTime) {
     world = nWorld;
     scale = nScale;
     size = nSize;
     framesRunning = 0;
+    bulletManager = nBulletManager;
+    reloadTime = nReloadTime;
+    timeSinceLastShot = 0.0f;
 
     // Constants
     movementForce = 20.0f;
@@ -65,9 +70,6 @@ void Player::initialize(
     bodyDef.userData = &myCollideData;
     body = world->CreateBody(&bodyDef);
 
-    b2PolygonShape box;
-    box.SetAsBox(((float) (size)) / (2 * scale)
-                 , ((float) (size)) / (2 * scale));
     b2CircleShape circle;
     circle.m_radius = ((float) (size)) / (2 * scale);
     b2FixtureDef fixtureDef;
@@ -159,6 +161,7 @@ void Player::update(Vector2f relativeMousePointerPos) {
     }
     sprite.setTextureRect(currentRec);
 
+    aiming = aimingLastFrame;
     movement = NONE;
     aiming = false;
 }
@@ -206,6 +209,21 @@ void Player::turn(bool left) {
         movement = left ? DOWN : DOWN_RIGHT;
 }
 
+void Player::shoot(Vector2f relativePointerPosition) {
+    timeSinceLastShot += shooterTimer.restart().asSeconds();
+    if (timeSinceLastShot > reloadTime && aiming) {
+        Vector2f pistolOutletPosition = Vector2f(11.5f, -24.5f);
+        pistolOutletPosition = rotateVec(pistolOutletPosition, getRotation() / toDegreesMultiple);
+        relativePointerPosition -= pistolOutletPosition;
+        float length = (float) (sqrt(relativePointerPosition.x * relativePointerPosition.x
+                                     + relativePointerPosition.y * relativePointerPosition.y));
+        if (length < 0.1) return;
+        Vector2f normalizedDirection = relativePointerPosition / length;
+        bulletManager->addBullet(getPosition() + pistolOutletPosition, normalizedDirection);
+        timeSinceLastShot = 0.0f;
+    }
+}
+
 void Player::draw(RenderTarget& target
                   , RenderStates states) const {
     states.transform *= getTransform();
@@ -218,6 +236,14 @@ b2Vec2 Player::rotateVec(b2Vec2 vector, float radians) {
     float y = vector.x * sin(radians)
         + vector.y * cos(radians);
     return b2Vec2(x, y);
+}
+
+Vector2f Player::rotateVec(Vector2f vector, float radians) {
+    float x = vector.x * cos(radians)
+        - vector.y * sin(radians);
+    float y = vector.x * sin(radians)
+        + vector.y * cos(radians);
+    return Vector2f(x, y);
 }
 
 void Player::setAiming(bool nAiming) {

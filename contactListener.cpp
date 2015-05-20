@@ -28,25 +28,46 @@ void ContactListener::BeginContact(b2Contact* contact) {
     void* userDataA = contact->GetFixtureA()->GetBody()->GetUserData();
     void* userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
     CollideData *collideDataA, *collideDataB;
-    Player *player;
-    bool wall;
+    Player *player = NULL;
+    Bullet *bullet = NULL;
+    bool wall = false;
     if (userDataA) { // has userdata
         collideDataA = static_cast<CollideData*> (userDataA);
         if (collideDataA->collideType == COLLIDE_TYPE_PLAYER) {
             player = static_cast<Player*> (collideDataA->user);
-        }
-        if (collideDataA->collideType == COLLIDE_TYPE_WALL) {
+        } else if (collideDataA->collideType == COLLIDE_TYPE_WALL) {
             wall = true;
+        } else if (collideDataA->collideType == COLLIDE_TYPE_BULLET) {
+            bullet = static_cast<Bullet*> (collideDataA->user);
+        } else {
+            std::cout << collideDataB->collideType << "\n";
         }
     }
     if (userDataB) { // has userdata
         collideDataB = static_cast<CollideData*> (userDataB);
         if (collideDataB->collideType == COLLIDE_TYPE_PLAYER) {
             player = static_cast<Player*> (collideDataB->user);
-        }
-        if (collideDataB->collideType == COLLIDE_TYPE_WALL) {
+        } else if (collideDataB->collideType == COLLIDE_TYPE_WALL) {
             wall = true;
+        } else if (collideDataB->collideType == COLLIDE_TYPE_BULLET) {
+            bullet = static_cast<Bullet*> (collideDataB->user);
+        } else {
+            std::cout << collideDataB->collideType << "\n";
         }
+    }
+    if (player) {
+        std::cout << "player ";
+    }
+    if (bullet) {
+        std::cout << "bullet ";
+    }
+    if (wall) {
+        std::cout << "wall ";
+    }
+    std::cout << "\n";
+
+    if (bullet && !player) {
+        bullet->queueRemoval();
     }
 }
 

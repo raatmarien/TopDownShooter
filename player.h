@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include "bulletManager.h"
 #include "collidable.h"
 
 enum Movement {
@@ -40,15 +41,20 @@ public:
                     , sf::Vector2f startPosition
                     , int nScale, int nSize
                     , sf::Texture nTexture
-                    , sf::Texture normalTexture);
+                    , sf::Texture normalTexture
+                    , BulletManager* nBulletManager
+                    , float nReloadTime);
     void update(sf::Vector2f relativeMousePointerPos);
     void move(bool up);
     void turn(bool left);
     void setAiming(bool nAiming);
+    void shoot(sf::Vector2f relativePointerPosition);
     void setNormal(bool drawNormalMap);
 private:
+    float reloadTime, timeSinceLastShot;
+    sf::Clock shooterTimer;
     CollideData myCollideData;
-    bool aiming;
+    bool aiming, aimingLastFrame;
     Movement movement;
     float movementForce, rotationTorque;
     int scale, size;
@@ -56,6 +62,7 @@ private:
     sf::Texture texMap, normalTexMap;
     sf::Sprite sprite;
     sf::IntRect currentRec;
+    BulletManager* bulletManager;
     b2Body* body;
     b2World* world;
     const static float toDegreesMultiple = 57.2957795131;
@@ -63,6 +70,7 @@ private:
     virtual void draw(sf::RenderTarget& target
                       , sf::RenderStates states) const;
     b2Vec2 rotateVec(b2Vec2 vector, float radians);
+    sf::Vector2f rotateVec(sf::Vector2f vector, float radians);
 };
 
 class MousePointer {

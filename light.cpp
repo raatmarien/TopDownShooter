@@ -42,9 +42,9 @@ void LightManager::initialize(const char* lightMapFilePath
     ambientColor = Color(60, 60, 60, 255);
     
     Vector3f falloff;
-    falloff.x = 3.0f; // Constant falloff
-    falloff.y = 0.003f; // Linear falloff
-    falloff.z = 0.00004f; // Quadratic falloff 
+    falloff.x = 2.0f; // Constant falloff
+    falloff.y = 0.005f; // Linear falloff
+    falloff.z = 0.000085f; // Quadratic falloff 
     int size = 2000;
     float lightHeight = 200.0f;
     
