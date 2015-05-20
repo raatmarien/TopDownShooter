@@ -33,6 +33,7 @@ To run the game, unpack the 7zip file and execute (double click) the file "TopDo
 #Controls
 - Use wasd or the arrow keys to move
 - Right click to aim
+- Left click to shoot while aiming
 
 #Maps
 
