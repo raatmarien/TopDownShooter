@@ -213,11 +213,15 @@ void Player::shoot(Vector2f relativePointerPosition) {
     timeSinceLastShot += shooterTimer.restart().asSeconds();
     if (timeSinceLastShot > reloadTime && aiming) {
         Vector2f pistolOutletPosition = Vector2f(11.5f, -24.5f);
+        float pistolDist = (float) sqrt(pistolOutletPosition.x * pistolOutletPosition.x
+                                        + pistolOutletPosition.y * pistolOutletPosition.y);
         pistolOutletPosition = rotateVec(pistolOutletPosition, getRotation() / toDegreesMultiple);
+        float fromCenterLength = (float) (sqrt(relativePointerPosition.x * relativePointerPosition.x
+                                     + relativePointerPosition.y * relativePointerPosition.y));
         relativePointerPosition -= pistolOutletPosition;
+        if (fromCenterLength < pistolDist + 0.1f) return;
         float length = (float) (sqrt(relativePointerPosition.x * relativePointerPosition.x
                                      + relativePointerPosition.y * relativePointerPosition.y));
-        if (length < 0.1) return;
         Vector2f normalizedDirection = relativePointerPosition / length;
         bulletManager->addBullet(getPosition() + pistolOutletPosition, normalizedDirection);
         timeSinceLastShot = 0.0f;

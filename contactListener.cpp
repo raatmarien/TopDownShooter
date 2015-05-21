@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Box2D/Box2D.h>
 #include <iostream>
 
+// #define DEBUG_CONTACTS
+
 ContactListener::ContactListener() {
 
 }
@@ -40,7 +42,9 @@ void ContactListener::BeginContact(b2Contact* contact) {
         } else if (collideDataA->collideType == COLLIDE_TYPE_BULLET) {
             bullet = static_cast<Bullet*> (collideDataA->user);
         } else {
+#ifdef DEBUG_CONTACTS
             std::cout << collideDataB->collideType << "\n";
+#endif
         }
     }
     if (userDataB) { // has userdata
@@ -52,9 +56,12 @@ void ContactListener::BeginContact(b2Contact* contact) {
         } else if (collideDataB->collideType == COLLIDE_TYPE_BULLET) {
             bullet = static_cast<Bullet*> (collideDataB->user);
         } else {
+#ifdef DEBUG_CONTACTS
             std::cout << collideDataB->collideType << "\n";
+#endif
         }
     }
+#ifdef DEBUG_CONTACTS
     if (player) {
         std::cout << "player ";
     }
@@ -65,6 +72,7 @@ void ContactListener::BeginContact(b2Contact* contact) {
         std::cout << "wall ";
     }
     std::cout << "\n";
+#endif
 
     if (bullet && !player) {
         bullet->queueRemoval();

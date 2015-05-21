@@ -20,21 +20,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include "collidable.h"
+#include "light.h"
 #include <vector>
 
 class Bullet : public sf::Drawable
 , public sf::Transformable {
 public:
-    Bullet(sf::Vector2f position
-           , float radius
-           , b2Vec2 nVelocity
-           , b2World* nWorld
-           , int nScale); 
+    void initialize(sf::Vector2f position
+                    , float radius
+                    , b2Vec2 nVelocity
+                    , b2World* nWorld
+                    , int nScale
+                    , LightManager* nLightManager
+                    , int nLightNum);
     void update();
     void queueRemoval();
-    void destroyBody();
+    void destroy();
     bool isQueuedForRemoval();
 private:
+    int lightNum;
+    LightManager* lightManager;
     bool needsToBeRemoved;
     CollideData myCollideData;
     int scale;
@@ -53,12 +58,14 @@ public:
     BulletManager();
     void initialize(b2World *nWorld, int nScale
                     , float nBulletSpeed
-                    , float nBulletRadius);
+                    , float nBulletRadius
+                    , LightManager* nLightManager);
     void update();
     void drawDiffuse(sf::RenderTarget* diffuseTarget);
     void addBullet(sf::Vector2f startPosition
                    , sf::Vector2f normalizedDirection);
 private:
+    LightManager* lightManager;
     b2World *world;
     int scale, bulletRadius;
     float bulletSpeed;

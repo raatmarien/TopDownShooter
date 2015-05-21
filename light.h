@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -25,6 +26,7 @@ struct Light {
     sf::FloatRect rect;
     sf::Vector2f center;
     sf::Vector3f falloff;
+    int lightNum;
     float height;
 };
 
@@ -38,8 +40,11 @@ public:
               , sf::RenderWindow* window
               , sf::View currentView);
     void setScreenSize(int x, int y);
-    Light* addLight(Light light);
+    int addLight(Light light);
+    Light* getLight(int lightNum);
+    void removeLight(int lightNum);
 private:
+    int currentLightNum;
     sf::Shader lightShader
         , lightMultiplierShader;
     std::vector<Light*> mapLights;

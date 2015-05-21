@@ -82,7 +82,7 @@ Clock timer, deltaTimer;
 int screenX = 50 * 20, screenY = 50 * 20;
 
 // test
-Light mouseLight, *pMouseLight;
+int mouseLightNum;
 
 bool mouseLightOn = true;
 
@@ -111,8 +111,13 @@ int main() {
                              , tileSize, tileSize
                              , 4, &world, SCALE);
 
+    // Set up LightManager
+    lightManager.initialize("maps/light_map3.ppm"
+                            , tileSize
+                            , tileSize);
+
     // Set up BulletManager
-    bulletManager.initialize(&world, SCALE, 1000.0f, 4.0f); 
+    bulletManager.initialize(&world, SCALE, 1000.0f, 4.0f, &lightManager); 
 
     // Set up Player
     player.initialize(&world, startPosition, SCALE
@@ -130,11 +135,6 @@ int main() {
     minimap.setTileSize(tileSize);
     minimap.setScreenSize(screenX, screenY);
 
-    // Set up LightManager
-    lightManager.initialize("maps/light_map4.ppm"
-                            , tileSize
-                            , tileSize);
-
     // Set up MousePointer
     mousePointer.setTexture(mousePointerTexture);
 
@@ -145,6 +145,7 @@ int main() {
     falloff.z = 0.00004f; // Quadratic falloff 
     int size = 2000;
     float lightHeight = 100.0f;
+    Light mouseLight;
     mouseLight.color = Color(255,255,255);
     mouseLight.center = Vector2f(100,100);
     mouseLight.rect = FloatRect(0
@@ -152,7 +153,7 @@ int main() {
                                 , size, size);
     mouseLight.height = lightHeight;
     mouseLight.falloff = falloff;
-    pMouseLight = lightManager.addLight(mouseLight);
+    mouseLightNum = lightManager.addLight(mouseLight);
 
     float timeLeft = 0;
 
@@ -213,7 +214,8 @@ void handleEvents(RenderWindow* window) {
             normalTarget.create(screenX, screenY);
         }
         if (event.type == Event::MouseWheelMoved) {
-            pMouseLight->height *= (1.0f + 0.1f * event.mouseWheel.delta);
+            lightManager.getLight(mouseLightNum)->height
+                *= (1.0f + 0.1f * event.mouseWheel.delta);
         }
     }
 }
@@ -283,6 +285,7 @@ void handleInput(RenderWindow* window) {
         player.shoot(mousePointer.getRelativePosition());
     }
     
+    Light* pMouseLight = lightManager.getLight(mouseLightNum);
     pMouseLight->center = Vector2f(Mouse::getPosition(*window).x
                                  , Mouse::getPosition(*window).y)
         + playerView.getCenter() - Vector2f(screenX / 2, screenY / 2);

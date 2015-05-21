@@ -27,6 +27,7 @@ using namespace sf;
 void LightManager::initialize(const char* lightMapFilePath
                               , int tileWidth
                               , int tileHeight) {
+    currentLightNum = 0;
     // Set up shader
     lightShader.loadFromFile("shaders/light.frag", Shader::Fragment);
     lightMultiplierShader.loadFromFile("shaders/lightMultiplier.frag"
@@ -71,6 +72,7 @@ void LightManager::initialize(const char* lightMapFilePath
                                        , size, size);
                 light.height = lightHeight;
                 light.falloff = falloff;                    
+                light.lightNum = currentLightNum++;
                 mapLights.push_back(&light);
                 lights.push_back(light);
             }
@@ -141,9 +143,27 @@ void LightManager::setScreenSize(int x, int y) {
     lightTexture.create(x, y);
 }
 
-Light* LightManager::addLight(Light light) {
+int LightManager::addLight(Light light) {
+    light.lightNum = currentLightNum++;
     lights.push_back(light);
-    return &lights[lights.size() - 1];
+    return (currentLightNum - 1);
+}
+
+Light* LightManager::getLight(int lightNum) {
+    for (int i = 0; i < lights.size(); i++) {
+        if (lights[i].lightNum == lightNum) {
+            return &(lights[i]);
+        }
+    }
+}
+
+void LightManager::removeLight(int lightNum) {
+    for (int i = 0; i < lights.size(); i++) {
+        if (lights[i].lightNum == lightNum) {
+            lights.erase(lights.begin() + i);
+            return;
+        }
+    }
 }
 
 // Returns an 0 by 0 rectangle at the position (0,0)

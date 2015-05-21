@@ -23,11 +23,14 @@ using namespace sf;
 
 // Bullet methods
 
-Bullet::Bullet(Vector2f position, float radius, b2Vec2 nVelocity
-               , b2World* nWorld, int nScale) {
+void Bullet::initialize(Vector2f position, float radius, b2Vec2 nVelocity
+                        , b2World* nWorld, int nScale
+                        , LightManager* nLightManager, int nLightNum) {
     world = nWorld;
     scale = nScale;
     velocity = nVelocity;
+    lightManager = nLightManager;
+    lightNum = nLightNum;
 
     needsToBeRemoved = false;
 
@@ -37,7 +40,7 @@ Bullet::Bullet(Vector2f position, float radius, b2Vec2 nVelocity
     bulletCircle.setPosition(position);
     bulletCircle.setFillColor(Color::Red);
 
-    // Set up collide data
+    // set up collide data
     myCollideData.collideType = COLLIDE_TYPE_BULLET;
     myCollideData.user = this;
 
@@ -71,8 +74,11 @@ void Bullet::update() {
     myCollideData.user = this;
     bulletBody->SetUserData(&myCollideData);
     b2Vec2 position = bulletBody->GetPosition();
-    bulletCircle.setPosition(position.x * scale
-                             , position.y * scale);
+    position *= (float) scale;
+    bulletCircle.setPosition(position.x 
+                             , position.y);
+    lightManager->getLight(lightNum)->center
+        = Vector2f(position.x, position.y);
 }
 
 void Bullet::draw(RenderTarget& target
@@ -80,7 +86,7 @@ void Bullet::draw(RenderTarget& target
     target.draw(bulletCircle);//, states);
 }
 
-    void Bullet::queueRemoval() {
+void Bullet::queueRemoval() {
     needsToBeRemoved = true;
 }
 
@@ -88,8 +94,9 @@ bool Bullet::isQueuedForRemoval() {
     return needsToBeRemoved;
 }
 
-void Bullet::destroyBody() {
+void Bullet::destroy() {
     world->DestroyBody(bulletBody);
+    lightManager->removeLight(lightNum);
 }
 
 // BulletManager methods
@@ -100,18 +107,20 @@ BulletManager::BulletManager() {
 
 void BulletManager::initialize(b2World *nWorld, int nScale
                                , float nBulletSpeed
-                               , float nBulletRadius) {
+                               , float nBulletRadius
+                               , LightManager* nLightManager) {
     world = nWorld;
     scale = nScale;
     bulletSpeed = nBulletSpeed;
     bulletRadius = nBulletRadius;
+    lightManager = nLightManager;
 }
 
 void BulletManager::update() {
     for (int i = 0; i < bullets.size(); i++) {
         bullets[i].update();
         if (bullets[i].isQueuedForRemoval()) {
-            bullets[i].destroyBody();
+            bullets[i].destroy();
             bullets.erase(bullets.begin() + i);
             i--;
         }
@@ -127,11 +136,27 @@ void BulletManager::drawDiffuse(RenderTarget* diffuseTarget) {
 
 void BulletManager::addBullet(Vector2f startPosition
                , Vector2f normalizedDirection) {
+    // Set up light
+    Vector3f falloff;
+    falloff.x = 4.0f; // Constant falloff
+    falloff.y = 0.03f; // Linear falloff
+    falloff.z = 0.004f; // Quadratic falloff 
+    int size = 500;
+    float lightHeight = 50.0f;
+    Light light;
+    light.color = Color(255,255,255);
+    light.center = Vector2f(100,100);
+    light.rect = FloatRect(0, 0, size, size);
+    light.height = lightHeight;
+    light.falloff = falloff;
+    int lightNum = lightManager->addLight(light);
+
     b2Vec2 velocity = b2Vec2((normalizedDirection.x * bulletSpeed)
                              / (float) (scale)
                              , (normalizedDirection.y * bulletSpeed)
                              / (float) (scale));
-    Bullet newBullet(startPosition, bulletRadius, velocity
-                     , world, scale);
+    Bullet newBullet;
+    newBullet.initialize(startPosition, bulletRadius, velocity
+                         , world, scale, lightManager, lightNum);
     bullets.push_back(newBullet);
 }
