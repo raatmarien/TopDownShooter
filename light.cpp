@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sf;
 
-void LightManager::initialize(const char* lightMapFilePath
+void LightManager::initialize(Image* lightMap
                               , int tileWidth
                               , int tileHeight) {
     currentLightNum = 0;
@@ -50,21 +50,15 @@ void LightManager::initialize(const char* lightMapFilePath
     float lightHeight = 200.0f;
     
     // Read the positions of the lamps from the map
-    std::ifstream map(lightMapFilePath);
-    char buf[10];
-    map >> buf; // Not needed
-    int width, height;
-    map >> width >> height;
-    map >> buf; // Range of bitmap
-                // Not needed
+    int width = lightMap->getSize().x
+       , height = lightMap->getSize().y;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            int r, g, b;
-            map >> r >> g >> b;
-            if (!(r == 0 && g == 0
-                  && b == 0)) { // Lamp
+            Color lightColor = lightMap->getPixel(x, y);
+            if (!(lightColor.r == 0 && lightColor.g == 0
+                  && lightColor.b == 0)) { // Lamp
                 Light light;
-                light.color = Color(r, g, b);
+                light.color = lightColor;
                 light.center = Vector2f(x * tileWidth
                                         , y * tileHeight);
                 light.rect = FloatRect(light.center.x - (size / 2)

@@ -37,41 +37,15 @@ ShadowHandler::ShadowHandler() {
     setScreenDiagonal(1000, 1000);
 }
 
-std::vector<Vector2f> ShadowHandler::genObstaclePoints(const char* filepath
-                                      , int tileSize) {
-    // Temp walls
-    std::vector<Vector2f> walls;
-    
-    std::ifstream mapReader(filepath);
-    char buf[10];
-    mapReader >> buf;
-    int width, height;
-    mapReader >> width >> height;
-    mapReader >> buf;
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            int tileNum;
-            mapReader >> tileNum;
-            if (tileNum == 1 || tileNum == 255) {
-                obstaclePoints.push_back(
-                    Vector2f(x * tileSize
-                             , y * tileSize));
-                obstaclePoints.push_back(
-                    Vector2f((x+1) * tileSize
-                             , y * tileSize));
-                obstaclePoints.push_back(
-                    Vector2f((x+1) * tileSize
-                             , (y+1) * tileSize));
-                obstaclePoints.push_back(
-                    Vector2f(x * tileSize
-                             , (y+1) * tileSize));
-
-                walls.push_back(Vector2f(x * tileSize
-                                         , y * tileSize));
-            }
-        }
+void ShadowHandler::setObstacles(std::vector<Vector2f> obstacles, int tileSize) {
+    for (int i = 0; i < obstacles.size(); i++) {
+        float x = obstacles[i].x
+            , y = obstacles[i].y;
+        obstaclePoints.push_back(Vector2f(x, y));
+        obstaclePoints.push_back(Vector2f(x + tileSize, y));
+        obstaclePoints.push_back(Vector2f(x + tileSize, y + tileSize));
+        obstaclePoints.push_back(Vector2f(x, y + tileSize));
     }
-    return walls;
 }
 
 void ShadowHandler::setScreenDiagonal(int screenX

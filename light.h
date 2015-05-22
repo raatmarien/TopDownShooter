@@ -32,7 +32,7 @@ struct Light {
 
 class LightManager {
 public:
-    void initialize(const char* lightMapFilePath
+    void initialize(sf::Image* image
                     , int tileWidth
                     , int tileHeight);
     void draw(sf::RenderTexture* diffuse 

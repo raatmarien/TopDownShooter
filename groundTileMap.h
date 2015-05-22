@@ -31,12 +31,13 @@ struct Wall {
 class groundTileMap : public sf::Drawable, public sf::Transformable
 {
 public:
-    void genGroundTileMap (const char* filename
+    void genGroundTileMap (sf::Image* map
                            , int tilesW, int tilesH
                            , int textureTileGridWidth
                            , b2World *world, int nScale);
-
+    std::vector<sf::Vector2f> getObstacles();
 private:
+    std::vector<sf::Vector2f> obstacles;
     virtual void draw (sf::RenderTarget& target
                        , sf::RenderStates states) const;
     CollideData myCollideData;

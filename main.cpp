@@ -44,6 +44,9 @@ void loadFiles();
 Texture spritesMap, playerSprite, mousePointerTexture
                                        , normalTiles
                                        , playerNormal;
+
+Image tileMapImage, lightMapImage;
+
 groundTileMap tileMap;
 int tileSize = 32;
 
@@ -101,34 +104,32 @@ int main() {
 
     loadFiles();
 
-    const char* mapFilePath = "maps/chambers_map3.pgm";
-
     // Set up world
     world.SetContactListener(&mainContactListener);
     
     // Set up Tilemap
-    tileMap.genGroundTileMap(mapFilePath
+    tileMap.genGroundTileMap(&tileMapImage
                              , tileSize, tileSize
                              , 4, &world, SCALE);
 
     // Set up LightManager
-    lightManager.initialize("maps/light_map3.ppm"
+    lightManager.initialize(&lightMapImage
                             , tileSize
                             , tileSize);
 
     // Set up BulletManager
-    bulletManager.initialize(&world, SCALE, 2000.0f, 4.0f, &lightManager); 
+    bulletManager.initialize(&world, SCALE, 1200.0f, 4.0f, &lightManager); 
 
     // Set up Player
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite, playerNormal, &bulletManager, 0.3f);
     
     // Set up ShadowHandler
-    std::vector<Vector2f> walls = shadowHandler.genObstaclePoints(mapFilePath, tileSize);
+    shadowHandler.setObstacles(tileMap.getObstacles(), tileSize);
     shadowHandler.setScreenDiagonal(screenX, screenY);
 
     // Set up Minimap
-    minimap.setWalls(walls);
+    minimap.setWalls(tileMap.getObstacles());
     minimap.setPositionFromCenter(
         Vector2f((0.5f * screenX) - minimapPadding
                  , (-0.5f * screenY) + minimapPadding));
@@ -148,9 +149,7 @@ int main() {
     Light mouseLight;
     mouseLight.color = Color(255,255,255);
     mouseLight.center = Vector2f(100,100);
-    mouseLight.rect = FloatRect(0
-                                , 0 
-                                , size, size);
+    mouseLight.rect = FloatRect(0, 0 , size, size);
     mouseLight.height = lightHeight;
     mouseLight.falloff = falloff;
     mouseLightNum = lightManager.addLight(mouseLight);
@@ -334,6 +333,8 @@ void loadFiles() {
     normalTiles.loadFromFile("normalmaps/tilesNormal3.png");
     playerSprite.loadFromFile("sprites/player_gray.png");
     playerNormal.loadFromFile("normalmaps/playerNormal3.png");
+    tileMapImage.loadFromFile("maps/chambers_map.png");
+    lightMapImage.loadFromFile("maps/light_map.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
     normalRotationShader.loadFromFile("shaders/rotateNormalBitmap.frag"
                                       , Shader::Fragment);

@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sf;
 
-void groundTileMap::genGroundTileMap (const char* filename
+void groundTileMap::genGroundTileMap (Image* map
                                       , int tilesW, int tilesH
                                       , int textureTileGridWidth
                                       , b2World *world, int nScale) {
@@ -36,19 +36,16 @@ void groundTileMap::genGroundTileMap (const char* filename
     tilesWidth = tilesW;
     tilesHeight = tilesH;
     SCALE = nScale;
-    std::ifstream bitmap(filename);
-    char buf[10];
-    bitmap >> buf;
-    bitmap >> width >> height;
-    bitmap >> buf; // The range of the grayscale
-                   // Not needed for reading for us
+    width = map->getSize().x;
+    height = map->getSize().y;
     vertices.setPrimitiveType(Quads);
     vertices.resize(4 * width * height);
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            int indexInVertexArray = 4 * (width * y + x), tileNum;
-            bitmap >> tileNum; // The grayscale value
-                               // of the corresponding pixel
+            int indexInVertexArray = 4 * (width * y + x);
+            int tileNum = map->getPixel(x, y).r; // The red value
+                                             // of the corresponding pixel
+                                             // used for information
 
             // For easier map editing in graphic software
             switch(tileNum) {
@@ -149,10 +146,17 @@ void groundTileMap::genGroundTileMap (const char* filename
                 boxBodyShape.SetAsBox((float)(tilesWidth) / (2 * SCALE)
                                       , (float)(tilesHeight) / (2 * SCALE));
                 boxBody->CreateFixture(&boxBodyShape, 0.0f);
+
+                // Add solid blocks to obstacles
+                obstacles.push_back(Vector2f(x * tilesWidth, y * tilesHeight));
             }
         }
         // std::cout << "\n"; // debug
     }
+}
+
+std::vector<Vector2f> groundTileMap::getObstacles() {
+    return obstacles;
 }
 
 void groundTileMap::draw(RenderTarget& target, RenderStates states) const
