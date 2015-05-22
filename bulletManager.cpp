@@ -138,9 +138,9 @@ void BulletManager::addBullet(Vector2f startPosition
                , Vector2f normalizedDirection) {
     // Set up light
     Vector3f falloff;
-    falloff.x = 4.0f; // Constant falloff
-    falloff.y = 0.03f; // Linear falloff
-    falloff.z = 0.004f; // Quadratic falloff 
+    falloff.x = 3.0f; // Constant falloff
+    falloff.y = 0.003f; // Linear falloff
+    falloff.z = 0.001f; // Quadratic falloff 
     int size = 500;
     float lightHeight = 50.0f;
     Light light;

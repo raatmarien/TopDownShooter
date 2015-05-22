@@ -117,11 +117,11 @@ int main() {
                             , tileSize);
 
     // Set up BulletManager
-    bulletManager.initialize(&world, SCALE, 1000.0f, 4.0f, &lightManager); 
+    bulletManager.initialize(&world, SCALE, 2000.0f, 4.0f, &lightManager); 
 
     // Set up Player
     player.initialize(&world, startPosition, SCALE
-                      , 40, playerSprite, playerNormal, &bulletManager, 0.4f);
+                      , 40, playerSprite, playerNormal, &bulletManager, 0.3f);
     
     // Set up ShadowHandler
     std::vector<Vector2f> walls = shadowHandler.genObstaclePoints(mapFilePath, tileSize);
