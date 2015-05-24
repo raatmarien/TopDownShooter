@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include "mapGen.h"
 #include "groundTileMap.h"
 #include "player.h"
 #include "bulletManager.h"
@@ -26,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "contactListener.h"
 #include <vector>
 #include <math.h>
+#include <time.h>
 #include <iostream>
 
 
@@ -52,8 +54,8 @@ int tileSize = 32;
 
 b2Vec2 gravity(0.0f, 0.0f);
 b2World world(gravity);
-Vector2f startPosition = Vector2f(150
-                                 ,200);
+Vector2f startPosition = Vector2f(350
+                                 ,400);
 Player player;
 
 BulletManager bulletManager;
@@ -93,6 +95,24 @@ Clock tKeyTimer;
 float timeSincePressT;
 
 int main() {
+    // Test
+    srand(time(NULL));
+    MapSettings testMapSettings;
+    testMapSettings.roomPlacementAttempts = 100;
+    testMapSettings.corridorWidth = 4;
+    testMapSettings.mapSize = Vector2i(200,200);
+    testMapSettings.baseRoomSize = Vector2i(7, 7);
+    testMapSettings.randomAddRoomSize = Vector2i(10, 10);
+    testMapSettings.emptyColor = Color::White;
+    testMapSettings.groundColor = Color::Black;
+    Map testMap = generateSimpleMap(testMapSettings);
+    startPosition = testMap.playerStartPosition * (float) (tileSize);
+    std::cout << startPosition.x << " " << startPosition.y << "\n";
+    Image cleanedTestMap = cleanWalls(&(testMap.mapImage), testMapSettings.emptyColor
+                                      , testMapSettings.groundColor);
+    // cleanedTestMap.saveToFile("testMap.png");
+
+    
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
     window.setMouseCursorVisible(false);
@@ -108,7 +128,7 @@ int main() {
     world.SetContactListener(&mainContactListener);
     
     // Set up Tilemap
-    tileMap.genGroundTileMap(&tileMapImage
+    tileMap.genGroundTileMap(&cleanedTestMap//tileMapImage
                              , tileSize, tileSize
                              , 4, &world, SCALE);
 
