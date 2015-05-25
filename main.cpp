@@ -98,19 +98,22 @@ int main() {
     // Test
     srand(time(NULL));
     MapSettings testMapSettings;
-    testMapSettings.roomPlacementAttempts = 100;
-    testMapSettings.corridorWidth = 4;
-    testMapSettings.mapSize = Vector2i(200,200);
+    testMapSettings.roomPlacementAttempts = 50;
+    testMapSettings.corridorWidth = 6;
+    testMapSettings.tilesPerLight = 15;
+    testMapSettings.mapSize = Vector2i(270, 270);
     testMapSettings.baseRoomSize = Vector2i(7, 7);
-    testMapSettings.randomAddRoomSize = Vector2i(10, 10);
+    testMapSettings.randomAddRoomSize = Vector2i(15, 15);
     testMapSettings.emptyColor = Color::White;
     testMapSettings.groundColor = Color::Black;
-    Map testMap = generateSimpleMap(testMapSettings);
-    startPosition = testMap.playerStartPosition * (float) (tileSize);
+    testMapSettings.roomLightColor = Color::White;
+    Map map = generateSimpleMap(testMapSettings);
+    startPosition = map.playerStartPosition * (float) (tileSize);
     std::cout << startPosition.x << " " << startPosition.y << "\n";
-    Image cleanedTestMap = cleanWalls(&(testMap.mapImage), testMapSettings.emptyColor
+    Image cleanedTestMap = cleanWalls(&(map.mapImage), testMapSettings.emptyColor
                                       , testMapSettings.groundColor);
-    // cleanedTestMap.saveToFile("testMap.png");
+    cleanedTestMap.saveToFile("testMap.png");
+    Image procedurallyGeneratedLightMap = map.lightMapImage;
 
     
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
@@ -133,7 +136,7 @@ int main() {
                              , 4, &world, SCALE);
 
     // Set up LightManager
-    lightManager.initialize(&lightMapImage
+    lightManager.initialize(&procedurallyGeneratedLightMap
                             , tileSize
                             , tileSize);
 

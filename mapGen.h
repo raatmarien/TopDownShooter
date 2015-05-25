@@ -21,15 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 struct MapSettings {
     int roomPlacementAttempts;
     int corridorWidth;
+    int tilesPerLight;
     sf::Vector2i mapSize;
     sf::Vector2i baseRoomSize;
     sf::Vector2i randomAddRoomSize;
     sf::Color emptyColor; // Color to draw fill the image
     sf::Color groundColor; // Color to draw the ground
+    sf::Color roomLightColor;
 };
 
 struct Map {
     sf::Image mapImage;
+    sf::Image lightMapImage;
     sf::Vector2f playerStartPosition;
 };
 
@@ -48,6 +51,10 @@ void drawRect(sf::Image* map, sf::IntRect room, sf::Color drawColor);
 
 bool contains(sf::IntRect rectThatContains
               , sf::IntRect rectToBeContained);
+
+// Lighting
+void lightRooms(sf::Image *lightMap, std::vector<Room>* rooms, MapSettings *settings);
+void lightRoom(sf::Image *lightMap, Room *room, MapSettings *settings);
 
 sf::Image cleanWalls(sf::Image *map, sf::Color wallColor, sf::Color neutralColor); 
 

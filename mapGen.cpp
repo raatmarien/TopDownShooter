@@ -24,15 +24,20 @@ using namespace sf;
 
 Map generateSimpleMap(MapSettings settings) {
     Map map;
-    Image mapImage;
+    Image mapImage, lightMapImage;
     map.mapImage = mapImage;
+    map.lightMapImage = lightMapImage;
 
     (map.mapImage).create(settings.mapSize.x, settings.mapSize.y
                           , settings.emptyColor);
+    (map.lightMapImage).create(settings.mapSize.x, settings.mapSize.y
+                               , Color::Black);
 
     std::vector<Room> rooms;
 
     generateRooms(&(map.mapImage), &settings, &rooms);
+
+    lightRooms(&(map.lightMapImage), &rooms, &settings);
 
     generateCorridors(&(map.mapImage), &settings, &rooms);
 
@@ -134,16 +139,16 @@ void generateCorridors(Image *map, MapSettings *settings
 
         IntRect verticalCorridor;
         if (fromStartDown) {
-            verticalCorridor = IntRect(startPosX, startPosY - 1, cWidth, endPosY - startPosY + 1 + cWidth);
+            verticalCorridor = IntRect(startPosX, startPosY - 1, cWidth, endPosY - startPosY + cWidth);
         } else {
-            verticalCorridor = IntRect(startPosX, endPosY - 1, cWidth, startPosY - endPosY + 1 + cWidth);
+            verticalCorridor = IntRect(startPosX, endPosY - 1, cWidth, startPosY - endPosY + cWidth);
         }
         drawRect(map, verticalCorridor, settings->groundColor);
         IntRect horizontalCorridor;
         if (fromEndLeft) {
-            horizontalCorridor = IntRect(startPosX - 1, endPosY, endPosX - startPosX + 1 + cWidth, cWidth);
+            horizontalCorridor = IntRect(startPosX - 1, endPosY, endPosX - startPosX + cWidth, cWidth);
         } else {
-            horizontalCorridor = IntRect(endPosX - 1, endPosY, startPosX - endPosX + 1 + cWidth, cWidth);
+            horizontalCorridor = IntRect(endPosX - 1, endPosY, startPosX - endPosX + cWidth, cWidth);
         }
         drawRect(map, horizontalCorridor, settings->groundColor);
     }
@@ -179,6 +184,28 @@ bool contains(IntRect rectThatContains, IntRect rectToBeContained) {
             < (rectThatContains.left + rectThatContains.width))
         && ((rectToBeContained.top + rectToBeContained.height)
             < (rectThatContains.top + rectThatContains.height));
+}
+
+// Lighting
+void lightRooms(sf::Image *lightMap, std::vector<Room>* rooms, MapSettings* settings) {
+    for (int i = 0; i < rooms->size(); i++) {
+        lightRoom(lightMap, &(rooms->at(i)), settings);
+    }
+}
+
+void lightRoom(sf::Image *lightMap, Room *room, MapSettings* settings) {
+    IntRect roomRect = room->rect;
+    float lightsInWidth = (float) (roomRect.width) / (float) (settings->tilesPerLight)
+        , lightsInHeight = (float) (roomRect.height) / (float) (settings->tilesPerLight);
+    for (int x = 0; x < (lightsInWidth + 1.0f); x++) {
+        for (int y = 0; y < (lightsInHeight + 1.0f); y++) {
+            int xCoor = roomRect.left + ((float) (roomRect.width) * ((float) (x) / lightsInWidth));
+            int yCoor = roomRect.top + ((float) (roomRect.height) * ((float) (y) / lightsInHeight));
+            xCoor += (rand() % 3) - 1;
+            yCoor += (rand() % 3) - 1;
+            lightMap->setPixel(xCoor, yCoor, settings->roomLightColor);
+        }
+    }
 }
 
 Image cleanWalls(Image *map, Color wallColor, Color neutralColor) {
