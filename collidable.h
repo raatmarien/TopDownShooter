@@ -21,7 +21,8 @@ enum CollideType {
     COLLIDE_TYPE_NONE = 0,
     COLLIDE_TYPE_PLAYER,
     COLLIDE_TYPE_WALL,
-    COLLIDE_TYPE_BULLET
+    COLLIDE_TYPE_BULLET,
+    COLLIDE_TYPE_ENEMY
 };
 
 class CollideData {

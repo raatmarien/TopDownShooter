@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mapGen.h"
 #include "groundTileMap.h"
 #include "player.h"
+#include "enemy.h"
 #include "bulletManager.h"
 #include "shadow.h"
 #include "minimap.h"
@@ -45,7 +46,8 @@ void loadFiles();
 
 Texture spritesMap, playerSprite, mousePointerTexture
                                        , normalTiles
-                                       , playerNormal;
+                                       , playerNormal
+                                       , enemy1Diffuse;
 
 Image tileMapImage, lightMapImage;
 
@@ -57,6 +59,9 @@ b2World world(gravity);
 Vector2f startPosition = Vector2f(350
                                  ,400);
 Player player;
+
+// Test enemy
+ChargingEnemy enemy;
 
 BulletManager bulletManager;
 
@@ -86,7 +91,6 @@ Clock timer, deltaTimer;
 
 int screenX = 50 * 20, screenY = 50 * 20;
 
-// test
 int mouseLightNum;
 
 bool mouseLightOn = true;
@@ -141,11 +145,14 @@ int main() {
                             , tileSize);
 
     // Set up BulletManager
-    bulletManager.initialize(&world, SCALE, 1200.0f, 20.0f, &lightManager); 
+    bulletManager.initialize(&world, SCALE, 1200.0f, 4.0f, &lightManager); 
 
     // Set up Player
     player.initialize(&world, startPosition, SCALE
-                      , 40, playerSprite, playerNormal, &bulletManager, 0.1f);
+                      , 40, playerSprite, playerNormal, &bulletManager, 0.3f);
+
+    enemy.initialize(enemy1Diffuse, 12, startPosition + Vector2f(0,100), 4.0f, 2.0f
+                     , SCALE, &player, &world);
     
     // Set up ShadowHandler
     shadowHandler.setObstacles(tileMap.getObstacles(), tileSize);
@@ -250,6 +257,7 @@ void simulatePhysics(RenderWindow* window) {
 
 void update(RenderWindow* window) {
     player.update(mousePointer.getRelativePosition());
+    enemy.update();
     bulletManager.update();
     minimap.setPlayerPosition(player.getPosition());
     minimap.update();
@@ -327,6 +335,7 @@ void draw(RenderWindow* window) {
     bulletManager.drawDiffuse(&diffuseTarget);
     player.setNormal(false);
     diffuseTarget.draw(player, &playerSprite);
+    diffuseTarget.draw(enemy);
     diffuseTarget.display();
 
     // Normal drawing
@@ -356,6 +365,7 @@ void loadFiles() {
     normalTiles.loadFromFile("normalmaps/tilesNormal3.png");
     playerSprite.loadFromFile("sprites/player_gray.png");
     playerNormal.loadFromFile("normalmaps/playerNormal3.png");
+    enemy1Diffuse.loadFromFile("sprites/enemy1.png");
     tileMapImage.loadFromFile("maps/chambers_map.png");
     lightMapImage.loadFromFile("maps/light_map.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");

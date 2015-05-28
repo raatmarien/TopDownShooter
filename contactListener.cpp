@@ -31,6 +31,7 @@ void ContactListener::BeginContact(b2Contact* contact) {
     void* userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
     CollideData *collideDataA, *collideDataB;
     Player *player = NULL;
+    Enemy *enemy = NULL;
     Bullet *bullet = NULL;
     bool wall = false;
     if (userDataA) { // has userdata
@@ -41,6 +42,8 @@ void ContactListener::BeginContact(b2Contact* contact) {
             wall = true;
         } else if (collideDataA->collideType == COLLIDE_TYPE_BULLET) {
             bullet = static_cast<Bullet*> (collideDataA->user);
+        } else if (collideDataA->collideType == COLLIDE_TYPE_ENEMY) {
+            enemy = static_cast<Enemy*> (collideDataA->user);
         } else {
 #ifdef DEBUG_CONTACTS
             std::cout << collideDataB->collideType << "\n";
@@ -55,6 +58,8 @@ void ContactListener::BeginContact(b2Contact* contact) {
             wall = true;
         } else if (collideDataB->collideType == COLLIDE_TYPE_BULLET) {
             bullet = static_cast<Bullet*> (collideDataB->user);
+        } else if (collideDataA->collideType == COLLIDE_TYPE_ENEMY) {
+            enemy = static_cast<Enemy*> (collideDataA->user);
         } else {
 #ifdef DEBUG_CONTACTS
             std::cout << collideDataB->collideType << "\n";
@@ -64,6 +69,9 @@ void ContactListener::BeginContact(b2Contact* contact) {
 #ifdef DEBUG_CONTACTS
     if (player) {
         std::cout << "player ";
+    }
+    if (enemy) {
+        std::cout << "enemy ";
     }
     if (bullet) {
         std::cout << "bullet ";
@@ -76,6 +84,9 @@ void ContactListener::BeginContact(b2Contact* contact) {
 
     if (bullet && !player) {
         bullet->queueRemoval();
+        if (enemy) {
+            enemy->hit();
+        }
     }
 }
 
