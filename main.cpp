@@ -141,11 +141,11 @@ int main() {
                             , tileSize);
 
     // Set up BulletManager
-    bulletManager.initialize(&world, SCALE, 1200.0f, 4.0f, &lightManager); 
+    bulletManager.initialize(&world, SCALE, 1200.0f, 20.0f, &lightManager); 
 
     // Set up Player
     player.initialize(&world, startPosition, SCALE
-                      , 40, playerSprite, playerNormal, &bulletManager, 0.3f);
+                      , 40, playerSprite, playerNormal, &bulletManager, 0.1f);
     
     // Set up ShadowHandler
     shadowHandler.setObstacles(tileMap.getObstacles(), tileSize);
