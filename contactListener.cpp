@@ -58,8 +58,8 @@ void ContactListener::BeginContact(b2Contact* contact) {
             wall = true;
         } else if (collideDataB->collideType == COLLIDE_TYPE_BULLET) {
             bullet = static_cast<Bullet*> (collideDataB->user);
-        } else if (collideDataA->collideType == COLLIDE_TYPE_ENEMY) {
-            enemy = static_cast<Enemy*> (collideDataA->user);
+        } else if (collideDataB->collideType == COLLIDE_TYPE_ENEMY) {
+            enemy = static_cast<Enemy*> (collideDataB->user);
         } else {
 #ifdef DEBUG_CONTACTS
             std::cout << collideDataB->collideType << "\n";
