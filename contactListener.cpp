@@ -82,10 +82,14 @@ void ContactListener::BeginContact(b2Contact* contact) {
     std::cout << "\n";
 #endif
 
-    if (bullet && !player) {
-        bullet->queueRemoval();
+    if (bullet) {
         if (enemy) {
             enemy->hit();
+            bullet->queueRemoval();
+        } else if (player) {
+
+        } else {
+            bullet->queueRemoval();
         }
     }
 }

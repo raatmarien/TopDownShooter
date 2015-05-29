@@ -28,6 +28,8 @@ class Enemy : public sf::Drawable
 public:
     virtual void update() = 0;
     virtual void hit() = 0;
+    virtual void destroy() = 0;
+    bool toBeRemoved;
 private:
     virtual void draw(sf::RenderTarget &target
                       , sf::RenderStates states) const = 0;
@@ -35,7 +37,7 @@ private:
 
 class ChargingEnemy : public Enemy {
 public:
-    void initialize(sf::Texture texture
+    void initialize(sf::Texture *texture
                     , float radius
                     , sf::Vector2f startPosition
                     , float moveForce
@@ -45,6 +47,7 @@ public:
                     , b2World *world);
     void update();
     void hit();
+    void destroy();
 private: 
     int scale;
     
@@ -54,7 +57,7 @@ private:
     CollideData myCollideData;
     float radius;
     b2Body* body;
-    sf::Texture texture;
+    sf::Texture *texture;
     sf::Sprite sprite;
 
     float moveForce, rotationTorque;

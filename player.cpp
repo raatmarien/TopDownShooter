@@ -42,7 +42,6 @@ void Player::initialize(
 
     // Constants
     movementForce = 20.0f;
-    rotationTorque = 2.0f;
 
     // Setup sprite
     texMap = nTexture;

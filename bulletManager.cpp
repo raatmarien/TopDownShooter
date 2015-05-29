@@ -68,11 +68,13 @@ void Bullet::initialize(Vector2f position, float radius, b2Vec2 nVelocity
     bulletBody->CreateFixture(&bulletFixtureDef);
     bulletBody->SetLinearVelocity(velocity);
     bulletBody->SetUserData(&myCollideData);
+
+    bulletBody->SetBullet(true);
 }
 
 void Bullet::update() {
     myCollideData.user = this;
-    // bulletBody->SetUserData(&myCollideData);
+    bulletBody->SetUserData(&myCollideData);
     b2Vec2 position = bulletBody->GetPosition();
     position *= (float) scale;
     bulletCircle.setPosition(position.x 

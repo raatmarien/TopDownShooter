@@ -37,6 +37,8 @@ Map generateSimpleMap(MapSettings settings) {
 
     generateRooms(&(map.mapImage), &settings, &rooms);
 
+    populateRooms(&rooms, &map, &settings);
+    
     lightRooms(&(map.lightMapImage), &rooms, &settings);
 
     generateCorridors(&(map.mapImage), &settings, &rooms);
@@ -184,6 +186,20 @@ bool contains(IntRect rectThatContains, IntRect rectToBeContained) {
             < (rectThatContains.left + rectThatContains.width))
         && ((rectToBeContained.top + rectToBeContained.height)
             < (rectThatContains.top + rectThatContains.height));
+}
+
+// Populating
+void populateRooms(std::vector<Room> *rooms, Map *map, MapSettings *settings) {
+    for (int i = 0; i < rooms->size(); i++) {
+        for (int j = 0; j < settings->enemysPerRoom; j++) {
+            Vector2f enemyPosition(rooms->at(i).rect.left
+                                   + (rand() % (rooms->at(i).rect.width - 1))
+                                   , rooms->at(i).rect.top
+                                   + (rand() % (rooms->at(i).rect.height - 1)));
+            enemyPosition *= (float) (settings->tileSize);
+            map->chargingEnemyPositions.push_back(enemyPosition);
+        }
+    }
 }
 
 // Lighting

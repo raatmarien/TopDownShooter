@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sf;
 
-void ChargingEnemy::initialize(Texture texture
+void ChargingEnemy::initialize(Texture *texture
                                , float radius
                                , Vector2f startPosition
                                , float moveForce
@@ -42,18 +42,19 @@ void ChargingEnemy::initialize(Texture texture
 
     currentForce = 0.0f;
     currentTorque = 0.0f;
+    toBeRemoved = false;
 
     myCollideData.collideType = COLLIDE_TYPE_ENEMY;
     myCollideData.user = this;
 
-    sprite.setTexture(this->texture);
+    sprite.setTexture(*(this->texture));
     sprite.setOrigin(radius, radius);
 
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(startPosition.x / (float) (this->scale)
                          , startPosition.y / (float) (this->scale));
-    bodyDef.linearDamping = 4.0f;
+    bodyDef.linearDamping = 2.0f;
     bodyDef.angularDamping = 20.0f;
     bodyDef.userData = &myCollideData;
 
@@ -70,6 +71,9 @@ void ChargingEnemy::initialize(Texture texture
 }
 
 void ChargingEnemy::update() {
+    myCollideData.user = this;
+    body->SetUserData(&myCollideData);
+
     b2Vec2 b2CurrentPosition = body->GetPosition();
     Vector2f currentPosition = Vector2f(b2CurrentPosition.x * scale
                                         , b2CurrentPosition.y * scale);
@@ -113,6 +117,11 @@ void ChargingEnemy::hit() {
     std::cout << "Enemy hit!\n";
     isHit = true;
     hittimer = 30;
+    toBeRemoved = true;
+}
+
+void ChargingEnemy::destroy() {
+    world->DestroyBody(body);
 }
 
 void ChargingEnemy::move(bool forward) {

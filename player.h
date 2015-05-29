@@ -56,7 +56,7 @@ private:
     CollideData myCollideData;
     bool aiming, aimingLastFrame;
     Movement movement;
-    float movementForce, rotationTorque;
+    float movementForce;
     int scale, size;
     float framesRunning;
     sf::Texture texMap, normalTexMap;

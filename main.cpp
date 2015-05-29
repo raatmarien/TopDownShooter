@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "groundTileMap.h"
 #include "player.h"
 #include "enemy.h"
+#include "enemyManager.h"
 #include "bulletManager.h"
 #include "shadow.h"
 #include "minimap.h"
@@ -60,8 +61,7 @@ Vector2f startPosition = Vector2f(350
                                  ,400);
 Player player;
 
-// Test enemy
-ChargingEnemy enemy;
+EnemyManager enemyManager;
 
 BulletManager bulletManager;
 
@@ -105,6 +105,8 @@ int main() {
     testMapSettings.roomPlacementAttempts = 50;
     testMapSettings.corridorWidth = 6;
     testMapSettings.tilesPerLight = 15;
+    testMapSettings.enemysPerRoom = 3;
+    testMapSettings.tileSize = tileSize;
     testMapSettings.mapSize = Vector2i(270, 270);
     testMapSettings.baseRoomSize = Vector2i(7, 7);
     testMapSettings.randomAddRoomSize = Vector2i(15, 15);
@@ -151,8 +153,9 @@ int main() {
     player.initialize(&world, startPosition, SCALE
                       , 40, playerSprite, playerNormal, &bulletManager, 0.3f);
 
-    enemy.initialize(enemy1Diffuse, 12, startPosition + Vector2f(0,100), 4.0f, 2.0f
-                     , SCALE, &player, &world);
+    // Set up EnemyManager
+    enemyManager.initializeChargingEnemys(map.chargingEnemyPositions, enemy1Diffuse
+                                          , 12, 4.0f, 0.7f, SCALE, &player, &world);
     
     // Set up ShadowHandler
     shadowHandler.setObstacles(tileMap.getObstacles(), tileSize);
@@ -257,7 +260,7 @@ void simulatePhysics(RenderWindow* window) {
 
 void update(RenderWindow* window) {
     player.update(mousePointer.getRelativePosition());
-    enemy.update();
+    enemyManager.update();
     bulletManager.update();
     minimap.setPlayerPosition(player.getPosition());
     minimap.update();
@@ -335,7 +338,7 @@ void draw(RenderWindow* window) {
     bulletManager.drawDiffuse(&diffuseTarget);
     player.setNormal(false);
     diffuseTarget.draw(player, &playerSprite);
-    diffuseTarget.draw(enemy);
+    enemyManager.draw(&diffuseTarget);
     diffuseTarget.display();
 
     // Normal drawing

@@ -22,6 +22,8 @@ struct MapSettings {
     int roomPlacementAttempts;
     int corridorWidth;
     int tilesPerLight;
+    int enemysPerRoom;
+    int tileSize;
     sf::Vector2i mapSize;
     sf::Vector2i baseRoomSize;
     sf::Vector2i randomAddRoomSize;
@@ -34,6 +36,7 @@ struct Map {
     sf::Image mapImage;
     sf::Image lightMapImage;
     sf::Vector2f playerStartPosition;
+    std::vector<sf::Vector2f> chargingEnemyPositions;
 };
 
 struct Room {
@@ -52,10 +55,14 @@ void drawRect(sf::Image* map, sf::IntRect room, sf::Color drawColor);
 bool contains(sf::IntRect rectThatContains
               , sf::IntRect rectToBeContained);
 
+// Populating
+void populateRooms(std::vector<Room>* rooms, Map *map, MapSettings* settings);
+
 // Lighting
 void lightRooms(sf::Image *lightMap, std::vector<Room>* rooms, MapSettings *settings);
 void lightRoom(sf::Image *lightMap, Room *room, MapSettings *settings);
 
+// Cleaning
 sf::Image cleanWalls(sf::Image *map, sf::Color wallColor, sf::Color neutralColor); 
 
 // Helper functions
