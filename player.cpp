@@ -145,8 +145,13 @@ void Player::update(Vector2f relativeMousePointerPos) {
                      , body->GetWorldCenter()
                      , true);
 
-    // Animation
 
+    // Shooting
+    if (shooting && aiming) {
+        shootBullet(relativeMousePointerPos);
+    }
+    
+    // Animation
     if (speed < 0.5) {
         currentRec = IntRect(0,0,size,size);
     } else {
@@ -162,6 +167,7 @@ void Player::update(Vector2f relativeMousePointerPos) {
 
     aiming = aimingLastFrame;
     movement = NONE;
+    shooting = false;
     aiming = false;
 }
 
@@ -208,9 +214,14 @@ void Player::turn(bool left) {
         movement = left ? DOWN : DOWN_RIGHT;
 }
 
-void Player::shoot(Vector2f relativePointerPosition) {
+void Player::shoot(Vector2f relativeMousePointerPos) {
+    shooting = true;
+    this->relativeMousePointerPos = relativeMousePointerPos;
+}
+
+void Player::shootBullet(Vector2f relativePointerPosition) {
     timeSinceLastShot += shooterTimer.restart().asSeconds();
-    if (timeSinceLastShot > reloadTime && aiming) {
+    if (timeSinceLastShot > reloadTime) {
         Vector2f pistolOutletPosition = Vector2f(11.5f, -24.5f);
         float pistolDist = (float) sqrt(pistolOutletPosition.x * pistolOutletPosition.x
                                         + pistolOutletPosition.y * pistolOutletPosition.y);

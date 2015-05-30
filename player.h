@@ -51,6 +51,9 @@ public:
     void shoot(sf::Vector2f relativePointerPosition);
     void setNormal(bool drawNormalMap);
 private:
+    bool shooting;
+    sf::Vector2f relativeMousePointerPos;
+    
     float reloadTime, timeSinceLastShot;
     sf::Clock shooterTimer;
     CollideData myCollideData;
@@ -71,6 +74,7 @@ private:
                       , sf::RenderStates states) const;
     b2Vec2 rotateVec(b2Vec2 vector, float radians);
     sf::Vector2f rotateVec(sf::Vector2f vector, float radians);
+    void shootBullet(sf::Vector2f relativePointerPosition);
 };
 
 class MousePointer {
