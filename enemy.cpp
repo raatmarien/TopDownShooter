@@ -65,7 +65,7 @@ void ChargingEnemy::initialize(Texture *texture
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &circle;
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 1.0f;
+    fixtureDef.friction = 0.4f;
 
     body->CreateFixture(&fixtureDef);
 }
@@ -114,7 +114,6 @@ void ChargingEnemy::update() {
 }
 
 void ChargingEnemy::hit() {
-    std::cout << "Enemy hit!\n";
     isHit = true;
     hittimer = 30;
     toBeRemoved = true;

@@ -147,7 +147,7 @@ int main() {
                             , tileSize);
 
     // Set up BulletManager
-    bulletManager.initialize(&world, SCALE, 1200.0f, 4.0f, &lightManager); 
+    bulletManager.initialize(&world, SCALE, 3200.0f, 4.0f, &lightManager); 
 
     // Set up Player
     player.initialize(&world, startPosition, SCALE
