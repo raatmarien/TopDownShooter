@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "shadow.h"
+#include "lineIntersections.h"
 
 class Minimap {
 public:

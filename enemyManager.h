@@ -33,12 +33,15 @@ public:
                                   , float moveForce
                                   , float rotationTorque
                                   , int scale
+                                  , int tileSize
                                   , Player *player
-                                  , b2World *world);
+                                  , b2World *world
+                                  , std::vector<sf::Vector2f> wallPoints);
     void update();
     void draw(sf::RenderTarget *target);
 private:
     sf::Texture chargingEnemyTexture;
     std::vector<ChargingEnemy> chargingEnemys;
+    std::vector<sf::Vector2f> wallPoints;
     std::vector<Enemy*> enemys;
 };

@@ -91,6 +91,10 @@ void ContactListener::BeginContact(b2Contact* contact) {
         } else {
             bullet->queueRemoval();
         }
+    } else if (enemy) {
+        if (player) {
+            // enemy->hit();
+        }
     }
 }
 

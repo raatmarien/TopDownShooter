@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "enemy.h"
+#include "lineIntersections.h"
 #include <math.h>
 #include <iostream>
 
@@ -30,19 +31,26 @@ void ChargingEnemy::initialize(Texture *texture
                                , float moveForce
                                , float rotationTorque
                                , int scale
+                               , int tileSize
                                , Player *player
-                               , b2World *world) {
+                               , b2World *world
+                               , std::vector<Vector2f>* wallPoints) {
     this->texture = texture;
     this->radius = radius;
     this->moveForce = moveForce;
     this->rotationTorque = rotationTorque;
     this->scale = scale;
+    this->tileSize = tileSize;
     this->player = player;
     this->world = world;
+    this->visionRadius = 2000;
+    this->wallPoints = wallPoints;
 
     currentForce = 0.0f;
     currentTorque = 0.0f;
     toBeRemoved = false;
+
+    state = CHARGING_ENEMY_WAITING;
 
     myCollideData.collideType = COLLIDE_TYPE_ENEMY;
     myCollideData.user = this;
@@ -65,7 +73,7 @@ void ChargingEnemy::initialize(Texture *texture
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &circle;
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.4f;
+    fixtureDef.friction = 0.0f;
 
     body->CreateFixture(&fixtureDef);
 }
@@ -81,19 +89,36 @@ void ChargingEnemy::update() {
     float currentRotation = body->GetAngle();
     setRotation((currentRotation / PI) * 180);
 
-    // Set move commands
+    // Update states
     Vector2f playerPosition = player->getPosition();
     Vector2f distanceToPlayer = playerPosition - currentPosition;
-    float targetRotation = atan2(distanceToPlayer.x, distanceToPlayer.y);
-    targetRotation -= 1 * PI;
-    targetRotation = targetRotation < 0 ? 2 * PI + targetRotation : targetRotation;
-    targetRotation = 2 * PI - targetRotation;
-    float rotDif = targetRotation - currentRotation;
-    if (abs(rotDif) > PI) {
-        rotDif = rotDif > 0 ? rotDif - (2 * PI) : rotDif + (2 * PI); 
+    if (sqrt(distanceToPlayer.x * distanceToPlayer.x
+             + distanceToPlayer.y * distanceToPlayer.y) < 1000) {
+        if (isVisible(playerPosition)) {
+            state = CHARGING_ENEMY_CHARGING;
+        }
     }
-    turn(rotDif < 0);
-    move(true);
+    
+
+    // Set move commands
+    switch (state) {
+    case CHARGING_ENEMY_WAITING:
+        
+        break;
+
+    case CHARGING_ENEMY_CHARGING:
+        float targetRotation = atan2(distanceToPlayer.x, distanceToPlayer.y);
+        targetRotation -= 1 * PI;
+        targetRotation = targetRotation < 0 ? 2 * PI + targetRotation : targetRotation;
+        targetRotation = 2 * PI - targetRotation;
+        float rotDif = targetRotation - currentRotation;
+        if (abs(rotDif) > PI) {
+            rotDif = rotDif > 0 ? rotDif - (2 * PI) : rotDif + (2 * PI); 
+        }
+        turn(rotDif < 0);
+        move(true);
+        break;
+    }
 
     b2Vec2 force;
     force.x = -currentForce * sin(currentRotation);
@@ -104,23 +129,53 @@ void ChargingEnemy::update() {
 
     currentForce = 0.0f;
     currentTorque = 0.0f;
-
-    if (hittimer > 0) {
-        sprite.setColor(Color::Red);
-        hittimer--;
-    } else {
-        sprite.setColor(Color::White);
-    }
 }
 
 void ChargingEnemy::hit() {
-    isHit = true;
-    hittimer = 30;
     toBeRemoved = true;
 }
 
 void ChargingEnemy::destroy() {
     world->DestroyBody(body);
+}
+
+bool ChargingEnemy::isVisible(Vector2f position) {
+    // Get wall points that are in the visible radius
+    Vector2f myPos = getPosition();
+    int squareMaxDist = visionRadius * visionRadius;
+    std::vector<Vector2f*> wallPointsInVision;
+    for (int i = 0; i < wallPoints->size(); i++) {
+        Vector2f cornerPos = wallPoints->at(i);
+        Vector2f dist = myPos - cornerPos;
+        if ((dist.x * dist.x + dist.y * dist.y)
+            < squareMaxDist) {
+            wallPointsInVision.push_back(&(wallPoints->at(i)));
+        }
+    }
+
+    for (int i = 0; i < wallPointsInVision.size(); i++) {
+        // Corners of the wall block
+        //   p1    p2
+        //    .___.
+        //    |   |
+        //    !___!
+        //   p4    p3
+        Vector2f p1 = *(wallPointsInVision[i])
+            , p2 = p1 + Vector2f(tileSize, 0)
+            , p3 = p1 + Vector2f(tileSize, tileSize)
+            , p4 = p1 + Vector2f(0, tileSize);
+        // Check if the vision to the player is cut off
+        // by one of the lines of this wall
+        if (lineSegmentsIntersect(myPos, position, p1, p2)
+            || lineSegmentsIntersect(myPos, position, p2, p3)
+            || lineSegmentsIntersect(myPos, position, p3, p4)
+            || lineSegmentsIntersect(myPos, position, p4, p1)) {
+            return false;
+        }
+    }
+
+    
+    return true;
 }
 
 void ChargingEnemy::move(bool forward) {

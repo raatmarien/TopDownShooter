@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include <vector>
 #include "collidable.h"
 #include "player.h"
 
@@ -35,6 +36,12 @@ private:
                       , sf::RenderStates states) const = 0;
 };
 
+enum ChargingEnemyState {
+    CHARGING_ENEMY_WAITING = 0,
+    CHARGING_ENEMY_WANDERING,
+    CHARGING_ENEMY_CHARGING
+};
+
 class ChargingEnemy : public Enemy {
 public:
     void initialize(sf::Texture *texture
@@ -43,16 +50,21 @@ public:
                     , float moveForce
                     , float rotationTorque
                     , int scale
+                    , int tileSize
                     , Player *player
-                    , b2World *world);
+                    , b2World *world
+                    , std::vector<sf::Vector2f>* wallPoints);
     void update();
     void hit();
     void destroy();
 private: 
     int scale;
+    int tileSize;
+    int visionRadius;
     
     b2World *world;
     Player *player;
+    std::vector<sf::Vector2f>* wallPoints;
 
     CollideData myCollideData;
     float radius;
@@ -62,9 +74,10 @@ private:
 
     float moveForce, rotationTorque;
     float currentForce, currentTorque;
-    // temp
-    bool isHit;
-    int hittimer;
+    ChargingEnemyState state;
+
+    bool isVisible(sf::Vector2f position);
+    
     void move(bool forward);
     void turn(bool left);
     virtual void draw(sf::RenderTarget &target

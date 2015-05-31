@@ -28,8 +28,11 @@ void EnemyManager::initializeChargingEnemys
  , float moveForce
  , float rotationTorque
  , int scale
+ , int tileSize
  , Player *player
- , b2World *world) {
+ , b2World *world
+ , std::vector<Vector2f> wallPoints) {
+    this->wallPoints = wallPoints;
     chargingEnemyTexture = texture;
     for (int i = 0; i < chargingEnemyPositions.size(); i++) {
         ChargingEnemy enemy;
@@ -37,7 +40,8 @@ void EnemyManager::initializeChargingEnemys
         chargingEnemys[i].initialize(&chargingEnemyTexture, radius
                                      , chargingEnemyPositions[i]
                                      , moveForce, rotationTorque
-                                     , scale, player, world);
+                                     , scale, tileSize, player
+                                     , world, &(this->wallPoints));
     }
 }
 

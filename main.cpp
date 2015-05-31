@@ -155,7 +155,8 @@ int main() {
 
     // Set up EnemyManager
     enemyManager.initializeChargingEnemys(map.chargingEnemyPositions, enemy1Diffuse
-                                          , 12, 4.0f, 0.7f, SCALE, &player, &world);
+                                          , 12, 3.5f, 0.6f, SCALE, tileSize, &player
+                                          , &world, tileMap.getObstacles());
     
     // Set up ShadowHandler
     shadowHandler.setObstacles(tileMap.getObstacles(), tileSize);
