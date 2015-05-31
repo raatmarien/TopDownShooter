@@ -103,7 +103,7 @@ void Player::update(Vector2f relativeMousePointerPos) {
 
     // Apply movement force
     float moveForce = movementForce
-        * (aiming ? 0.4f : 1);
+        * (aiming ? 0.6f : 1);
     b2Vec2 moveForceVec = b2Vec2(0,0);
     float diagonalForce
         = sqrt(0.5 * moveForce * moveForce);

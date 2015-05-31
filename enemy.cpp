@@ -43,7 +43,7 @@ void ChargingEnemy::initialize(Texture *texture
     this->tileSize = tileSize;
     this->player = player;
     this->world = world;
-    this->visionRadius = 2000;
+    this->visionRadius = 1600;
     this->wallPoints = wallPoints;
 
     currentForce = 0.0f;
@@ -92,8 +92,9 @@ void ChargingEnemy::update() {
     // Update states
     Vector2f playerPosition = player->getPosition();
     Vector2f distanceToPlayer = playerPosition - currentPosition;
-    if (sqrt(distanceToPlayer.x * distanceToPlayer.x
-             + distanceToPlayer.y * distanceToPlayer.y) < 1000) {
+    if ((state != CHARGING_ENEMY_CHARGING) &&
+        sqrt(distanceToPlayer.x * distanceToPlayer.x
+             + distanceToPlayer.y * distanceToPlayer.y) < visionRadius) {
         if (isVisible(playerPosition)) {
             state = CHARGING_ENEMY_CHARGING;
         }

@@ -102,7 +102,7 @@ int main() {
     // Test
     srand(time(NULL));
     MapSettings testMapSettings;
-    testMapSettings.roomPlacementAttempts = 50;
+    testMapSettings.roomPlacementAttempts = 100;
     testMapSettings.corridorWidth = 6;
     testMapSettings.tilesPerLight = 15;
     testMapSettings.enemysPerRoom = 3;
