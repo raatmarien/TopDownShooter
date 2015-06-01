@@ -93,7 +93,7 @@ int screenX = 50 * 20, screenY = 50 * 20;
 
 int mouseLightNum;
 
-bool mouseLightOn = true;
+bool mouseLightOn = false;
 
 Clock tKeyTimer;
 float timeSincePressT;
