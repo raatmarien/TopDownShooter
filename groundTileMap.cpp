@@ -172,10 +172,9 @@ void groundTileMap::genGroundTileMap (Image* map
                            , cornerTextureY + tilesHeight);
 
             // Rotation is saved in the alpha value of the vertex color
-            // with the alpha being the rotation where 0 is upright and every
-            // increase is a turn of 90 degrees clockwise
+            // with the alpha being the rotation where 0.0f is upright and every
+            // increase of 0.25f is a turn of 90 degrees clockwise
             Color rotationInfoColor = Color(255, 255, 255, ((float) rotation) * (255.0f / 4.0f));
-            std::cout << ((float) rotation) * (255.0f / 4.0f) / 255.0f << "\n";
             normalVertices[indexInVertexArray+0].color = rotationInfoColor;
             normalVertices[indexInVertexArray+1].color = rotationInfoColor;
             normalVertices[indexInVertexArray+2].color = rotationInfoColor;
