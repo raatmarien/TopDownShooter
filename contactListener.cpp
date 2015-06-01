@@ -94,6 +94,7 @@ void ContactListener::BeginContact(b2Contact* contact) {
     } else if (enemy) {
         if (player) {
             // enemy->hit();
+            // int res = 1 / 0;
         }
     }
 }

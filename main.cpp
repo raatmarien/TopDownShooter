@@ -79,7 +79,7 @@ View playerView;
 RenderTexture diffuseTarget, normalTarget;
 
 // Shaders
-Shader normalRotationShader;
+Shader normalRotationShader, tileMapRotationShader;
 
 ContactListener mainContactListener;
 
@@ -140,6 +140,7 @@ int main() {
     tileMap.genGroundTileMap(&cleanedTestMap//tileMapImage
                              , tileSize, tileSize
                              , 4, &world, SCALE);
+    tileMap.setShader(&tileMapRotationShader);
 
     // Set up LightManager
     lightManager.initialize(&procedurallyGeneratedLightMap
@@ -335,6 +336,7 @@ void draw(RenderWindow* window) {
     // Diffuse drawing
     diffuseTarget.setView(playerView);
     diffuseTarget.clear(sf::Color(0,0,0));
+    tileMap.setNormalDrawing(false);
     diffuseTarget.draw(tileMap, &spritesMap);
     bulletManager.drawDiffuse(&diffuseTarget);
     player.setNormal(false);
@@ -345,6 +347,7 @@ void draw(RenderWindow* window) {
     // Normal drawing
     normalTarget.setView(playerView);
     normalTarget.clear(sf::Color(0,0,0));
+    tileMap.setNormalDrawing(true);
     normalTarget.draw(tileMap, &normalTiles);
     player.setNormal(true);
     normalRotationShader.setParameter("angle"
@@ -374,5 +377,7 @@ void loadFiles() {
     lightMapImage.loadFromFile("maps/light_map.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
     normalRotationShader.loadFromFile("shaders/rotateNormalBitmap.frag"
+                                      , Shader::Fragment);
+    tileMapRotationShader.loadFromFile("shaders/tileMapRotationShader.frag"
                                       , Shader::Fragment);
 }

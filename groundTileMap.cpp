@@ -40,6 +40,9 @@ void groundTileMap::genGroundTileMap (Image* map
     height = map->getSize().y;
     vertices.setPrimitiveType(Quads);
     vertices.resize(4 * width * height);
+
+    normalVertices.setPrimitiveType(Quads);
+    normalVertices.resize(4 * width * height);
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             int indexInVertexArray = 4 * (width * y + x);
@@ -74,9 +77,9 @@ void groundTileMap::genGroundTileMap (Image* map
             if (tileNum == 1) { // wall
                 cornerTextureX = 2 * tilesWidth;
             }
-            int rotation = 0; // Todo: random rotation?
-                             // rand() % 4;
-            // rotation = rand() % 4;
+
+            int rotation = rand() % 4;
+            
             int turnArray[4] = {0,1,2,3};
             if (rotation == 1) {
                 turnArray[0] = 1;
@@ -132,6 +135,52 @@ void groundTileMap::genGroundTileMap (Image* map
                            , cornerTextureY + tilesHeight);
 
             
+            // Top left corner
+            normalVertices[indexInVertexArray+0].position
+                = Vector2f(x * tilesWidth
+                           , y * tilesHeight);
+            // Top right corner
+            normalVertices[indexInVertexArray+1].position
+                = Vector2f((x + 1) * tilesWidth
+                           , y * tilesHeight);
+            // Bottom right corner
+            normalVertices[indexInVertexArray+2].position
+                = Vector2f((x + 1) * tilesWidth
+                           , (y + 1) * tilesHeight);
+            // Bottom left corner
+            normalVertices[indexInVertexArray+3].position
+                = Vector2f(x * tilesWidth
+                           , (y + 1) * tilesHeight);
+
+
+            // Texture Coords
+            // Top left corner
+            normalVertices[indexInVertexArray+turnArray[0]].texCoords
+                = Vector2f(cornerTextureX
+                           , cornerTextureY);
+            // Top right corner
+            normalVertices[indexInVertexArray+turnArray[1]].texCoords
+                = Vector2f(cornerTextureX + tilesWidth - 0.1f
+                           , cornerTextureY);
+            // Bottom right corner
+            normalVertices[indexInVertexArray+turnArray[2]].texCoords
+                = Vector2f(cornerTextureX + tilesWidth - 0.1f
+                           , cornerTextureY + tilesHeight);
+            // Bottom left corner
+            normalVertices[indexInVertexArray+turnArray[3]].texCoords
+                = Vector2f(cornerTextureX
+                           , cornerTextureY + tilesHeight);
+
+            // Rotation is saved in the alpha value of the vertex color
+            // with the alpha being the rotation where 0 is upright and every
+            // increase is a turn of 90 degrees clockwise
+            Color rotationInfoColor = Color(255, 255, 255, ((float) rotation) * (255.0f / 4.0f));
+            std::cout << ((float) rotation) * (255.0f / 4.0f) / 255.0f << "\n";
+            normalVertices[indexInVertexArray+0].color = rotationInfoColor;
+            normalVertices[indexInVertexArray+1].color = rotationInfoColor;
+            normalVertices[indexInVertexArray+2].color = rotationInfoColor;
+            normalVertices[indexInVertexArray+3].color = rotationInfoColor;
+            
             // Adding a physical box if necessary
             if (isSolid(tileNum)) {
                 b2BodyDef boxBodyDef;
@@ -159,10 +208,23 @@ std::vector<Vector2f> groundTileMap::getObstacles() {
     return obstacles;
 }
 
+void groundTileMap::setShader(Shader *tileMapRotationShader) {
+    this->tileMapRotationShader = tileMapRotationShader;
+}
+
+void groundTileMap::setNormalDrawing(bool normalDrawingOn) {
+    this->normalDrawingOn = normalDrawingOn;
+}
+
 void groundTileMap::draw(RenderTarget& target, RenderStates states) const
 {
     states.transform *= getTransform();
-    target.draw(vertices, states);
+    if (normalDrawingOn) {
+        states.shader = tileMapRotationShader;
+        target.draw(normalVertices, states);
+    } else {
+        target.draw(vertices, states);
+    }
 }
 
 bool isSolid(int tileNum)

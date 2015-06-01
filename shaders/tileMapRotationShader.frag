@@ -1,10 +1,19 @@
 uniform sampler2D texture;
-uniform float angle;
 
 void main()
 {
     // lookup the color in the texture
     vec4 color = texture2D(texture, gl_TexCoord[0].xy);
+    
+    // determine the rotation based on the vertex alpha
+    float alpha = gl_Color.a;
+    float angle = 0;
+    if (alpha > 0.15 && alpha < 0.35)
+        angle = 90;
+    if (alpha > 0.4 && alpha < 0.6)
+        angle = 180;
+    if (alpha > 0.65 && alpha < 0.85)
+        angle = 270;
     
     // extract the 2d part of the normal vector
     vec2 oldVector = (color.rgb * 2.0) - 1.0;
@@ -12,7 +21,7 @@ void main()
     // rotate the 2d part of the vector
     float radians = radians(angle);
     
-    vec2 vector;
+    vec2 vector;    
 
     vector.x = oldVector.x * cos(radians)
                 - (-1.0 * oldVector.y) * sin(radians);
@@ -27,5 +36,5 @@ void main()
     color.zw = color.zw; 
 
     // multiply it by the color
-    gl_FragColor = gl_Color * color;
+    gl_FragColor = color;
 }

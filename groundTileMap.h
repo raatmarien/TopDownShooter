@@ -36,12 +36,18 @@ public:
                            , int textureTileGridWidth
                            , b2World *world, int nScale);
     std::vector<sf::Vector2f> getObstacles();
+    void setShader(sf::Shader *tileMapRotationShader);
+    void setNormalDrawing(bool normalDrawingOn);
 private:
+    bool normalDrawingOn;
+    
+    sf::Shader *tileMapRotationShader;
+    
     std::vector<sf::Vector2f> obstacles;
     virtual void draw (sf::RenderTarget& target
                        , sf::RenderStates states) const;
     CollideData myCollideData;
     int width, height, SCALE;
-    sf::VertexArray vertices;
+    sf::VertexArray vertices, normalVertices;
     int tilesWidth, tilesHeight;
 };
