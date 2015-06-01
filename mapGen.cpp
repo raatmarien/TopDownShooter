@@ -219,7 +219,9 @@ void lightRoom(sf::Image *lightMap, Room *room, MapSettings* settings) {
             int yCoor = roomRect.top + ((float) (roomRect.height) * ((float) (y) / lightsInHeight));
             xCoor += (rand() % 3) - 1;
             yCoor += (rand() % 3) - 1;
-            lightMap->setPixel(xCoor, yCoor, settings->roomLightColor);
+            int lightVariance = rand() % 50;
+            Color testColor = Color(255 - (lightVariance / 2), 120 + (lightVariance * 2), 130 - lightVariance);
+            lightMap->setPixel(xCoor, yCoor, testColor * settings->roomLightColor);
         }
     }
 }
