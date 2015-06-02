@@ -170,6 +170,7 @@ int main() {
                  , (-0.5f * screenY) + minimapPadding));
     minimap.setTileSize(tileSize);
     minimap.setScreenSize(screenX, screenY);
+    minimap.setScale(0.75f);
 
     // Set up MousePointer
     mousePointer.setTexture(mousePointerTexture);

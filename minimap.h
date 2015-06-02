@@ -30,6 +30,7 @@ public:
     void setPositionFromCenter(sf::Vector2f
                                fromCenterPosition);
     void setViewCenter(sf::Vector2f viewCenter);
+    void setScale(float scale);
     void update();
     sf::Vector2f getSize();
     void setPlayerPosition(sf::Vector2f position);
@@ -37,6 +38,8 @@ public:
     void setWalls(std::vector<sf::Vector2f>
                   newWalls);
 private:
+    float scale;
+    
     int framesToCheckEverything, currentPart;
     std::vector<sf::Vector2f> getWallsOnScreen();
     std::vector<sf::Vector2f> wallPositions;

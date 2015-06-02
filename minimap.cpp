@@ -41,10 +41,16 @@ Minimap::Minimap() {
 
     currentPart = 0;
     framesToCheckEverything = 20;
+    scale = 1.0f;
 }
 
 void Minimap::setTileSize(int nTileSize) {
     tileSize = nTileSize;
+}
+
+
+void Minimap::setScale(float scale) {
+    this->scale = scale;
 }
 
 // Position should be given in tiles
@@ -73,7 +79,7 @@ void Minimap::addWall(Vector2u position) {
 void Minimap::draw(RenderWindow* window) {
     minimapSprite.setPosition(currentViewCenter + position);
     player.setPosition(currentViewCenter + position
-                       + (playerPosition / (float) tileSize)
+                       + ((playerPosition * scale) / (float) tileSize)
                        - Vector2f(minimapImage.getSize().x, 0));
     window->draw(minimapSprite);
     window->draw(player);
@@ -207,8 +213,8 @@ void Minimap::update() {
             }
             if (visible1 || visible2 || visible3 || visible4) {
                 isWallSeen[onScreenWallIndex[i]] = true;
-                addWall(Vector2u(walls[i].x / tileSize
-                                 , walls[i].y / tileSize));
+                addWall(Vector2u((walls[i].x * scale) / tileSize
+                                 , (walls[i].y * scale) / tileSize));
             }
         }
     }
