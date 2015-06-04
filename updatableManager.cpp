@@ -16,12 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "enemyManager.h"
+#include "updatableManager.h"
 #include <iostream>
 
 using namespace sf;
 
-void EnemyManager::initializeChargingEnemys
+void UpdatableManager::initializeChargingEnemys
 (std::vector<Vector2f> chargingEnemyPositions
  , Texture texture 
  , float radius
@@ -35,30 +35,30 @@ void EnemyManager::initializeChargingEnemys
     this->wallPoints = wallPoints;
     chargingEnemyTexture = texture;
     for (int i = 0; i < chargingEnemyPositions.size(); i++) {
-        ChargingEnemy enemy;
-        chargingEnemys.push_back(enemy);
-        chargingEnemys[i].initialize(&chargingEnemyTexture, radius
+        ChargingEnemy* enemy = new ChargingEnemy;
+        enemy->initialize(&chargingEnemyTexture, radius
                                      , chargingEnemyPositions[i]
                                      , moveForce, rotationTorque
                                      , scale, tileSize, player
                                      , world, &(this->wallPoints));
+        updatables.push_back(enemy);
     }
 }
 
-void EnemyManager::update() {
-    for (int i = 0; i < chargingEnemys.size(); i++) {
-        if (chargingEnemys[i].toBeRemoved) {
-            chargingEnemys[i].destroy();
-            chargingEnemys.erase(i + chargingEnemys.begin());
+void UpdatableManager::update() {
+    for (int i = 0; i < updatables.size(); i++) {
+        if (updatables[i]->queuedForRemoval()) {
+            updatables[i]->destroy();
+            updatables.erase(i + updatables.begin());
             i--;
         } else {
-            chargingEnemys[i].update();
+            (updatables[i])->update();
         }
     }
 }
 
-void EnemyManager::draw(RenderTarget *target) {
-    for (int i = 0; i < chargingEnemys.size(); i++) {
-        target->draw(chargingEnemys[i]);
+void UpdatableManager::draw(RenderTarget *target) {
+    for (int i = 0; i < updatables.size(); i++) {
+        target->draw(*(updatables[i]));
     }
 }

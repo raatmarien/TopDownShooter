@@ -22,14 +22,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Box2D/Box2D.h>
 #include <vector>
 #include "collidable.h"
+#include "updatable.h"
 #include "player.h"
 
-class Enemy : public sf::Drawable
-, public sf::Transformable {
+class Enemy : public Updatable {
 public:
     virtual void update() = 0;
     virtual void hit() = 0;
     virtual void destroy() = 0;
+    bool queuedForRemoval() { return toBeRemoved; }
     bool toBeRemoved;
 private:
     virtual void draw(sf::RenderTarget &target

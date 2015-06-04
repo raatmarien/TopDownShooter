@@ -20,12 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
+#include "updatable.h"
 #include "enemy.h"
 #include "player.h"
 #include <vector>
 
 
-class EnemyManager {
+class UpdatableManager {
 public:
     void initializeChargingEnemys(std::vector<sf::Vector2f> chargingEnemyPositions
                                   , sf::Texture texture 
@@ -40,8 +41,8 @@ public:
     void update();
     void draw(sf::RenderTarget *target);
 private:
+    std::vector<Updatable*> updatables;
+    
     sf::Texture chargingEnemyTexture;
-    std::vector<ChargingEnemy> chargingEnemys;
     std::vector<sf::Vector2f> wallPoints;
-    std::vector<Enemy*> enemys;
 };
