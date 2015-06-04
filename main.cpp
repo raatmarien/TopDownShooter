@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "groundTileMap.h"
 #include "player.h"
 #include "enemy.h"
-#include "enemyManager.h"
+#include "updatableManager.h"
 #include "bulletManager.h"
 #include "shadow.h"
 #include "minimap.h"
@@ -48,7 +48,8 @@ void loadFiles();
 Texture spritesMap, playerSprite, mousePointerTexture
                                        , normalTiles
                                        , playerNormal
-                                       , enemy1Diffuse;
+                                       , enemy1Diffuse
+                                       , boxTexture;
 
 Image tileMapImage, lightMapImage;
 
@@ -61,7 +62,7 @@ Vector2f startPosition = Vector2f(350
                                  ,400);
 Player player;
 
-EnemyManager enemyManager;
+UpdatableManager updatableManager;
 
 BulletManager bulletManager;
 
@@ -106,6 +107,7 @@ int main() {
     testMapSettings.corridorWidth = 6;
     testMapSettings.tilesPerLight = 15;
     testMapSettings.enemysPerRoom = 3;
+    testMapSettings.maxBoxesPerRoom = 8;
     testMapSettings.tileSize = tileSize;
     testMapSettings.mapSize = Vector2i(270, 270);
     testMapSettings.baseRoomSize = Vector2i(7, 7);
@@ -155,9 +157,11 @@ int main() {
                       , 40, playerSprite, playerNormal, &bulletManager, 0.3f);
 
     // Set up EnemyManager
-    enemyManager.initializeChargingEnemys(map.chargingEnemyPositions, enemy1Diffuse
+    updatableManager.initializeChargingEnemys(map.chargingEnemyPositions, enemy1Diffuse
                                           , 12, 3.5f, 0.6f, SCALE, tileSize, &player
                                           , &world, tileMap.getObstacles());
+    updatableManager.initializeBoxes(map.boxPositions, boxTexture, Vector2f(50,30)
+                                     , &world, SCALE);
     
     // Set up ShadowHandler
     shadowHandler.setObstacles(tileMap.getObstacles(), tileSize);
@@ -263,7 +267,7 @@ void simulatePhysics(RenderWindow* window) {
 
 void update(RenderWindow* window) {
     player.update(mousePointer.getRelativePosition());
-    enemyManager.update();
+    updatableManager.update();
     bulletManager.update();
     minimap.setPlayerPosition(player.getPosition());
     minimap.update();
@@ -342,7 +346,7 @@ void draw(RenderWindow* window) {
     bulletManager.drawDiffuse(&diffuseTarget);
     player.setNormal(false);
     diffuseTarget.draw(player, &playerSprite);
-    enemyManager.draw(&diffuseTarget);
+    updatableManager.draw(&diffuseTarget);
     diffuseTarget.display();
 
     // Normal drawing
@@ -374,6 +378,7 @@ void loadFiles() {
     playerSprite.loadFromFile("sprites/player_gray.png");
     playerNormal.loadFromFile("normalmaps/playerNormal3.png");
     enemy1Diffuse.loadFromFile("sprites/enemy1.png");
+    boxTexture.loadFromFile("sprites/box1.png");
     tileMapImage.loadFromFile("maps/chambers_map.png");
     lightMapImage.loadFromFile("maps/light_map.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");

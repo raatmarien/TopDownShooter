@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Box2D/Box2D.h>
 #include "updatable.h"
 #include "enemy.h"
+#include "item.h"
 #include "player.h"
 #include <vector>
 
@@ -38,11 +39,16 @@ public:
                                   , Player *player
                                   , b2World *world
                                   , std::vector<sf::Vector2f> wallPoints);
+    void initializeBoxes(std::vector<sf::Vector2f> boxPositions
+                         , sf::Texture boxTexture
+                         , sf::Vector2f boxSize
+                         , b2World *world
+                         , int scale);
     void update();
     void draw(sf::RenderTarget *target);
 private:
     std::vector<Updatable*> updatables;
     
-    sf::Texture chargingEnemyTexture;
+    sf::Texture chargingEnemyTexture, boxTexture;
     std::vector<sf::Vector2f> wallPoints;
 };

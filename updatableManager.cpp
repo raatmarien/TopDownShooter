@@ -45,10 +45,32 @@ void UpdatableManager::initializeChargingEnemys
     }
 }
 
+void UpdatableManager::initializeBoxes(std::vector<Vector2f> boxPositions
+                                       , Texture boxTexture
+                                       , Vector2f boxSize
+                                       , b2World *world
+                                       , int scale) {
+    this->boxTexture = boxTexture;
+    BoxSettings boxSettings;
+    boxSettings.texture = &(this->boxTexture);
+    boxSettings.size = boxSize;
+    boxSettings.density = 1.0f;
+    boxSettings.friction = 1.0f;
+    boxSettings.scale = scale;
+    boxSettings.world = world;
+    for (int i = 0; i < boxPositions.size(); i++) {
+        boxSettings.position = boxPositions[i];
+        Box *box = new Box;
+        box->initialize(boxSettings);
+        updatables.push_back(box);
+    }
+}
+
 void UpdatableManager::update() {
     for (int i = 0; i < updatables.size(); i++) {
         if (updatables[i]->queuedForRemoval()) {
             updatables[i]->destroy();
+            delete updatables[i];
             updatables.erase(i + updatables.begin());
             i--;
         } else {

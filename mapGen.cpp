@@ -199,6 +199,15 @@ void populateRooms(std::vector<Room> *rooms, Map *map, MapSettings *settings) {
             enemyPosition *= (float) (settings->tileSize);
             map->chargingEnemyPositions.push_back(enemyPosition);
         }
+        int boxes = rand() % (settings->maxBoxesPerRoom + 1);
+        for (int j = 0; j < boxes; j++) {
+            Vector2f boxPosition(rooms->at(i).rect.left
+                                   + (rand() % (rooms->at(i).rect.width - 1))
+                                   , rooms->at(i).rect.top
+                                   + (rand() % (rooms->at(i).rect.height - 1)));
+            boxPosition *= (float) (settings->tileSize);
+            map->boxPositions.push_back(boxPosition);
+        }
     }
 }
 

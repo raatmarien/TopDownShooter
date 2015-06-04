@@ -23,6 +23,7 @@ struct MapSettings {
     int corridorWidth;
     int tilesPerLight;
     int enemysPerRoom;
+    int maxBoxesPerRoom;
     int tileSize;
     sf::Vector2i mapSize;
     sf::Vector2i baseRoomSize;
@@ -37,6 +38,7 @@ struct Map {
     sf::Image lightMapImage;
     sf::Vector2f playerStartPosition;
     std::vector<sf::Vector2f> chargingEnemyPositions;
+    std::vector<sf::Vector2f> boxPositions;
 };
 
 struct Room {
