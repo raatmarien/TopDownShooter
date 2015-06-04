@@ -27,6 +27,7 @@ public:
     virtual void update() = 0;
     virtual void destroy() = 0;
     virtual bool queuedForRemoval() = 0;
+    virtual void setDrawNormal(bool drawNormal) = 0;
 private:
     virtual void draw(sf::RenderTarget &target
                       , sf::RenderStates states) const = 0;

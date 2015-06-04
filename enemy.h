@@ -30,6 +30,7 @@ public:
     virtual void update() = 0;
     virtual void hit() = 0;
     virtual void destroy() = 0;
+    virtual void setDrawNormal(bool drawNormal) = 0;
     bool queuedForRemoval() { return toBeRemoved; }
     bool toBeRemoved;
 private:
@@ -45,7 +46,8 @@ enum ChargingEnemyState {
 
 class ChargingEnemy : public Enemy {
 public:
-    void initialize(sf::Texture *texture
+    void initialize(sf::Texture *diffuseTexture
+                    , sf::Texture *normalTexture
                     , float radius
                     , sf::Vector2f startPosition
                     , float moveForce
@@ -58,6 +60,7 @@ public:
     void update();
     void hit();
     void destroy();
+    void setDrawNormal(bool drawNormal);
 private: 
     int scale;
     int tileSize;
@@ -70,7 +73,7 @@ private:
     CollideData myCollideData;
     float radius;
     b2Body* body;
-    sf::Texture *texture;
+    sf::Texture *diffuseTexture, *normalTexture;
     sf::Sprite sprite;
 
     float moveForce, rotationTorque;

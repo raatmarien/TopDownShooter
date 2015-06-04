@@ -23,11 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "updatable.h"
 
 struct BoxSettings {
-    sf::Texture *texture;
+    sf::Texture *diffuseTexture;
+    sf::Texture *normalTexture;
     sf::Vector2f size;
     sf::Vector2f position;
     float density;
     float friction;
+    float rotation;
     int scale;
     b2World *world;
 };
@@ -37,11 +39,13 @@ public:
     void initialize(BoxSettings settings);
     void update();
     void destroy();
+    void setDrawNormal(bool drawNormal);
     bool queuedForRemoval() { return false; }
 private:
     int scale;
     b2Body *body;
     b2World *world;
+    sf::Texture *diffuse, *normal;
     sf::Sprite sprite;    
     virtual void draw(sf::RenderTarget &target
                       , sf::RenderStates states) const;

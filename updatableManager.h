@@ -30,7 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class UpdatableManager {
 public:
     void initializeChargingEnemys(std::vector<sf::Vector2f> chargingEnemyPositions
-                                  , sf::Texture texture 
+                                  , sf::Texture diffuseTexture
+                                  , sf::Texture normalTexture
                                   , float radius
                                   , float moveForce
                                   , float rotationTorque
@@ -40,15 +41,18 @@ public:
                                   , b2World *world
                                   , std::vector<sf::Vector2f> wallPoints);
     void initializeBoxes(std::vector<sf::Vector2f> boxPositions
-                         , sf::Texture boxTexture
+                         , sf::Texture boxTextureDiffuse
+                         , sf::Texture boxTextureNormal
                          , sf::Vector2f boxSize
                          , b2World *world
                          , int scale);
     void update();
+    void setNormalDraw(bool drawNormal);
     void draw(sf::RenderTarget *target);
 private:
     std::vector<Updatable*> updatables;
     
-    sf::Texture chargingEnemyTexture, boxTexture;
+    sf::Texture chargingEnemyDiffuse, chargingEnemyNormal
+        , boxTextureDiffuse, boxTextureNormal;
     std::vector<sf::Vector2f> wallPoints;
 };

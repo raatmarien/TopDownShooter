@@ -25,7 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sf;
 
-void ChargingEnemy::initialize(Texture *texture
+void ChargingEnemy::initialize(Texture *diffuseTexture
+                               , Texture *normalTexture
                                , float radius
                                , Vector2f startPosition
                                , float moveForce
@@ -35,7 +36,8 @@ void ChargingEnemy::initialize(Texture *texture
                                , Player *player
                                , b2World *world
                                , std::vector<Vector2f>* wallPoints) {
-    this->texture = texture;
+    this->diffuseTexture = diffuseTexture;
+    this->normalTexture = normalTexture;
     this->radius = radius;
     this->moveForce = moveForce;
     this->rotationTorque = rotationTorque;
@@ -55,7 +57,7 @@ void ChargingEnemy::initialize(Texture *texture
     myCollideData.collideType = COLLIDE_TYPE_ENEMY;
     myCollideData.user = this;
 
-    sprite.setTexture(*(this->texture));
+    sprite.setTexture(*(this->diffuseTexture));
     sprite.setOrigin(radius, radius);
 
     b2BodyDef bodyDef;
@@ -73,7 +75,7 @@ void ChargingEnemy::initialize(Texture *texture
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &circle;
     fixtureDef.density = 1.0f;
-    fixtureDef.friction = 0.0f;
+    fixtureDef.friction = 0.3f;
 
     body->CreateFixture(&fixtureDef);
 }
@@ -138,6 +140,10 @@ void ChargingEnemy::hit() {
 
 void ChargingEnemy::destroy() {
     world->DestroyBody(body);
+}
+
+void ChargingEnemy::setDrawNormal(bool drawNormal) {
+    sprite.setTexture(*(drawNormal ? normalTexture : diffuseTexture));
 }
 
 bool ChargingEnemy::isVisible(Vector2f position) {

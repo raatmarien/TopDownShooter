@@ -23,14 +23,17 @@ using namespace sf;
 void Box::initialize(BoxSettings settings) {
     world = settings.world;
     scale = settings.scale;
+    diffuse = settings.diffuseTexture;
+    normal = settings.normalTexture;
     
-    sprite.setTexture(*(settings.texture));
+    sprite.setTexture(*(diffuse));
     sprite.setOrigin(settings.size / 2.0f);
 
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(settings.position.x / (float) (settings.scale)
                          , settings.position.y / (float) (settings.scale));
+    bodyDef.angle = settings.rotation;
     bodyDef.linearDamping = 1.0f;
     bodyDef.angularDamping = 1.0f;
     
@@ -58,6 +61,10 @@ void Box::update() {
 
 void Box::destroy() {
     world->DestroyBody(body);
+}
+
+void Box::setDrawNormal(bool drawNormal) {
+    sprite.setTexture(*(drawNormal ? normal : diffuse));
 }
 
 void Box::draw(RenderTarget &target, RenderStates states) const {

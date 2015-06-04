@@ -23,7 +23,8 @@ using namespace sf;
 
 void UpdatableManager::initializeChargingEnemys
 (std::vector<Vector2f> chargingEnemyPositions
- , Texture texture 
+ , Texture diffuseTexture 
+ , Texture normalTexture
  , float radius
  , float moveForce
  , float rotationTorque
@@ -33,33 +34,37 @@ void UpdatableManager::initializeChargingEnemys
  , b2World *world
  , std::vector<Vector2f> wallPoints) {
     this->wallPoints = wallPoints;
-    chargingEnemyTexture = texture;
+    chargingEnemyDiffuse = diffuseTexture;
+    chargingEnemyNormal = normalTexture;
     for (int i = 0; i < chargingEnemyPositions.size(); i++) {
         ChargingEnemy* enemy = new ChargingEnemy;
-        enemy->initialize(&chargingEnemyTexture, radius
-                                     , chargingEnemyPositions[i]
-                                     , moveForce, rotationTorque
-                                     , scale, tileSize, player
-                                     , world, &(this->wallPoints));
+        enemy->initialize(&chargingEnemyDiffuse, &chargingEnemyNormal
+                          , radius, chargingEnemyPositions[i]
+                          , moveForce, rotationTorque, scale
+                          , tileSize, player, world, &(this->wallPoints));
         updatables.push_back(enemy);
     }
 }
 
 void UpdatableManager::initializeBoxes(std::vector<Vector2f> boxPositions
-                                       , Texture boxTexture
+                                       , Texture boxTextureDiffuse
+                                       , Texture boxTextureNormal
                                        , Vector2f boxSize
                                        , b2World *world
                                        , int scale) {
-    this->boxTexture = boxTexture;
+    this->boxTextureDiffuse = boxTextureDiffuse;
+    this->boxTextureNormal = boxTextureNormal;
     BoxSettings boxSettings;
-    boxSettings.texture = &(this->boxTexture);
+    boxSettings.diffuseTexture = &(this->boxTextureDiffuse);
+    boxSettings.normalTexture = &(this->boxTextureNormal);
     boxSettings.size = boxSize;
-    boxSettings.density = 1.0f;
+    boxSettings.density = 2.0f;
     boxSettings.friction = 1.0f;
     boxSettings.scale = scale;
     boxSettings.world = world;
     for (int i = 0; i < boxPositions.size(); i++) {
         boxSettings.position = boxPositions[i];
+        boxSettings.rotation = (float) (rand() % 360) * 0.0174532925;
         Box *box = new Box;
         box->initialize(boxSettings);
         updatables.push_back(box);
@@ -76,6 +81,12 @@ void UpdatableManager::update() {
         } else {
             (updatables[i])->update();
         }
+    }
+}
+
+void UpdatableManager::setNormalDraw(bool drawNormal) {
+    for (int i = 0; i < updatables.size(); i++) {
+        updatables[i]->setDrawNormal(drawNormal);
     }
 }
 

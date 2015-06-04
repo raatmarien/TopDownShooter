@@ -158,9 +158,11 @@ int main() {
 
     // Set up EnemyManager
     updatableManager.initializeChargingEnemys(map.chargingEnemyPositions, enemy1Diffuse
+                                              , enemy1Diffuse
                                           , 12, 3.5f, 0.6f, SCALE, tileSize, &player
                                           , &world, tileMap.getObstacles());
-    updatableManager.initializeBoxes(map.boxPositions, boxTexture, Vector2f(50,30)
+    updatableManager.initializeBoxes(map.boxPositions, boxTexture, boxTexture
+                                     , Vector2f(50,30)
                                      , &world, SCALE);
     
     // Set up ShadowHandler
@@ -346,6 +348,7 @@ void draw(RenderWindow* window) {
     bulletManager.drawDiffuse(&diffuseTarget);
     player.setNormal(false);
     diffuseTarget.draw(player, &playerSprite);
+    updatableManager.setNormalDraw(false);
     updatableManager.draw(&diffuseTarget);
     diffuseTarget.display();
 
@@ -358,6 +361,8 @@ void draw(RenderWindow* window) {
     normalRotationShader.setParameter("angle"
                                       , player.getRotation());
     normalTarget.draw(player, &normalRotationShader);
+    updatableManager.setNormalDraw(true);
+    updatableManager.draw(&normalTarget);
     normalTarget.display();
 
     // Draw diffuse combined with lighting to window
