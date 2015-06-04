@@ -144,6 +144,12 @@ void ChargingEnemy::destroy() {
 
 void ChargingEnemy::setDrawNormal(bool drawNormal) {
     sprite.setTexture(*(drawNormal ? normalTexture : diffuseTexture));
+    // TODO change
+    if (drawNormal) {
+        sprite.setRotation(-1.0f * getRotation());
+    } else {
+        sprite.setRotation(0);
+    }
 }
 
 bool ChargingEnemy::isVisible(Vector2f position) {

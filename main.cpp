@@ -49,7 +49,9 @@ Texture spritesMap, playerSprite, mousePointerTexture
                                        , normalTiles
                                        , playerNormal
                                        , enemy1Diffuse
-                                       , boxTexture;
+                                       , enemy1Normal
+                                       , boxTexture
+                                       , boxTextureNormal;
 
 Image tileMapImage, lightMapImage;
 
@@ -158,10 +160,10 @@ int main() {
 
     // Set up EnemyManager
     updatableManager.initializeChargingEnemys(map.chargingEnemyPositions, enemy1Diffuse
-                                              , enemy1Diffuse
+                                              , enemy1Normal
                                           , 12, 3.5f, 0.6f, SCALE, tileSize, &player
                                           , &world, tileMap.getObstacles());
-    updatableManager.initializeBoxes(map.boxPositions, boxTexture, boxTexture
+    updatableManager.initializeBoxes(map.boxPositions, boxTexture, boxTextureNormal
                                      , Vector2f(50,30)
                                      , &world, SCALE);
     
@@ -383,7 +385,9 @@ void loadFiles() {
     playerSprite.loadFromFile("sprites/player_gray.png");
     playerNormal.loadFromFile("normalmaps/playerNormal3.png");
     enemy1Diffuse.loadFromFile("sprites/enemy1.png");
+    enemy1Normal.loadFromFile("normalmaps/enemy1Normal.png");
     boxTexture.loadFromFile("sprites/box1.png");
+    boxTextureNormal.loadFromFile("normalmaps/box1Normal.png");
     tileMapImage.loadFromFile("maps/chambers_map.png");
     lightMapImage.loadFromFile("maps/light_map.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");
