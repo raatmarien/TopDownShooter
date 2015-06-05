@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class UpdatableManager {
 public:
+    void initialize(sf::Shader *normalRotationShader);
     void initializeChargingEnemys(std::vector<sf::Vector2f> chargingEnemyPositions
                                   , sf::Texture diffuseTexture
                                   , sf::Texture normalTexture
@@ -51,7 +52,9 @@ public:
     void draw(sf::RenderTarget *target);
 private:
     std::vector<Updatable*> updatables;
-    
+    bool drawNormal;
+
+    sf::Shader *normalRotationShader;
     sf::Texture chargingEnemyDiffuse, chargingEnemyNormal
         , boxTextureDiffuse, boxTextureNormal;
     std::vector<sf::Vector2f> wallPoints;

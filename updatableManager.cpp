@@ -21,6 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace sf;
 
+void UpdatableManager::initialize(Shader *normalRotationShader) {
+    this->normalRotationShader = normalRotationShader;
+    this->drawNormal = false;
+}
+
 void UpdatableManager::initializeChargingEnemys
 (std::vector<Vector2f> chargingEnemyPositions
  , Texture diffuseTexture 
@@ -85,6 +90,7 @@ void UpdatableManager::update() {
 }
 
 void UpdatableManager::setNormalDraw(bool drawNormal) {
+    this->drawNormal = drawNormal;
     for (int i = 0; i < updatables.size(); i++) {
         updatables[i]->setDrawNormal(drawNormal);
     }
@@ -92,6 +98,12 @@ void UpdatableManager::setNormalDraw(bool drawNormal) {
 
 void UpdatableManager::draw(RenderTarget *target) {
     for (int i = 0; i < updatables.size(); i++) {
-        target->draw(*(updatables[i]));
+        if (drawNormal) {
+            normalRotationShader->setParameter
+                ("angle", updatables[i]->getRotation());
+            target->draw(*(updatables[i]), normalRotationShader);
+        } else {
+            target->draw(*(updatables[i]));
+        }
     }
 }

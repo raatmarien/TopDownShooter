@@ -159,6 +159,7 @@ int main() {
                       , 40, playerSprite, playerNormal, &bulletManager, 0.3f);
 
     // Set up EnemyManager
+    updatableManager.initialize(&normalRotationShader);
     updatableManager.initializeChargingEnemys(map.chargingEnemyPositions, enemy1Diffuse
                                               , enemy1Normal
                                           , 12, 3.5f, 0.6f, SCALE, tileSize, &player
@@ -307,7 +308,7 @@ void handleInput(RenderWindow* window) {
     if (Keyboard::isKeyPressed(Keyboard::F1))
     {
         Image Screen = window->capture();
-        Screen.saveToFile("screenshot.jpg");
+        Screen.saveToFile("screenshot.png");
     }
 
     if (Keyboard::isKeyPressed(Keyboard::Escape)) {
@@ -385,7 +386,7 @@ void loadFiles() {
     playerSprite.loadFromFile("sprites/player_gray.png");
     playerNormal.loadFromFile("normalmaps/playerNormal3.png");
     enemy1Diffuse.loadFromFile("sprites/enemy1.png");
-    enemy1Normal.loadFromFile("normalmaps/enemy1Normal.png");
+    enemy1Normal.loadFromFile("normalmaps/enemy1Normal2.png");
     boxTexture.loadFromFile("sprites/box1.png");
     boxTextureNormal.loadFromFile("normalmaps/box1Normal.png");
     tileMapImage.loadFromFile("maps/chambers_map.png");
