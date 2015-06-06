@@ -62,6 +62,8 @@ Image tileMapImage, lightMapImage;
 groundTileMap tileMap;
 int tileSize = 32;
 
+Map map;
+
 b2Vec2 gravity(0.0f, 0.0f);
 b2World world(gravity);
 Vector2f startPosition = Vector2f(350
@@ -123,14 +125,15 @@ int main() {
     testMapSettings.emptyColor = Color::White;
     testMapSettings.groundColor = Color::Black;
     testMapSettings.roomLightColor = Color::White;
-    Map map = generateSimpleMap(testMapSettings);
+    map = generateSimpleMap(testMapSettings);
     startPosition = map.playerStartPosition * (float) (tileSize);
-    Image cleanedTestMap = cleanWalls(&(map.mapImage), testMapSettings.emptyColor
-                                      , testMapSettings.groundColor);
-    cleanedTestMap.saveToFile("testMap.png");
     Image procedurallyGeneratedLightMap = map.lightMapImage;
 
     setupConnections();
+
+    Image cleanedTestMap = cleanWalls(&(map.mapImage), testMapSettings.emptyColor
+                                      , testMapSettings.groundColor);
+    cleanedTestMap.saveToFile("testMap.png");
     
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
@@ -432,11 +435,19 @@ void setupConnections() {
             throw 404;
         }
         std::cout << "Connected with client!\n";
-        sf::Packet receivedPack;
-        serverSocket.receive(receivedPack);
-        std::string textReceived;
-        receivedPack >> textReceived;
-        std::cout << "Received: " << textReceived << "\n";
+        sf::Packet receivedMapPack;
+        serverSocket.receive(receivedMapPack);
+        
+        Image *mapImage = &(map.mapImage);
+        Int32 mapSizeX, mapSizeY;
+        receivedMapPack >> mapSizeX >> mapSizeY;
+        for (int y = 0; y < mapSizeY; y++) {
+            for (int x = 0; x < mapSizeX; x++) {
+                Int8 red;
+                receivedMapPack >> red;
+                mapImage->setPixel(x, y, Color(red, red, red));
+            }
+        }
     } else if (choice == 'c') {
         std::cout << "Input the servers IP adress:\n";
         std::string serverIP;
@@ -452,8 +463,17 @@ void setupConnections() {
         }
         std::cout << "Succesfully connected to the server.\n";
 
-        Packet textPack;
-        textPack << "WOW het werkt";
-        clientSocket.send(textPack);
+        Packet mapPack;
+        Image *mapImage = &(map.mapImage);
+        Vector2u mapSize = mapImage->getSize();
+        Int32 mapSizeX = mapSize.x, mapSizeY = mapSize.y;
+        mapPack << mapSizeX << mapSizeY;
+        for (int y = 0; y < mapSize.y; y++) {
+            for (int x = 0; x < mapSize.x; x++) {
+                Int8 red = mapImage->getPixel(x, y).r;
+                mapPack << red;
+            }
+        }
+        clientSocket.send(mapPack);
     }
 }
