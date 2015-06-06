@@ -16,10 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 #include <Box2D/Box2D.h>
 #include <vector>
 #include <math.h>
 #include <time.h>
+#include <string>
 #include <iostream>
 
 #include <mapGen.h>
@@ -45,6 +47,7 @@ void updateDrawables(RenderWindow* window);
 void draw(RenderWindow* window);
 
 void loadFiles();
+void setupConnections();
 
 Texture spritesMap, playerSprite, mousePointerTexture
                                        , normalTiles
@@ -122,12 +125,12 @@ int main() {
     testMapSettings.roomLightColor = Color::White;
     Map map = generateSimpleMap(testMapSettings);
     startPosition = map.playerStartPosition * (float) (tileSize);
-    std::cout << startPosition.x << " " << startPosition.y << "\n";
     Image cleanedTestMap = cleanWalls(&(map.mapImage), testMapSettings.emptyColor
                                       , testMapSettings.groundColor);
     cleanedTestMap.saveToFile("testMap.png");
     Image procedurallyGeneratedLightMap = map.lightMapImage;
 
+    setupConnections();
     
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
@@ -405,4 +408,52 @@ void loadFiles() {
                                       , Shader::Fragment);
     tileMapRotationShader.loadFromFile("shaders/tileMapRotationShader.frag"
                                       , Shader::Fragment);
+}
+
+void setupConnections() {
+    std::cout << "Type s to be the server.\nType c to be the client.\n"
+              << "Or type anything else to continue normally\n";
+    char choice;
+    std::cin >> choice;
+    if (choice == 's') {
+        std::cout << "Setting up server...\n";
+        TcpListener serverListener;
+        if (serverListener.listen(Socket::AnyPort) != Socket::Done) {
+            std::cout << "Creating a listener failed\n";
+            throw 404;
+        }
+        
+        std::cout << "Connect to port " << serverListener.getLocalPort()
+                  << " with the client.\n";
+        std::cout << "Waiting for client...\n";
+        TcpSocket serverSocket;
+        if (serverListener.accept(serverSocket) != Socket::Done) {
+            std::cout << "Accepting a client failed\n";
+            throw 404;
+        }
+        std::cout << "Connected with client!\n";
+        sf::Packet receivedPack;
+        serverSocket.receive(receivedPack);
+        std::string textReceived;
+        receivedPack >> textReceived;
+        std::cout << "Received: " << textReceived << "\n";
+    } else if (choice == 'c') {
+        std::cout << "Input the servers IP adress:\n";
+        std::string serverIP;
+        std::cin >> serverIP;
+        std::cout << "Input the port to connect to:\n";
+        int port;
+        std::cin >> port;
+
+        TcpSocket clientSocket;
+        if (clientSocket.connect(serverIP, port) != Socket::Done) {
+            std::cout << "Connecting to the server failed\n";
+            throw 404;
+        }
+        std::cout << "Succesfully connected to the server.\n";
+
+        Packet textPack;
+        textPack << "WOW het werkt";
+        clientSocket.send(textPack);
+    }
 }

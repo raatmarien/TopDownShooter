@@ -1,7 +1,7 @@
 VPATH = src
 CC = g++
 CFLAG = -I headers
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lBox2D
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -lBox2D
 OBJ = main.o              \
       groundTileMap.o     \
       player.o            \
