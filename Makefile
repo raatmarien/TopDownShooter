@@ -20,10 +20,10 @@ HEADERS = $(wildcard *.h)
 all : topDownShooter
 
 %.o : %.cpp
-	gcc -c $< -o $@ $(CFLAG)
+	$(CC) -c $< -o $@ $(CFLAG)
 
 topDownShooter : $(OBJ) $(HEADERS)
-	g++ -o topDownShooter $(OBJ) $(LIBS)
+	$(CC) -o topDownShooter $(OBJ) $(LIBS)
 
 .PHONY : clean
 clean :
