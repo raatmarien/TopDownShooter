@@ -456,7 +456,8 @@ void setupConnections() {
         }
         Int32 startPosX, startPosY;
         receivedMapPack >> startPosX >> startPosY;
-        map.playerStartPosition = Vector2f(startPosX, startPosY);
+        startPosition = Vector2f(startPosX, startPosY);
+        std::cout << "Data received\n";
     } else if (socketType == 'c') {
         std::cout << "Input the servers IP adress:\n";
         std::string serverIP;
