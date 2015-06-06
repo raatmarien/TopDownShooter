@@ -126,7 +126,6 @@ int main() {
     testMapSettings.groundColor = Color::Black;
     testMapSettings.roomLightColor = Color::White;
     map = generateSimpleMap(testMapSettings);
-    startPosition = map.playerStartPosition * (float) (tileSize);
     Image procedurallyGeneratedLightMap = map.lightMapImage;
 
     setupConnections();
@@ -134,6 +133,7 @@ int main() {
     Image cleanedTestMap = cleanWalls(&(map.mapImage), testMapSettings.emptyColor
                                       , testMapSettings.groundColor);
     cleanedTestMap.saveToFile("testMap.png");
+    startPosition = map.playerStartPosition * (float) (tileSize);
     
     RenderWindow window(VideoMode(screenX, screenY), "Top Down Shooter");
     window.setVerticalSyncEnabled(true);
@@ -456,7 +456,7 @@ void setupConnections() {
         }
         Int32 startPosX, startPosY;
         receivedMapPack >> startPosX >> startPosY;
-        startPosition = Vector2f(startPosX, startPosY);
+        map.playerStartPosition = Vector2f(startPosX, startPosY);
         std::cout << "Data received\n";
     } else if (socketType == 'c') {
         std::cout << "Input the servers IP adress:\n";
