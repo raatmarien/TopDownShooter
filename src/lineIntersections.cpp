@@ -1,4 +1,4 @@
-#include "lineIntersections.h"
+#include <lineIntersections.h>
 
 using namespace sf;
 

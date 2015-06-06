@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <vector>
-#include "collidable.h"
+#include <collidable.h>
 bool isSolid(int tileNum);
 char getDisplayChar(int tileNum);
 

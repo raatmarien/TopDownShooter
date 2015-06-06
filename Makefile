@@ -15,7 +15,7 @@ OBJ = main.o              \
       updatableManager.o  \
       lineIntersections.o \
       item.o
-HEADERS = $(wildcard *.h)
+HEADERS = $(wildcard headers/*.h)
 
 all : topDownShooter
 

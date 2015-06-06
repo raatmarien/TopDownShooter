@@ -17,21 +17,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "mapGen.h"
-#include "groundTileMap.h"
-#include "player.h"
-#include "enemy.h"
-#include "updatableManager.h"
-#include "bulletManager.h"
-#include "shadow.h"
-#include "minimap.h"
-#include "light.h"
-#include "contactListener.h"
 #include <vector>
 #include <math.h>
 #include <time.h>
 #include <iostream>
 
+#include <mapGen.h>
+#include <groundTileMap.h>
+#include <player.h>
+#include <enemy.h>
+#include <updatableManager.h>
+#include <bulletManager.h>
+#include <shadow.h>
+#include <minimap.h>
+#include <light.h>
+#include <contactListener.h>
 
 #define SCALE 50
 using namespace sf;

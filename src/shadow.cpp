@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "shadow.h"
+#include <shadow.h>
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cmath>

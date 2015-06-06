@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "bulletManager.h"
-#include "collidable.h"
+#include <bulletManager.h>
+#include <collidable.h>
 
 enum Movement {
     NONE = 0

@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "collidable.h"
-#include "light.h"
+#include <collidable.h>
+#include <light.h>
 #include <vector>
 
 class Bullet : public sf::Drawable

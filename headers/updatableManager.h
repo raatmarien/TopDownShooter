@@ -20,10 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
-#include "updatable.h"
-#include "enemy.h"
-#include "item.h"
-#include "player.h"
+#include <updatable.h>
+#include <enemy.h>
+#include <item.h>
+#include <player.h>
 #include <vector>
 
 
