@@ -414,16 +414,22 @@ void loadFiles() {
 }
 
 void setupConnections() {
+    std::cout << "Type anything to play single player\n"
+              << "Type 'o' to connect with another player and play on the same map\n";
+    char onlineOrSingle;
+    std::cin >> onlineOrSingle;
+    if (onlineOrSingle != 'o')
+        return;
     std::cout << "Type s to be the server.\nType c to be the client.\n"
               << "Or type anything else to continue normally\n";
-    char choice;
-    std::cin >> choice;
-    if (choice == 's') {
+    char socketType;
+    std::cin >> socketType;
+    if (socketType == 's') {
         std::cout << "Setting up server...\n";
         TcpListener serverListener;
         if (serverListener.listen(Socket::AnyPort) != Socket::Done) {
             std::cout << "Creating a listener failed\n";
-            throw 404;
+            return;
         }
         
         std::cout << "Connect to port " << serverListener.getLocalPort()
@@ -432,7 +438,7 @@ void setupConnections() {
         TcpSocket serverSocket;
         if (serverListener.accept(serverSocket) != Socket::Done) {
             std::cout << "Accepting a client failed\n";
-            throw 404;
+            return;
         }
         std::cout << "Connected with client!\n";
         sf::Packet receivedMapPack;
@@ -448,7 +454,10 @@ void setupConnections() {
                 mapImage->setPixel(x, y, Color(red, red, red));
             }
         }
-    } else if (choice == 'c') {
+        Int32 startPosX, startPosY;
+        receivedMapPack >> startPosX >> startPosY;
+        map.playerStartPosition = Vector2f(startPosX, startPosY);
+    } else if (socketType == 'c') {
         std::cout << "Input the servers IP adress:\n";
         std::string serverIP;
         std::cin >> serverIP;
@@ -459,7 +468,7 @@ void setupConnections() {
         TcpSocket clientSocket;
         if (clientSocket.connect(serverIP, port) != Socket::Done) {
             std::cout << "Connecting to the server failed\n";
-            throw 404;
+            return;
         }
         std::cout << "Succesfully connected to the server.\n";
 
@@ -474,6 +483,9 @@ void setupConnections() {
                 mapPack << red;
             }
         }
+        Int32 startPosX = map.playerStartPosition.x
+            , startPosY = map.playerStartPosition.y;
+        mapPack << startPosX << startPosY;
         clientSocket.send(mapPack);
     }
 }
