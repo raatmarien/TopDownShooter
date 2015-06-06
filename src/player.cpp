@@ -31,7 +31,8 @@ void Player::initialize(
     , Texture nTexture
     , Texture normalTexture
     , BulletManager* nBulletManager
-    , float nReloadTime) {
+    , float nReloadTime
+    , int maxHealth) {
     world = nWorld;
     scale = nScale;
     size = nSize;
@@ -39,6 +40,8 @@ void Player::initialize(
     bulletManager = nBulletManager;
     reloadTime = nReloadTime;
     timeSinceLastShot = 0.0f;
+    this->maxHealth = maxHealth;
+    currentHealth = this->maxHealth;
 
     // Constants
     movementForce = 20.0f;
@@ -270,6 +273,13 @@ void Player::setNormal(bool drawNormalMap) {
     else
         sprite.setTexture(texMap);
 }
+
+void Player::hit(int damage) {
+    currentHealth -= damage;
+}
+
+int Player::getHealth() { return currentHealth; }
+int Player::getMaxHealth() { return maxHealth; }
 
 // MousePointer methods
 MousePointer::MousePointer() {

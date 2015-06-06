@@ -43,16 +43,22 @@ public:
                     , sf::Texture nTexture
                     , sf::Texture normalTexture
                     , BulletManager* nBulletManager
-                    , float nReloadTime);
+                    , float nReloadTime
+                    , int maxHealth);
     void update(sf::Vector2f relativeMousePointerPos);
     void move(bool up);
     void turn(bool left);
     void setAiming(bool nAiming);
     void shoot(sf::Vector2f relativePointerPosition);
     void setNormal(bool drawNormalMap);
+    void hit(int damage);
+    int getHealth();
+    int getMaxHealth();
 private:
     bool shooting;
     sf::Vector2f relativeMousePointerPos;
+
+    int maxHealth, currentHealth;
     
     float reloadTime, timeSinceLastShot;
     sf::Clock shooterTimer;

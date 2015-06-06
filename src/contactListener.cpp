@@ -87,14 +87,12 @@ void ContactListener::BeginContact(b2Contact* contact) {
             enemy->hit();
             bullet->queueRemoval();
         } else if (player) {
-
         } else {
             bullet->queueRemoval();
         }
     } else if (enemy) {
         if (player) {
-            // enemy->hit();
-            // int res = 1 / 0;
+            player->hit(5);
         }
     }
 }

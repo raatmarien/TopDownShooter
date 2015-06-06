@@ -32,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <minimap.h>
 #include <light.h>
 #include <contactListener.h>
+#include <healthBar.h>
 
 #define SCALE 50
 using namespace sf;
@@ -72,6 +73,8 @@ ShadowHandler shadowHandler;
 
 Minimap minimap;
 float minimapPadding = 50.0f;
+
+HealthBar healthBar;
 
 LightManager lightManager;
 
@@ -155,8 +158,8 @@ int main() {
     bulletManager.initialize(&world, SCALE, 3200.0f, 4.0f, &lightManager); 
 
     // Set up Player
-    player.initialize(&world, startPosition, SCALE
-                      , 40, playerSprite, playerNormal, &bulletManager, 0.3f);
+    player.initialize(&world, startPosition, SCALE, 40, playerSprite
+                      , playerNormal, &bulletManager, 0.3f, 100);
 
     // Set up EnemyManager
     updatableManager.initialize(&normalRotationShader);
@@ -180,6 +183,9 @@ int main() {
     minimap.setTileSize(tileSize);
     minimap.setScreenSize(screenX, screenY);
     minimap.setScale(0.75f);
+
+    // Set up HealthBar
+    healthBar.initialize(Vector2f(200,16), &player);
 
     // Set up MousePointer
     mousePointer.setTexture(mousePointerTexture);
@@ -283,6 +289,8 @@ void updateDrawables(RenderWindow* window) {
     shadowHandler.update(player.getPosition()
                          , playerView.getCenter());
     minimap.setViewCenter(playerView.getCenter());
+    healthBar.update();
+    healthBar.setPosition(Vector2f(10, 10) + playerView.getCenter() - (Vector2f(screenX, screenY) / 2.0f));
 }
 
 void handleInput(RenderWindow* window) {
@@ -377,6 +385,7 @@ void draw(RenderWindow* window) {
     shadowHandler.draw(window);
     mousePointer.draw(window, playerView);
     minimap.draw(window);
+    window->draw(healthBar);
     window->display();
 }
 

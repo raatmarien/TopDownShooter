@@ -1,7 +1,7 @@
-VPATH = src:headers
+VPATH = src
 CC = g++
 CFLAG = -I headers
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -l Box2D
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lBox2D
 OBJ = main.o              \
       groundTileMap.o     \
       player.o            \
@@ -14,7 +14,8 @@ OBJ = main.o              \
       enemy.o             \
       updatableManager.o  \
       lineIntersections.o \
-      item.o
+      item.o              \
+      healthBar.o
 HEADERS = $(wildcard headers/*.h)
 
 all : topDownShooter

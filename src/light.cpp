@@ -45,7 +45,7 @@ void LightManager::initialize(Image* lightMap
     Vector3f falloff;
     falloff.x = 2.0f; // Constant falloff
     falloff.y = 0.005f; // Linear falloff
-    falloff.z = 0.000085f; // Quadratic falloff 
+    falloff.z = 0.000075f; // Quadratic falloff 
     int size = 2000;
     float lightHeight = 200.0f;
     
