@@ -1,6 +1,6 @@
 ##A simple top down shooter with a field of view
 
-![Gameplay image](http://i.imgur.com/ta02I2g.jpg)
+![Gameplay image](http://i.imgur.com/3SqpiBT.jpg)
 
 #Build instructions
 
@@ -50,4 +50,4 @@ Positions of the lights are saved in a seperate bitmap of te PPM type. This bitm
 
 #'Gameplay' so far
 
-[Walking through a map with lighting](https://gfycat.com/AccurateHospitableBlacknorwegianelkhound)
+[Walking through a map with lighting](https://gfycat.com/GrandMeagerAlligator)
