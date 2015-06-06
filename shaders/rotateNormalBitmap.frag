@@ -25,7 +25,7 @@ void main()
     // apply the 2d part to the color
     color.xy = vector.xy;
     color.zw = color.zw; 
-
+    
     // multiply it by the color
     gl_FragColor = gl_Color * color;
 }

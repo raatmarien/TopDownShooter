@@ -109,7 +109,7 @@ int main() {
     testMapSettings.corridorWidth = 6;
     testMapSettings.tilesPerLight = 15;
     testMapSettings.enemysPerRoom = 3;
-    testMapSettings.maxBoxesPerRoom = 8;
+    testMapSettings.maxBoxesPerRoom = 5;
     testMapSettings.tileSize = tileSize;
     testMapSettings.mapSize = Vector2i(270, 270);
     testMapSettings.baseRoomSize = Vector2i(7, 7);
@@ -388,7 +388,7 @@ void loadFiles() {
     enemy1Diffuse.loadFromFile("sprites/enemy1.png");
     enemy1Normal.loadFromFile("normalmaps/enemy1Normal2.png");
     boxTexture.loadFromFile("sprites/box1.png");
-    boxTextureNormal.loadFromFile("normalmaps/box1Normal.png");
+    boxTextureNormal.loadFromFile("normalmaps/box1Normal2.png");
     tileMapImage.loadFromFile("maps/chambers_map.png");
     lightMapImage.loadFromFile("maps/light_map.png");
     mousePointerTexture.loadFromFile("sprites/mousePointer.png");

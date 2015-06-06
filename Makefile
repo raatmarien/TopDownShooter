@@ -1,5 +1,6 @@
+VPATH = src:headers
 CC = g++
-CFLAG = -Wall
+CFLAG = -I headers
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -l Box2D
 OBJ = main.o              \
       groundTileMap.o     \
@@ -14,14 +15,16 @@ OBJ = main.o              \
       updatableManager.o  \
       lineIntersections.o \
       item.o
+HEADERS = $(wildcard *.h)
 
-all: topDownShooter
+all : topDownShooter
 
-%.o : %.c
-	gcc -c $(CFLAGS) $< -o $@
+%.o : %.cpp
+	gcc -c $< -o $@ $(CFLAG)
 
-topDownShooter: $(OBJ)
+topDownShooter : $(OBJ) $(HEADERS)
 	g++ -o topDownShooter $(OBJ) $(LIBS)
 
-clean:
-	rm *.o
+.PHONY : clean
+clean :
+	rm topDownShooter $(OBJ)

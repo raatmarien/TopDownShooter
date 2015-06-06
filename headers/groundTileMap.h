@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include <Box2D/Box2D.h>
 #include <vector>
