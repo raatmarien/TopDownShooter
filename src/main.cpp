@@ -403,7 +403,6 @@ void draw(RenderWindow* window) {
     window->clear(sf::Color(0,0,0));
     lightManager.draw(&diffuseTarget, &normalTarget
                       , window, playerView);
-    secondPlayerSprite.setPosition(player.getPosition());
     if (multiplayer) window->draw(secondPlayerSprite);
 
     shadowHandler.draw(window);
@@ -511,12 +510,17 @@ bool setupConnections() {
 void interchangeData() {
     Packet playerPosPack;
     Vector2f playerPos = player.getPosition();
+    float rotation = player.getRotation();
     playerPosPack << playerPos.x << playerPos.y;
+    playerPosPack << rotation;
     multiSocket.send(playerPosPack);
     Packet secondPlayerPosPack;
     multiSocket.receive(secondPlayerPosPack);
     Vector2f secondPlayerPos;
+    float newRotation;
     secondPlayerPosPack >> secondPlayerPos.x
-                        >> secondPlayerPos.y;
+                        >> secondPlayerPos.y
+                        >> newRotation;
     secondPlayerSprite.setPosition(secondPlayerPos);
+    secondPlayerSprite.setRotation(newRotation);
 }
