@@ -140,7 +140,9 @@ int main() {
 
     if (multiplayer) {
         secondPlayerSprite.setTexture(playerSprite);
-        secondPlayerSprite.setColor(Color(255,255,255,200));
+        secondPlayerSprite.setTextureRect(IntRect(0,0,40,40));
+        secondPlayerSprite.setOrigin(20,20);
+        secondPlayerSprite.setColor(Color(255,255,255,150));
     }
 
     Image cleanedTestMap = cleanWalls(&(map.mapImage), testMapSettings.emptyColor
@@ -401,6 +403,7 @@ void draw(RenderWindow* window) {
     window->clear(sf::Color(0,0,0));
     lightManager.draw(&diffuseTarget, &normalTarget
                       , window, playerView);
+    secondPlayerSprite.setPosition(player.getPosition());
     if (multiplayer) window->draw(secondPlayerSprite);
 
     shadowHandler.draw(window);
