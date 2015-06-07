@@ -124,7 +124,7 @@ int main() {
     testMapSettings.roomPlacementAttempts = 100;
     testMapSettings.corridorWidth = 6;
     testMapSettings.tilesPerLight = 15;
-    testMapSettings.enemysPerRoom = 30;
+    testMapSettings.enemysPerRoom = 3;
     testMapSettings.maxBoxesPerRoom = 5;
     testMapSettings.tileSize = tileSize;
     testMapSettings.mapSize = Vector2i(270, 270);
@@ -136,7 +136,7 @@ int main() {
     map = generateSimpleMap(testMapSettings);
     Image procedurallyGeneratedLightMap = map.lightMapImage;
 
-    multiplayer = setupConnections();
+    multiplayer = false;// setupConnections();
 
     if (multiplayer) {
         secondPlayerSprite.setTexture(playerSprite);
