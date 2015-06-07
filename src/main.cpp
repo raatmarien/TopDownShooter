@@ -47,7 +47,10 @@ void updateDrawables(RenderWindow* window);
 void draw(RenderWindow* window);
 
 void loadFiles();
-void setupConnections();
+
+// Network
+bool setupConnections();
+void interchangeData();
 
 Texture spritesMap, playerSprite, mousePointerTexture
                                        , normalTiles
@@ -109,6 +112,11 @@ bool mouseLightOn = false;
 Clock tKeyTimer;
 float timeSincePressT;
 
+// Network
+bool multiplayer;
+TcpSocket multiSocket;
+Sprite secondPlayerSprite;
+
 int main() {
     // Test
     srand(time(NULL));
@@ -116,7 +124,7 @@ int main() {
     testMapSettings.roomPlacementAttempts = 100;
     testMapSettings.corridorWidth = 6;
     testMapSettings.tilesPerLight = 15;
-    testMapSettings.enemysPerRoom = 3;
+    testMapSettings.enemysPerRoom = 30;
     testMapSettings.maxBoxesPerRoom = 5;
     testMapSettings.tileSize = tileSize;
     testMapSettings.mapSize = Vector2i(270, 270);
@@ -128,7 +136,12 @@ int main() {
     map = generateSimpleMap(testMapSettings);
     Image procedurallyGeneratedLightMap = map.lightMapImage;
 
-    setupConnections();
+    multiplayer = setupConnections();
+
+    if (multiplayer) {
+        secondPlayerSprite.setTexture(playerSprite);
+        secondPlayerSprite.setColor(Color(255,255,255,200));
+    }
 
     Image cleanedTestMap = cleanWalls(&(map.mapImage), testMapSettings.emptyColor
                                       , testMapSettings.groundColor);
@@ -239,6 +252,7 @@ int main() {
         } while(timeLeft > box2DTimeStep && i < maxUpdatesInFrame);
         if (i == maxUpdatesInFrame) timeLeft = 0;
         updateDrawables(&window);
+        if (multiplayer) interchangeData();
         draw(&window);
     }
 }
@@ -387,6 +401,7 @@ void draw(RenderWindow* window) {
     window->clear(sf::Color(0,0,0));
     lightManager.draw(&diffuseTarget, &normalTarget
                       , window, playerView);
+    if (multiplayer) window->draw(secondPlayerSprite);
 
     shadowHandler.draw(window);
     mousePointer.draw(window, playerView);
@@ -413,13 +428,13 @@ void loadFiles() {
                                       , Shader::Fragment);
 }
 
-void setupConnections() {
+bool setupConnections() {
     std::cout << "Type anything to play single player\n"
               << "Type 'o' to connect with another player and play on the same map\n";
     char onlineOrSingle;
     std::cin >> onlineOrSingle;
     if (onlineOrSingle != 'o')
-        return;
+        return false;
     std::cout << "Type s to be the server.\nType c to be the client.\n"
               << "Or type anything else to continue normally\n";
     char socketType;
@@ -429,20 +444,19 @@ void setupConnections() {
         TcpListener serverListener;
         if (serverListener.listen(Socket::AnyPort) != Socket::Done) {
             std::cout << "Creating a listener failed\n";
-            return;
+            return false;
         }
         
         std::cout << "Connect to port " << serverListener.getLocalPort()
                   << " with the client.\n";
         std::cout << "Waiting for client...\n";
-        TcpSocket serverSocket;
-        if (serverListener.accept(serverSocket) != Socket::Done) {
+        if (serverListener.accept(multiSocket) != Socket::Done) {
             std::cout << "Accepting a client failed\n";
-            return;
+            return false;
         }
         std::cout << "Connected with client!\n";
         sf::Packet receivedMapPack;
-        serverSocket.receive(receivedMapPack);
+        multiSocket.receive(receivedMapPack);
         
         Image *mapImage = &(map.mapImage);
         Int32 mapSizeX, mapSizeY;
@@ -466,10 +480,9 @@ void setupConnections() {
         int port;
         std::cin >> port;
 
-        TcpSocket clientSocket;
-        if (clientSocket.connect(serverIP, port) != Socket::Done) {
+        if (multiSocket.connect(serverIP, port) != Socket::Done) {
             std::cout << "Connecting to the server failed\n";
-            return;
+            return false;
         }
         std::cout << "Succesfully connected to the server.\n";
 
@@ -487,6 +500,20 @@ void setupConnections() {
         Int32 startPosX = map.playerStartPosition.x
             , startPosY = map.playerStartPosition.y;
         mapPack << startPosX << startPosY;
-        clientSocket.send(mapPack);
+        multiSocket.send(mapPack);
     }
+    return true;
+}
+
+void interchangeData() {
+    Packet playerPosPack;
+    Vector2f playerPos = player.getPosition();
+    playerPosPack << playerPos.x << playerPos.y;
+    multiSocket.send(playerPosPack);
+    Packet secondPlayerPosPack;
+    multiSocket.receive(secondPlayerPosPack);
+    Vector2f secondPlayerPos;
+    secondPlayerPosPack >> secondPlayerPos.x
+                        >> secondPlayerPos.y;
+    secondPlayerSprite.setPosition(secondPlayerPos);
 }
