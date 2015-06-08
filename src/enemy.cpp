@@ -96,7 +96,8 @@ void ChargingEnemy::update() {
     Vector2f distanceToPlayer = playerPosition - currentPosition;
     if ((state != CHARGING_ENEMY_CHARGING) &&
         sqrt(distanceToPlayer.x * distanceToPlayer.x
-             + distanceToPlayer.y * distanceToPlayer.y) < visionRadius) {
+             + distanceToPlayer.y * distanceToPlayer.y) < visionRadius
+        && (rand() % 10) == 0) {
         if (isVisible(playerPosition)) {
             state = CHARGING_ENEMY_CHARGING;
         }
